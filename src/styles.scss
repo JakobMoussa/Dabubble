@@ -1,1 +1,192 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg-color: #eceefe;
+  --white: #ffffff;
+  --black: #000000;
+  --purple-1: #444df2;
+  --purple-2: #797ef3;
+  --purple-3: #535af1;
+  --light-purple: #adb0d9;
+  --text-gray: #686868;
+  --online-green: #92c83e;
+  --error-pink: #ed1e79;
+  --intro-gradient: linear-gradient(0.82deg, #313ae5 1.22%, #797ef3 98.76%);
+  --card-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+  --font-primary: 'Nunito', sans-serif;
+  --font-secondary: 'Figtree', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100dvh;
+  background-color: var(--bg-color);
+  color: var(--black);
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+button {
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.visually-hidden {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}
+
+/* Shared Buttons (10. Button primary & 11. Button secondary) */
+.btn-primary {
+  background-color: var(--purple-1);
+  color: var(--white);
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 12px 25px;
+  border-radius: 25px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background-color: var(--purple-2);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--purple-1);
+  }
+
+  &:disabled {
+    background-color: var(--text-gray);
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--purple-1);
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 12px 25px;
+  border-radius: 25px;
+  border: 1px solid var(--purple-2);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background-color: var(--purple-3);
+    border-color: var(--purple-3);
+    color: var(--white);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--purple-1);
+    border-color: var(--purple-1);
+    color: var(--white);
+  }
+}
+
+/* Shared Auth Form Inputs */
+.input-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.input-pill {
+  width: 100%;
+  background-color: var(--bg-color);
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--text-gray);
+  }
+
+  &.input-pill--focused,
+  &.input-pill--error {
+    border-color: var(--purple-3);
+  }
+}
+
+.input-pill__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.input-pill__field {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--black);
+
+  &::placeholder {
+    color: var(--text-gray);
+    font-weight: 500;
+  }
+}
+
+.input-error {
+  min-height: 19px;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--error-pink);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  &.input-error--visible {
+    visibility: visible;
+    opacity: 1;
+  }
+}
