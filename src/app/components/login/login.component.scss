@@ -4,7 +4,6 @@
   background-color: var(--bg-color);
 }
 
-/* 00-Intro Splash Overlay Animation */
 .intro-overlay {
   position: fixed;
   inset: 0;
@@ -50,36 +49,22 @@
 }
 
 @keyframes introIconSlideLeft {
-  from {
-    transform: translateX(140px);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(140px); }
+  to { transform: translateX(0); }
 }
 
 @keyframes introTextReveal {
-  from {
-    transform: translateX(-110%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(-110%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes introStageMoveToCorner {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(calc(-50vw + 190px), calc(-50vh + 110px)) scale(0.37);
-  }
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(max(calc(-50vw + 190px), -530px), calc(-50vh + 110px)) scale(0.37); }
 }
 
 @keyframes introOverlayFadeOut {
-  from {
-    opacity: 1;
-  }
+  from { opacity: 1; }
   to {
     opacity: 0;
     visibility: hidden;
@@ -87,10 +72,10 @@
   }
 }
 
-/* 01-Log In Page Layout */
 .login-page {
   min-height: 100dvh;
-  max-width: 1920px;
+  width: 100%;
+  max-width: var(--max-content-width);
   margin: 0 auto;
   padding: 75px 75px 48px;
   display: flex;
@@ -162,7 +147,6 @@
   }
 }
 
-/* Center Card & Form */
 .login-main {
   display: flex;
   flex-direction: column;
@@ -287,18 +271,12 @@
   &:hover,
   &:focus-visible {
     border-color: var(--purple-1);
-
-    .google-btn__label {
-      font-weight: 700;
-    }
+    .google-btn__label { font-weight: 700; }
   }
 
   &:active {
     border-color: var(--text-gray);
-
-    .google-btn__label {
-      font-weight: 500;
-    }
+    .google-btn__label { font-weight: 500; }
   }
 }
 
@@ -350,7 +328,6 @@
   }
 }
 
-/* Responsive Design (Tablet & Mobile down to 320px) */
 @media (max-width: 768px) {
   .intro-logo-stage {
     gap: 14px;
@@ -374,27 +351,11 @@
     gap: 24px;
   }
 
-  .login-header {
-    justify-content: center;
-  }
-
-  .brand-logo {
-    gap: 13px;
-  }
-
-  .brand-logo__icon {
-    width: 56px;
-    height: 56px;
-  }
-
-  .brand-logo__name {
-    width: 135.29px;
-    height: 20.8px;
-  }
-
-  .signup-cta--desktop {
-    display: none;
-  }
+  .login-header { justify-content: center; }
+  .brand-logo { gap: 13px; }
+  .brand-logo__icon { width: 56px; height: 56px; }
+  .brand-logo__name { width: 135.29px; height: 20.8px; }
+  .signup-cta--desktop { display: none; }
 
   .signup-cta--mobile {
     display: flex;
@@ -404,23 +365,10 @@
     margin-top: 24px;
   }
 
-  .signup-cta__mobile-btn {
-    padding: 7px 18px;
-  }
-
-  .login-card {
-    max-width: 398px;
-    padding: 35px 20px;
-  }
-
-  .login-card__head {
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-
-  .login-card__title {
-    font-size: 32px;
-  }
+  .signup-cta__mobile-btn { padding: 7px 18px; }
+  .login-card { max-width: 398px; padding: 35px 20px; }
+  .login-card__head { gap: 15px; margin-bottom: 20px; }
+  .login-card__title { font-size: 32px; }
 
   .login-card__subtitle,
   .forgot-password-link,
@@ -434,37 +382,14 @@
     margin-bottom: 20px;
   }
 
-  .google-btn {
-    padding: 6px 24px;
-    margin-bottom: 24px;
-  }
-
-  .action-buttons {
-    gap: 20px;
-  }
+  .google-btn { padding: 6px 24px; margin-bottom: 24px; }
+  .action-buttons { gap: 20px; }
 }
 
 @media (max-width: 380px) {
-  .login-page {
-    padding: 24px 10px 16px;
-  }
-
-  .login-card {
-    padding: 28px 14px;
-    border-radius: 24px;
-  }
-
-  .google-btn {
-    padding: 6px 14px;
-    gap: 12px;
-  }
-
-  .google-btn__label {
-    font-size: 16px;
-  }
-
-  .action-buttons {
-    gap: 12px;
-    width: 100%;
-  }
+  .login-page { padding: 24px 10px 16px; }
+  .login-card { padding: 28px 14px; border-radius: 24px; }
+  .google-btn { padding: 6px 14px; gap: 12px; }
+  .google-btn__label { font-size: 16px; }
+  .action-buttons { gap: 12px; width: 100%; }
 }
