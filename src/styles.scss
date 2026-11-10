@@ -1,3 +1,43 @@
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/Nunito/static/Nunito-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/Nunito/static/Nunito-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/Nunito/static/Nunito-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/Nunito/static/Nunito-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('assets/fonts/Nunito/static/Nunito-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-color: #eceefe;
   --white: #ffffff;
@@ -12,7 +52,7 @@
   --intro-gradient: linear-gradient(0.82deg, #313ae5 1.22%, #797ef3 98.76%);
   --card-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
   --font-primary: 'Nunito', sans-serif;
-  --font-secondary: 'Figtree', sans-serif;
+  --font-secondary: 'Nunito', sans-serif;
   --max-content-width: 1440px;
 }
 
