@@ -1,0 +1,250 @@
+:host {
+    display: block;
+    min-height: 100dvh;
+    background-color: var(--bg-color);
+}
+
+.input-pill__icon--muted {
+    opacity: 0.58;
+}
+
+.privacy-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.privacy-check-row {
+    display: flex;
+    align-items: center;
+}
+
+.privacy-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.privacy-checkbox-box {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 2px solid var(--purple-2);
+    background-color: var(--white);
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.privacy-checkbox-label:hover .privacy-checkbox-box {
+    border-color: var(--purple-1);
+    box-shadow: 0 0 0 4px var(--bg-color);
+}
+
+.privacy-checkbox-input:focus-visible+.privacy-checkbox-label .privacy-checkbox-box {
+    outline: 2px solid var(--purple-1);
+    outline-offset: 2px;
+}
+
+.privacy-checkbox-input:checked+.privacy-checkbox-label .privacy-checkbox-box {
+    background-color: var(--purple-1);
+    border-color: var(--purple-1);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid var(--white);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+}
+
+.privacy-checkbox-text {
+    font-family: var(--font-secondary);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--black);
+}
+
+.privacy-link {
+    color: var(--purple-2);
+    padding: 2px 6px;
+    border-radius: 14px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--bg-color);
+        color: var(--purple-1);
+        font-weight: 500;
+    }
+}
+
+.submit-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Step 2: Choose Avatar */
+.avatar-head {
+    margin-bottom: 24px;
+}
+
+.avatar-preview-box {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    background-color: var(--purple-2);
+}
+
+.avatar-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-preview-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-placeholder-icon {
+    width: 112px;
+    height: 112px;
+    filter: brightness(0) invert(1);
+}
+
+.avatar-user-name {
+    font-family: var(--font-primary);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--black);
+    text-align: center;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.avatar-list-label {
+    width: 100%;
+    max-width: 472px;
+    font-family: var(--font-primary);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--black);
+    margin-bottom: 16px;
+}
+
+.avatar-grid {
+    width: 100%;
+    max-width: 472px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.avatar-option {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    padding: 4px;
+    border: 3px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--bg-color);
+        border-color: var(--light-purple);
+        transform: scale(1.04);
+    }
+
+    &.avatar-option--selected {
+        background-color: var(--bg-color);
+        border-color: var(--purple-1);
+    }
+}
+
+.avatar-option__img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-upload-label {
+    font-family: var(--font-primary);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--black);
+}
+
+.upload-error {
+    width: 100%;
+    max-width: 472px;
+    margin-bottom: 8px;
+}
+
+.avatar-submit-row {
+    max-width: 472px;
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .avatar-preview-box {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 16px;
+    }
+
+    .avatar-placeholder-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatar-user-name {
+        font-size: 24px;
+    }
+
+    .avatar-list-label,
+    .avatar-upload-label {
+        font-size: 17px;
+    }
+
+    .avatar-grid {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .avatar-option {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 380px) {
+    .submit-row {
+        justify-content: center;
+    }
+}

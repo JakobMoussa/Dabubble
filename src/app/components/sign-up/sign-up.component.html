@@ -1,0 +1,166 @@
+<div class="auth-page">
+    <header class="auth-header">
+        <a routerLink="/" class="brand-logo" aria-label="DABubble Startseite">
+            <img src="assets/icons/Logo.svg" alt="DABubble Logo" width="70" height="70" class="brand-logo__icon" />
+            <img src="assets/icons/logo-name-black.svg" alt="DABubble" width="156" height="24"
+                class="brand-logo__name" />
+        </a>
+    </header>
+
+    <main class="auth-main">
+        @if (step === 'form') {
+        <section class="auth-card" aria-labelledby="signup-heading">
+            <a routerLink="/login" class="back-btn" aria-label="Zurück zur Anmeldung">
+                <img src="assets/icons/arrow_back.svg" alt="" width="24" height="24" class="back-btn__icon" />
+            </a>
+
+            <div class="auth-card__head">
+                <h1 id="signup-heading" class="auth-card__title">Konto erstellen</h1>
+                <p class="auth-card__subtitle">
+                    Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.
+                </p>
+            </div>
+
+            <form class="auth-form" (ngSubmit)="onProceedToAvatar()" novalidate>
+                <div class="input-group">
+                    <label for="full-name" class="visually-hidden">Name und Nachname</label>
+                    <div class="input-pill" [class.input-pill--focused]="nameFocused"
+                        [class.input-pill--error]="showNameError()">
+                        <img src="assets/icons/account_circle.svg" alt="" width="24" height="24"
+                            class="input-pill__icon"
+                            [class.input-pill__icon--muted]="!isFieldActive(nameFocused, fullName)" />
+                        <input type="text" id="full-name" name="fullName" [(ngModel)]="fullName"
+                            (focus)="nameFocused = true" (blur)="onNameBlur()" placeholder="Name und Nachname"
+                            autocomplete="name" enterkeyhint="next" required [attr.aria-invalid]="showNameError()"
+                            aria-describedby="name-error" class="input-pill__field" />
+                    </div>
+                    <p id="name-error" class="input-error" [class.input-error--visible]="showNameError()"
+                        aria-live="polite">
+                        *Bitte schreiben Sie Ihren Namen und Nachnamen.
+                    </p>
+                </div>
+
+                <div class="input-group">
+                    <label for="signup-email" class="visually-hidden">E-Mail-Adresse</label>
+                    <div class="input-pill" [class.input-pill--focused]="emailFocused"
+                        [class.input-pill--error]="showEmailError()">
+                        <img [src]="getMailIcon()" alt="" width="24" height="24" class="input-pill__icon" />
+                        <input type="email" id="signup-email" name="email" [(ngModel)]="email"
+                            (focus)="emailFocused = true" (blur)="onEmailBlur()" placeholder="beispielname@email.com"
+                            autocomplete="username" enterkeyhint="next" required [attr.aria-invalid]="showEmailError()"
+                            aria-describedby="signup-email-error" class="input-pill__field" />
+                    </div>
+                    <p id="signup-email-error" class="input-error" [class.input-error--visible]="showEmailError()"
+                        aria-live="polite">
+                        *Diese E-Mail-Adresse ist leider ungültig.
+                    </p>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-password" class="visually-hidden">Passwort</label>
+                    <div class="input-pill" [class.input-pill--focused]="passwordFocused"
+                        [class.input-pill--error]="showPasswordError()">
+                        <img [src]="getLockIcon()" alt="" width="24" height="24" class="input-pill__icon" />
+                        <input type="password" id="new-password" name="password" [(ngModel)]="password"
+                            (focus)="passwordFocused = true" (blur)="onPasswordBlur()" placeholder="Passwort"
+                            autocomplete="new-password" enterkeyhint="done" minlength="8" required
+                            [attr.aria-invalid]="showPasswordError()" aria-describedby="signup-password-error"
+                            class="input-pill__field" />
+                    </div>
+                    <p id="signup-password-error" class="input-error" [class.input-error--visible]="showPasswordError()"
+                        aria-live="polite">
+                        *Das Passwort muss mindestens 8 Zeichen lang sein.
+                    </p>
+                </div>
+
+                <div class="privacy-group">
+                    <div class="privacy-check-row">
+                        <input type="checkbox" id="privacy-accepted" name="privacyAccepted"
+                            [(ngModel)]="privacyAccepted" (change)="onPrivacyChange()"
+                            [attr.aria-invalid]="showPrivacyError()" aria-describedby="privacy-error"
+                            class="visually-hidden privacy-checkbox-input" />
+                        <label for="privacy-accepted" class="privacy-checkbox-label">
+                            <span class="privacy-checkbox-box" aria-hidden="true"></span>
+                            <span class="privacy-checkbox-text">
+                                Ich stimme der
+                                <a routerLink="/privacy" class="privacy-link">Datenschutzerklärung</a>
+                                zu.
+                            </span>
+                        </label>
+                    </div>
+                    <p id="privacy-error" class="input-error" [class.input-error--visible]="showPrivacyError()"
+                        aria-live="polite">
+                        *Bitte stimmen Sie der Datenschutzerklärung zu.
+                    </p>
+                </div>
+
+                <div class="submit-row">
+                    <button type="submit" class="btn-primary" [disabled]="!isStepOneValid()">
+                        Weiter
+                    </button>
+                </div>
+            </form>
+        </section>
+        } @else {
+        <section class="auth-card" aria-labelledby="avatar-heading">
+            <button type="button" class="back-btn" aria-label="Zurück zur Registrierung" (click)="goBackToForm()">
+                <img src="assets/icons/arrow_back.svg" alt="" width="24" height="24" class="back-btn__icon" />
+            </button>
+
+            <div class="auth-card__head avatar-head">
+                <h1 id="avatar-heading" class="auth-card__title">Wähle deinen Avatar</h1>
+            </div>
+
+            <div class="avatar-preview-box">
+                @if (selectedAvatar) {
+                <img [src]="selectedAvatar" [alt]="fullName" width="168" height="168" class="avatar-preview-img" />
+                } @else {
+                <div class="avatar-preview-placeholder" aria-hidden="true">
+                    <img src="assets/icons/account_circle.svg" alt="" width="96" height="96"
+                        class="avatar-placeholder-icon" />
+                </div>
+                }
+            </div>
+
+            <p class="avatar-user-name">{{ fullName.trim() }}</p>
+            <p class="avatar-list-label">Aus der Liste wählen</p>
+
+            <div class="avatar-grid" role="radiogroup" aria-label="Avatar aus der Liste wählen">
+                @for (avatar of avatarOptions; track avatar.src) {
+                <button type="button" role="radio" [attr.aria-checked]="selectedAvatar === avatar.src"
+                    [attr.aria-label]="avatar.name" class="avatar-option"
+                    [class.avatar-option--selected]="selectedAvatar === avatar.src" (click)="selectAvatar(avatar.src)">
+                    <img [src]="avatar.src" [alt]="avatar.name" width="64" height="64" class="avatar-option__img" />
+                </button>
+                }
+            </div>
+
+            @if (uploadError) {
+            <p class="input-error input-error--visible upload-error" aria-live="polite">
+                {{ uploadError }}
+            </p>
+            }
+
+            <div class="submit-row avatar-submit-row">
+                <button type="button" class="btn-primary" [disabled]="!selectedAvatar || isSubmitting"
+                    (click)="onCreateAccount()">
+                    Weiter
+                </button>
+            </div>
+        </section>
+        }
+    </main>
+
+    <footer class="auth-footer">
+        <a routerLink="/imprint" class="footer-link">Impressum</a>
+        <a routerLink="/privacy" class="footer-link">Datenschutz</a>
+    </footer>
+</div>
+
+@if (showToast) {
+<div class="toast-backdrop" role="status" aria-live="polite">
+    <div class="toast-pill">
+        <span>Konto erfolgreich erstellt!</span>
+    </div>
+</div>
+}
