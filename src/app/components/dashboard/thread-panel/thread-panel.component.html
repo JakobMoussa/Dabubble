@@ -1,0 +1,85 @@
+<aside class="thread-panel" aria-label="Thread Ansicht">
+  <header class="thread-header">
+    <div class="thread-header__title-group">
+      <h2 class="thread-header__title">Thread</h2>
+      <span class="thread-header__channel"># {{ channelName }}</span>
+    </div>
+    <button
+      type="button"
+      class="thread-close-btn"
+      aria-label="Thread schließen"
+      (click)="onClose()"
+    >
+      <img src="assets/icons/close.svg" alt="" width="14" height="14" />
+    </button>
+  </header>
+
+  <div class="thread-messages">
+    <article class="thread-msg">
+      <img [src]="rootMessage.avatar" [alt]="rootMessage.author" width="56" height="56" class="thread-msg__avatar" />
+      <div class="thread-msg__body">
+        <div class="thread-msg__meta">
+          <span class="thread-msg__author">{{ rootMessage.author }}</span>
+          <span class="thread-msg__time">{{ rootMessage.time }}</span>
+        </div>
+        <div class="thread-msg__bubble">{{ rootMessage.text }}</div>
+      </div>
+    </article>
+
+    <div class="thread-divider">
+      <span class="thread-divider__count">{{ replies.length }} Antworten</span>
+      <span class="thread-divider__line"></span>
+    </div>
+
+    @for (reply of replies; track reply.id) {
+      <article class="thread-msg" [class.thread-msg--own]="reply.isOwn">
+        <img [src]="reply.avatar" [alt]="reply.author" width="56" height="56" class="thread-msg__avatar" />
+        <div class="thread-msg__body" [class.thread-msg__body--own]="reply.isOwn">
+          <div class="thread-msg__meta" [class.thread-msg__meta--own]="reply.isOwn">
+            <span class="thread-msg__author">{{ reply.author }}</span>
+            <span class="thread-msg__time">{{ reply.time }}</span>
+          </div>
+          <div class="thread-msg__bubble" [class.thread-msg__bubble--own]="reply.isOwn">
+            {{ reply.text }}
+          </div>
+          @if (reply.reactions?.length) {
+            <div class="thread-msg__reactions">
+              @for (reaction of reply.reactions; track reaction.emoji) {
+                <span class="reaction-chip">{{ reaction.emoji }} {{ reaction.count }}</span>
+              }
+            </div>
+          }
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="thread-composer-wrap">
+    <div class="thread-composer-box">
+      <label for="thread-reply-input" class="visually-hidden">Antworten</label>
+      <textarea
+        id="thread-reply-input"
+        rows="2"
+        placeholder="Antworten..."
+        class="thread-composer-box__textarea"
+      ></textarea>
+      <div class="thread-composer-toolbar">
+        <div class="thread-composer-toolbar__left">
+          <button type="button" class="composer-icon-btn" aria-label="Option hinzufügen">
+            <img src="assets/icons/add.svg" alt="" width="24" height="24" />
+          </button>
+          <span class="composer-divider" aria-hidden="true"></span>
+          <button type="button" class="composer-icon-btn" aria-label="Emoticon einfügen">
+            <img src="assets/icons/sentiment_satisfied.svg" alt="" width="20" height="20" />
+          </button>
+          <button type="button" class="composer-icon-btn" aria-label="Person markieren">
+            <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
+          </button>
+        </div>
+        <button type="button" class="composer-send-btn" aria-label="Antwort senden">
+          <img src="assets/icons/send.svg" alt="" width="22" height="19" />
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
