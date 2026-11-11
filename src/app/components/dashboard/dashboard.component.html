@@ -1,0 +1,253 @@
+<div class="dashboard-shell">
+
+  <header class="dashboard-header">
+    <div class="header-brand">
+      @if (mobileView !== 'menu') {
+      <button type="button" class="mobile-back-btn" aria-label="Zurück"
+        (click)="mobileView === 'thread' ? closeThread() : openMobileMenu()">
+        <img src="assets/icons/keyboard_arrow_down (1).svg" alt="" width="10" height="16" />
+        <img src="assets/icons/workspaces.svg" alt="" width="24" height="24" />
+        <span class="mobile-back-btn__title">Devspace</span>
+      </button>
+      }
+
+      <a routerLink="/login" class="brand-logo" [class.brand-logo--hide-mobile]="mobileView !== 'menu'">
+        <img src="assets/icons/Logo.svg" alt="DABubble Logo" width="70" height="70" class="brand-logo__icon" />
+        <img src="assets/icons/logo-name-black.svg" alt="DABubble" width="156" height="24" class="brand-logo__name" />
+      </a>
+    </div>
+
+    <div class="header-search">
+      <label for="global-search" class="visually-hidden">Devspace durchsuchen</label>
+      <input type="search" id="global-search" placeholder="Devspace durchsuchen" class="header-search__input" />
+      <img src="assets/icons/search (2).svg" alt="" width="24" height="24" class="header-search__icon" />
+    </div>
+
+    <button type="button" class="user-menu-btn" aria-label="Benutzerprofil öffnen">
+      <span class="user-menu-btn__name">{{ currentUser.name }}</span>
+      <span class="avatar-wrapper">
+        <img [src]="currentUser.avatar" [alt]="currentUser.name" width="70" height="70" class="avatar-wrapper__img" />
+        <span class="status-dot status-dot--online" aria-label="Online"></span>
+      </span>
+      <img src="assets/icons/keyboard_arrow_down.svg" alt="" width="30" height="30" class="user-menu-btn__arrow" />
+    </button>
+  </header>
+
+  <div class="dashboard-body">
+    <aside class="workspace-sidebar" [class.workspace-sidebar--collapsed]="isSidebarHidden"
+      [class.workspace-sidebar--mobile-hidden]="mobileView !== 'menu'" [attr.aria-hidden]="isSidebarHidden"
+      [attr.inert]="isSidebarHidden ? '' : null" aria-label="Workspace Navigation">
+      <div class="sidebar-top">
+        <div class="workspace-title">
+          <img src="assets/icons/workspaces.svg" alt="" width="36" height="36" class="workspace-title__icon" />
+          <h1 class="workspace-title__text">Devspace</h1>
+        </div>
+        <button type="button" class="icon-btn" aria-label="Neue Nachricht verfassen">
+          <img src="assets/icons/edit_square.svg" alt="" width="24" height="24" />
+        </button>
+      </div>
+
+      <div class="mobile-search-box">
+        <label for="mobile-search" class="visually-hidden">Gehe zu...</label>
+        <input type="search" id="mobile-search" placeholder="Gehe zu..." class="mobile-search-box__input" />
+        <img src="assets/icons/search (2).svg" alt="" width="20" height="20" />
+      </div>
+
+      <nav class="sidebar-scroll">
+        <section class="sidebar-section">
+          <div class="section-header">
+            <button type="button" class="section-toggle" [attr.aria-expanded]="isChannelsOpen"
+              (click)="toggleChannels()">
+              <img src="assets/icons/keyboard_arrow_down.svg" alt="" width="24" height="24"
+                class="section-toggle__arrow" [class.section-toggle__arrow--collapsed]="!isChannelsOpen" />
+              <img src="assets/icons/workspaces.svg" alt="" width="24" height="24" />
+              <span>Channels</span>
+            </button>
+            <button type="button" class="icon-btn" aria-label="Channel erstellen" (click)="openChannelPopup()">
+              <img src="/assets/icons/add (1).svg" alt="" width="24" height="24" />
+            </button>
+          </div>
+
+          @if (isChannelsOpen) {
+          <ul class="channel-list">
+            @for (channel of channels; track channel.id) {
+            <li>
+              <button type="button" class="channel-item"
+                [class.channel-item--active]="!activeMemberId && activeChannelId === channel.id"
+                (click)="selectChannel(channel.id)">
+                <img
+                  [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag (1).svg' : 'assets/icons/tag.svg'"
+                  alt="" width="24" height="24" />
+                <span>{{ channel.name }}</span>
+              </button>
+            </li>
+            }
+            <li>
+              <button type="button" class="add-channel-btn" (click)="openChannelPopup()">
+                <img src="assets/icons/add_circle.svg" alt="" width="24" height="24" />
+                <span>Channel hinzufügen</span>
+              </button>
+            </li>
+          </ul>
+          }
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-header">
+            <button type="button" class="section-toggle" [attr.aria-expanded]="isDirectMessagesOpen"
+              (click)="toggleDirectMessages()">
+              <img src="assets/icons/keyboard_arrow_down.svg" alt="" width="24" height="24"
+                class="section-toggle__arrow" [class.section-toggle__arrow--collapsed]="!isDirectMessagesOpen" />
+              <img src="assets/icons/account_circle.svg" alt="" width="24" height="24" />
+              <span>Direktnachrichten</span>
+            </button>
+          </div>
+
+          @if (isDirectMessagesOpen) {
+          <ul class="member-list">
+            @for (member of members; track member.id) {
+            <li>
+              <button type="button" class="member-item" [class.member-item--active]="activeMemberId === member.id"
+                (click)="selectMember(member.id)">
+                <span class="avatar-wrapper avatar-wrapper--sm">
+                  <img [src]="member.avatar" [alt]="member.name" width="50" height="50" class="avatar-wrapper__img" />
+                  <span class="status-dot status-dot--sm" [class.status-dot--online]="member.online"
+                    [class.status-dot--offline]="!member.online"></span>
+                </span>
+                <span class="member-item__name">{{ member.name }}</span>
+              </button>
+            </li>
+            }
+          </ul>
+          }
+        </section>
+      </nav>
+    </aside>
+
+    <main class="chat-panel" [class.chat-panel--mobile-hidden]="mobileView !== 'chat'" aria-label="Aktiver Chat">
+      <header class="chat-header">
+        @if (getActiveMember(); as member) {
+        <button type="button" class="chat-title-btn">
+          <span class="avatar-wrapper avatar-wrapper--sm">
+            <img [src]="member.avatar" [alt]="member.name" width="50" height="50" class="avatar-wrapper__img" />
+            <span class="status-dot status-dot--sm" [class.status-dot--online]="member.online"
+              [class.status-dot--offline]="!member.online"></span>
+          </span>
+          <span class="chat-title-btn__text">{{ member.name }}</span>
+        </button>
+        } @else {
+        <button type="button" class="chat-title-btn">
+          <img src="assets/icons/tag.svg" alt="" width="24" height="24" />
+          <span class="chat-title-btn__text">{{ getActiveChannel().name }}</span>
+          <img src="assets/icons/keyboard_arrow_down.svg" alt="" width="24" height="24" />
+        </button>
+
+        <div class="chat-header__members">
+          <button type="button" class="member-stack-btn" aria-label="Channel-Mitglieder anzeigen">
+            <span class="member-stack">
+              @for (avatar of channelMemberAvatars; track avatar) {
+              <img [src]="avatar" alt="" width="40" height="40" class="member-stack__img" />
+              }
+            </span>
+            <span class="member-stack__count">{{ channelMemberAvatars.length }}</span>
+          </button>
+
+          <button type="button" class="add-member-btn" aria-label="Mitglied hinzufügen">
+            <img src="assets/icons/person_add.svg" alt="" width="24" height="24" />
+          </button>
+        </div>
+        }
+      </header>
+
+      <div class="chat-messages">
+        <div class="date-separator">
+          <span class="date-separator__line"></span>
+          <span class="date-separator__pill">Heute</span>
+          <span class="date-separator__line"></span>
+        </div>
+
+        @for (msg of sampleMessages; track msg.id) {
+        <article class="message-row" [class.message-row--own]="msg.isOwn">
+          <img [src]="msg.avatar" [alt]="msg.author" width="70" height="70" class="message-row__avatar" />
+          <div class="message-content" [class.message-content--own]="msg.isOwn">
+            <div class="message-meta" [class.message-meta--own]="msg.isOwn">
+              <span class="message-meta__author">{{ msg.author }}</span>
+              <span class="message-meta__time">{{ msg.time }}</span>
+            </div>
+
+            <div class="message-bubble" [class.message-bubble--own]="msg.isOwn">
+              {{ msg.text }}
+            </div>
+
+            @if (msg.repliesCount) {
+            <div class="message-thread-info">
+              <button type="button" class="thread-link" (click)="openThread()">
+                {{ msg.repliesCount }} Antworten
+              </button>
+              <span class="thread-last-time">Letzte Antwort {{ msg.lastReplyTime }}</span>
+            </div>
+            }
+
+            @if (msg.reactions?.length) {
+            <div class="message-reactions">
+              @for (reaction of msg.reactions; track reaction.emoji) {
+              <span class="reaction-chip">{{ reaction.emoji }} {{ reaction.count }}</span>
+              }
+              <button type="button" class="reaction-add-btn" aria-label="Reaktion hinzufügen">
+                <img src="assets/icons/add_reaction.svg" alt="" width="20" height="20" />
+              </button>
+            </div>
+            }
+          </div>
+        </article>
+        }
+      </div>
+
+      <div class="composer-wrapper">
+        <div class="composer-box">
+          <label for="chat-message-input" class="visually-hidden">Nachricht schreiben</label>
+          <textarea id="chat-message-input" rows="2" [placeholder]="'Nachricht an ' + getActiveTitle()"
+            class="composer-box__textarea"></textarea>
+          <div class="composer-toolbar">
+            <div class="composer-toolbar__left">
+              <button type="button" class="composer-icon-btn" aria-label="Datei oder Option hinzufügen">
+                <img src="assets/icons/add.svg" alt="" width="24" height="24" />
+              </button>
+              <span class="composer-divider" aria-hidden="true"></span>
+              <button type="button" class="composer-icon-btn" aria-label="Emoticon einfügen">
+                <img src="assets/icons/sentiment_satisfied.svg" alt="" width="20" height="20" />
+              </button>
+              <button type="button" class="composer-icon-btn" aria-label="Person markieren">
+                <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
+              </button>
+            </div>
+            <button type="button" class="composer-send-btn" aria-label="Nachricht senden">
+              <img src="assets/icons/send.svg" alt="" width="22" height="19" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    @if (isThreadOpen) {
+    <app-thread-panel [class.thread-panel--mobile-hidden]="mobileView !== 'thread'"
+      [channelName]="getActiveChannel().name" [rootMessage]="threadRootMessage" [replies]="threadReplies"
+      (closeThread)="closeThread()" />
+    }
+  </div>
+
+  <button type="button" class="workspace-toggle-tab"
+    [attr.aria-label]="isSidebarHidden ? 'Workspace-Menü öffnen' : 'Workspace-Menü schließen'"
+    (click)="toggleSidebar()">
+    <span class="workspace-toggle-tab__label">
+      {{ isSidebarHidden ? 'Workspace-Menü öffnen' : 'Workspace-Menü schließen' }}
+      <img class="hide-icon" [class.hide-icon--flipped]="isSidebarHidden" src="/assets/icons/Group 2.svg"
+        alt="hide-icon" />
+    </span>
+  </button>
+
+  @if (isChannelPopupOpen) {
+  <app-add-channel-modal [existingChannelNames]="getExistingChannelNames()" [members]="members"
+    (closed)="closeChannelPopup()" (channelCreated)="handleChannelCreated($event)" />
+  }
+</div>
