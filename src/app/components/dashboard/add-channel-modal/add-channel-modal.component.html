@@ -1,0 +1,177 @@
+<dialog
+  #channelDialog
+  closedby="any"
+  class="channel-dialog"
+  [class.channel-dialog--compact]="step === 'members'"
+  aria-labelledby="channel-modal-title"
+  (close)="onNativeClose()"
+  (click)="onDialogBackdropClick($event)"
+>
+  <div class="modal-card">
+    <header class="modal-header">
+      <h2 id="channel-modal-title" class="modal-header__title">
+        {{ step === 'details' ? 'Channel erstellen' : 'Leute hinzufügen' }}
+      </h2>
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Dialog schließen"
+        (click)="requestClose()"
+      >
+        <img src="assets/icons/close.svg" alt="" width="14" height="14" />
+      </button>
+    </header>
+
+    @if (step === 'details') {
+      <p class="modal-subtitle">
+        Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein –
+        #marketing zum Beispiel.
+      </p>
+
+      <form class="modal-form" (ngSubmit)="onProceedToMembers()" novalidate>
+        <div class="field-group">
+          <label for="channel-name-input" class="field-label">Channel-Name</label>
+          <div class="channel-input-pill" [class.channel-input-pill--error]="getNameError()">
+            <img src="assets/icons/tag.svg" alt="" width="20" height="20" class="channel-input-pill__icon" />
+            <input
+              type="text"
+              id="channel-name-input"
+              name="channelName"
+              [(ngModel)]="channelName"
+              (blur)="onNameBlur()"
+              placeholder="z. B. Kooperationsprojekte"
+              maxlength="40"
+              enterkeyhint="next"
+              required
+              [attr.aria-invalid]="!!getNameError()"
+              aria-describedby="channel-name-error"
+              class="channel-input-pill__field"
+            />
+          </div>
+          @if (getNameError()) {
+            <p id="channel-name-error" class="field-error" aria-live="polite">
+              {{ getNameError() }}
+            </p>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="channel-desc-input" class="field-label">
+            Beschreibung <span class="field-label__optional">(optional)</span>
+          </label>
+          <div class="channel-input-pill">
+            <input
+              type="text"
+              id="channel-desc-input"
+              name="channelDescription"
+              [(ngModel)]="channelDescription"
+              placeholder="Dein Text hier"
+              maxlength="120"
+              enterkeyhint="done"
+              class="channel-input-pill__field"
+            />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary" [disabled]="!isNameValid()">
+            Erstellen
+          </button>
+        </div>
+      </form>
+    } @else {
+      <form class="modal-form" (ngSubmit)="onCreateChannel()" novalidate>
+        <fieldset class="invite-fieldset">
+          <legend class="visually-hidden">Mitglieder zum Channel einladen</legend>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="inviteMode"
+              value="all"
+              [(ngModel)]="inviteMode"
+              class="radio-option__input"
+            />
+            <span class="radio-option__circle" aria-hidden="true"></span>
+            <span class="radio-option__text">
+              Alle Mitglieder von <span class="workspace-highlight">Devspace</span> hinzufügen
+            </span>
+          </label>
+
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="inviteMode"
+              value="specific"
+              [(ngModel)]="inviteMode"
+              class="radio-option__input"
+            />
+            <span class="radio-option__circle" aria-hidden="true"></span>
+            <span class="radio-option__text">Bestimmte Leute hinzufügen</span>
+          </label>
+        </fieldset>
+
+        @if (inviteMode === 'specific') {
+          <div class="member-picker">
+            @if (selectedMembers.length > 0) {
+              <div class="selected-chips" aria-label="Ausgewählte Mitglieder">
+                @for (member of selectedMembers; track member.id) {
+                  <span class="member-chip">
+                    <img [src]="member.avatar" [alt]="member.name" width="24" height="24" class="member-chip__avatar" />
+                    <span>{{ member.name }}</span>
+                    <button
+                      type="button"
+                      class="member-chip__remove"
+                      [attr.aria-label]="member.name + ' entfernen'"
+                      (click)="removeMember(member.id)"
+                    >
+                      <img src="assets/icons/close.svg" alt="" width="10" height="10" />
+                    </button>
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="channel-input-pill">
+              <label for="member-search-input" class="visually-hidden">Name eingeben</label>
+              <input
+                type="text"
+                id="member-search-input"
+                name="memberSearch"
+                [(ngModel)]="memberSearch"
+                placeholder="Name eingeben"
+                autocomplete="off"
+                class="channel-input-pill__field"
+              />
+            </div>
+
+            @if (getFilteredMembers().length > 0) {
+              <ul class="member-dropdown" role="listbox" aria-label="Verfügbare Mitglieder">
+                @for (member of getFilteredMembers(); track member.id) {
+                  <li>
+                    <button type="button" class="member-dropdown__item" (click)="addMember(member)">
+                      <span class="member-dropdown__avatar-wrap">
+                        <img [src]="member.avatar" [alt]="member.name" width="38" height="38" class="member-dropdown__avatar" />
+                        <span
+                          class="member-dropdown__status"
+                          [class.member-dropdown__status--online]="member.online"
+                        ></span>
+                      </span>
+                      <span>{{ member.name }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary" [disabled]="!canCreateChannel()">
+            Erstellen
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</dialog>
