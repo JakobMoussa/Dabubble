@@ -23,7 +23,8 @@
       <img src="assets/icons/search (2).svg" alt="" width="24" height="24" class="header-search__icon" />
     </div>
 
-    <button type="button" class="user-menu-btn" aria-label="Benutzerprofil öffnen">
+    <button type="button" class="user-menu-btn" aria-label="Benutzerprofil öffnen" aria-haspopup="dialog"
+      [attr.aria-expanded]="isSettingsPopupOpen" (click)="openSettingsPopup()">
       <span class="user-menu-btn__name">{{ currentUser.name }}</span>
       <span class="avatar-wrapper">
         <img [src]="currentUser.avatar" [alt]="currentUser.name" width="70" height="70" class="avatar-wrapper__img" />
@@ -249,5 +250,34 @@
   @if (isChannelPopupOpen) {
   <app-add-channel-modal [existingChannelNames]="getExistingChannelNames()" [members]="members"
     (closed)="closeChannelPopup()" (channelCreated)="handleChannelCreated($event)" />
+  }
+
+  @if (isSettingsPopupOpen) {
+  <div class="settings-popup-overlay" (click)="closeSettingsPopup()">
+    <div class="settings-popup" role="dialog" aria-modal="true" aria-label="Profileinstellungen"
+      (click)="$event.stopPropagation()">
+      <span class="settings-popup__handle" aria-hidden="true"></span>
+      <button type="button" class="settings-popup__item" (click)="openProfileSettings()">
+        <span class="settings-popup__icon" aria-hidden="true">
+          <img src="assets/icons/account_circle.svg" alt="" width="24" height="24"
+            class="settings-popup__icon-default" />
+          <img src="assets/icons/account_circle (1).svg" alt="" width="24" height="24"
+            class="settings-popup__icon-hover" />
+        </span>
+        <span>Profil</span>
+      </button>
+      <a routerLink="/login" class="settings-popup__item" (click)="closeSettingsPopup()">
+        <span class="settings-popup__icon" aria-hidden="true">
+          <img src="assets/icons/logout.svg" alt="" width="24" height="24" class="settings-popup__icon-default" />
+          <img src="assets/icons/logout (1).svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
+        </span>
+        <span>Log out</span>
+      </a>
+    </div>
+  </div>
+  }
+  @if (isProfilePopupOpen) {
+  <app-profile-popup [userName]="currentUser.name" [userAvatar]="currentUser.avatar"
+    (closed)="closeProfilePopup()"></app-profile-popup>
   }
 </div>

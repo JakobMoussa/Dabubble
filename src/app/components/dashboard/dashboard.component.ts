@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AddChannelModalComponent,
   CreatedChannelPayload
 } from './add-channel-modal/add-channel-modal.component';
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
+import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
+
 
 export interface ChannelPreview {
   id: string;
@@ -37,13 +39,15 @@ export interface ChatMessagePreview {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent],
+  imports: [CommonModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
   isSidebarHidden = false;
+  isSettingsPopupOpen = false;
   isChannelPopupOpen = false;
+  isProfilePopupOpen = false;
   isThreadOpen = true;
   isChannelsOpen = true;
   isDirectMessagesOpen = true;
@@ -158,9 +162,32 @@ export class DashboardComponent {
     this.isChannelPopupOpen = true;
   }
 
-
   closeChannelPopup(): void {
     this.isChannelPopupOpen = false;
+  }
+
+  openSettingsPopup(): void {
+    this.isSettingsPopupOpen = true;
+  }
+
+  closeSettingsPopup(): void {
+    this.isSettingsPopupOpen = false;
+  }
+
+  openProfileSettings(): void {
+    this.isSettingsPopupOpen = false;
+    this.isProfilePopupOpen = true;
+  }
+
+  closeProfilePopup(): void {
+    this.isProfilePopupOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.isSettingsPopupOpen) {
+      this.closeSettingsPopup();
+    }
   }
 
 

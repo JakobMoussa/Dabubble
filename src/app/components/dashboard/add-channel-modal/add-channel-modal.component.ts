@@ -47,7 +47,6 @@ export class AddChannelModalComponent implements AfterViewInit {
   memberSearch = '';
   selectedMembers: ModalMemberOption[] = [];
 
-
   ngAfterViewInit(): void {
     const dialog = this.dialogRef.nativeElement;
     if (!dialog.open) {
@@ -55,11 +54,9 @@ export class AddChannelModalComponent implements AfterViewInit {
     }
   }
 
-
   getNormalizedName(): string {
     return this.channelName.trim().replace(/^#+/, '').trim();
   }
-
 
   isDuplicateName(): boolean {
     const normalized = this.getNormalizedName().toLowerCase();
@@ -69,12 +66,10 @@ export class AddChannelModalComponent implements AfterViewInit {
     return this.existingChannelNames.some((n) => n.toLowerCase() === normalized);
   }
 
-
   isNameValid(): boolean {
     const normalized = this.getNormalizedName();
     return normalized.length > 0 && !this.isDuplicateName();
   }
-
 
   getNameError(): string {
     if (!this.nameTouched) {
@@ -86,11 +81,9 @@ export class AddChannelModalComponent implements AfterViewInit {
     return this.isDuplicateName() ? '*Dieser Channel existiert bereits.' : '';
   }
 
-
   onNameBlur(): void {
     this.nameTouched = true;
   }
-
 
   onProceedToMembers(): void {
     this.nameTouched = true;
@@ -100,12 +93,10 @@ export class AddChannelModalComponent implements AfterViewInit {
     this.step = 'members';
   }
 
-
   getFilteredMembers(): ModalMemberOption[] {
     const query = this.memberSearch.trim().toLowerCase();
     return this.members.filter((m) => this.isAvailableMember(m, query));
   }
-
 
   private isAvailableMember(member: ModalMemberOption, query: string): boolean {
     if (member.isCurrentUser || this.isMemberSelected(member.id)) {
@@ -114,11 +105,9 @@ export class AddChannelModalComponent implements AfterViewInit {
     return !query || member.name.toLowerCase().includes(query);
   }
 
-
   private isMemberSelected(memberId: string): boolean {
     return this.selectedMembers.some((m) => m.id === memberId);
   }
-
 
   addMember(member: ModalMemberOption): void {
     if (!this.isMemberSelected(member.id)) {
@@ -127,16 +116,13 @@ export class AddChannelModalComponent implements AfterViewInit {
     }
   }
 
-
   removeMember(memberId: string): void {
     this.selectedMembers = this.selectedMembers.filter((m) => m.id !== memberId);
   }
 
-
   canCreateChannel(): boolean {
     return this.inviteMode === 'all' || this.selectedMembers.length > 0;
   }
-
 
   onCreateChannel(): void {
     if (!this.canCreateChannel()) {
@@ -150,7 +136,6 @@ export class AddChannelModalComponent implements AfterViewInit {
     this.requestClose();
   }
 
-
   private resolveMemberIds(): string[] {
     if (this.inviteMode === 'all') {
       return this.members.map((m) => m.id);
@@ -160,16 +145,13 @@ export class AddChannelModalComponent implements AfterViewInit {
     return ownId && !ids.includes(ownId) ? [ownId, ...ids] : ids;
   }
 
-
   requestClose(): void {
     this.dialogRef.nativeElement.close();
   }
 
-
   onNativeClose(): void {
     this.closed.emit();
   }
-
 
   onDialogBackdropClick(event: MouseEvent): void {
     const dialog = this.dialogRef.nativeElement;
@@ -180,7 +162,6 @@ export class AddChannelModalComponent implements AfterViewInit {
       dialog.close();
     }
   }
-
 
   private isInsideDialogRect(event: MouseEvent, rect: DOMRect): boolean {
     const inY = rect.top <= event.clientY && event.clientY <= rect.top + rect.height;

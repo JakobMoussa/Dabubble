@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +21,8 @@ export class LoginComponent implements OnInit {
   introCompleted = false;
 
   private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  constructor(private readonly router: Router) {}
 
   ngOnInit(): void {
     this.initIntroAnimation();
@@ -113,12 +115,14 @@ export class LoginComponent implements OnInit {
 
   private performLogin(): void {
     this.authError = '';
+    this.router.navigate(['/dashboard']);
   }
 
   onGuestLogin(): void {
     this.authError = '';
     this.emailTouched = false;
     this.passwordTouched = false;
+    this.router.navigate(['/dashboard']);
   }
 
   onGoogleLogin(): void {

@@ -1,3 +1,5 @@
+@use './app/shared/styles/auth-layout';
+
 @font-face {
   font-family: 'Nunito';
   src: url('assets/fonts/Nunito/static/Nunito-Regular.ttf') format('truetype');
@@ -111,7 +113,6 @@ a {
   white-space: nowrap;
 }
 
-/* Shared Buttons (10. Button primary & 11. Button secondary) */
 .btn-primary {
   background-color: var(--purple-1);
   color: var(--white);
@@ -164,7 +165,6 @@ a {
   }
 }
 
-/* Shared Auth Form Inputs */
 .input-group {
   width: 100%;
   display: flex;
