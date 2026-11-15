@@ -284,6 +284,28 @@
     padding: 16px;
   }
 
+  .direct-chat-intro {
+    padding: 0 4px 12px;
+    gap: 12px;
+
+    &__header {
+      gap: 16px;
+    }
+
+    &__avatar {
+      width: 72px;
+      height: 72px;
+    }
+
+    &__name-btn {
+      font-size: 20px;
+    }
+
+    &__text {
+      font-size: 16px;
+    }
+  }
+
   .chat-header__members .member-stack-btn {
     display: none;
   }

@@ -160,14 +160,37 @@
         }
       </header>
 
-      <div class="chat-messages">
+      <div class="chat-messages" [class.chat-messages--empty]="getCurrentMessages().length === 0">
+        @if (getActiveMember(); as member) {
+        @if (getCurrentMessages().length === 0) {
+        <div class="direct-chat-intro">
+          <div class="direct-chat-intro__header">
+            <img [src]="member.avatar" [alt]="member.name" width="100" height="100" class="direct-chat-intro__avatar" />
+            <button type="button" class="direct-chat-intro__name-btn">
+              {{ member.name }}
+            </button>
+          </div>
+          <p class="direct-chat-intro__text">
+            @if (member.isCurrentUser) {
+            <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, erstelle To-do-Listen oder halte Links und Dateien griffbereit. Du kannst hier auch gerne mit dir selbst sprechen.
+            } @else {
+            Diese Unterhaltung findet nur zwischen
+            <span class="direct-chat-intro__mention">&#64;{{ member.name }}</span>
+            und dir statt.
+            }
+          </p>
+        </div>
+        }
+        }
+
+        @if (getCurrentMessages().length > 0) {
         <div class="date-separator">
           <span class="date-separator__line"></span>
           <span class="date-separator__pill">Heute</span>
           <span class="date-separator__line"></span>
         </div>
 
-        @for (msg of sampleMessages; track msg.id) {
+        @for (msg of getCurrentMessages(); track msg.id) {
         <article class="message-row" [class.message-row--own]="msg.isOwn">
           <img [src]="msg.avatar" [alt]="msg.author" width="70" height="70" class="message-row__avatar" />
           <div class="message-content" [class.message-content--own]="msg.isOwn">
@@ -201,6 +224,7 @@
             }
           </div>
         </article>
+        }
         }
       </div>
 

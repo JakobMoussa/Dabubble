@@ -84,30 +84,51 @@ export class DashboardComponent {
     'assets/img/Frederik Beck.png'
   ];
 
-  readonly sampleMessages: ChatMessagePreview[] = [
-    {
-      id: 'm1',
-      author: 'Noah Braun',
-      avatar: 'assets/img/Noah Braun.png',
-      time: '14:25 Uhr',
-      text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
-      isOwn: false,
-      repliesCount: 2,
-      lastReplyTime: '14:56'
-    },
-    {
-      id: 'm2',
-      author: 'Frederik Beck',
-      avatar: 'assets/img/Frederik Beck.png',
-      time: '15:06 Uhr',
-      text: 'Wir nutzen Angular 19 mit Standalone Components und SCSS. Sieht schon richtig sauber aus!',
-      isOwn: true,
-      reactions: [
-        { emoji: '🚀', count: 1 },
-        { emoji: '✅', count: 2 }
-      ]
-    }
-  ];
+  readonly channelMessages: Record<string, ChatMessagePreview[]> = {
+    'entwicklerteam': [
+      {
+        id: 'm1',
+        author: 'Noah Braun',
+        avatar: 'assets/img/Noah Braun.png',
+        time: '14:25 Uhr',
+        text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
+        isOwn: false,
+        repliesCount: 2,
+        lastReplyTime: '14:56'
+      },
+      {
+        id: 'm2',
+        author: 'Frederik Beck',
+        avatar: 'assets/img/Frederik Beck.png',
+        time: '15:06 Uhr',
+        text: 'Wir nutzen Angular 19 mit Standalone Components und SCSS. Sieht schon richtig sauber aus!',
+        isOwn: true,
+        reactions: [
+          { emoji: '🚀', count: 1 },
+          { emoji: '✅', count: 2 }
+        ]
+      }
+    ],
+    'office-team': [
+      {
+        id: 'ot-1',
+        author: 'Sofia Müller',
+        avatar: 'assets/img/Sofia Müller.png',
+        time: '10:15 Uhr',
+        text: 'Guten Morgen zusammen! Willkommen im Office-Team-Channel.',
+        isOwn: false
+      }
+    ]
+  };
+
+  readonly directMessages: Record<string, ChatMessagePreview[]> = {
+    'frederik': [],
+    'sofia': [],
+    'noah': [],
+    'elise': [],
+    'elias': [],
+    'steffen': []
+  };
 
 
   readonly threadRootMessage: ThreadMessage = {
@@ -194,11 +215,9 @@ export class DashboardComponent {
     }
   }
 
-
   getExistingChannelNames(): string[] {
     return this.channels.map((channel) => channel.name);
   }
-
 
   handleChannelCreated(payload: CreatedChannelPayload): void {
     const id = `${payload.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
@@ -211,7 +230,6 @@ export class DashboardComponent {
     this.channels = [...this.channels, newChannel];
     this.selectChannel(id);
   }
-
 
   toggleChannels(): void {
     this.isChannelsOpen = !this.isChannelsOpen;
@@ -257,5 +275,13 @@ export class DashboardComponent {
   getActiveTitle(): string {
     const member = this.getActiveMember();
     return member ? member.name : `#${this.getActiveChannel().name}`;
+  }
+
+
+  getCurrentMessages(): ChatMessagePreview[] {
+    if (this.activeMemberId) {
+      return this.directMessages[this.activeMemberId] ?? [];
+    }
+    return this.channelMessages[this.activeChannelId] ?? [];
   }
 }

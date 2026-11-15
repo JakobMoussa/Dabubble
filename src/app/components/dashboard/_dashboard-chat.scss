@@ -94,6 +94,68 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  &--empty {
+    justify-content: flex-end;
+  }
+}
+
+.direct-chat-intro {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 8px 16px;
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+  }
+
+  &__avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__name-btn {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--black);
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--purple-1);
+    }
+  }
+
+  &__text {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text-gray);
+    margin: 0;
+  }
+
+  &__mention {
+    color: var(--purple-3);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--purple-1);
+      text-decoration: underline;
+    }
+  }
 }
 
 .date-separator {
