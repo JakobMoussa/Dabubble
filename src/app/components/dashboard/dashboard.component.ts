@@ -183,6 +183,10 @@ export class DashboardComponent {
     this.isProfilePopupOpen = false;
   }
 
+  updateProfileName(newName: string): void {
+    this.currentUser.name = newName;
+  }
+
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
     if (this.isSettingsPopupOpen) {

@@ -280,4 +280,10 @@
   <app-profile-popup [userName]="currentUser.name" [userAvatar]="currentUser.avatar"
     (closed)="closeProfilePopup()"></app-profile-popup>
   }
+
+  @if (isProfilePopupOpen) {
+  <app-profile-popup [userName]="currentUser.name" [userAvatar]="currentUser.avatar" (closed)="closeProfilePopup()"
+    (nameSaved)="updateProfileName($event)">
+  </app-profile-popup>
+  }
 </div>
