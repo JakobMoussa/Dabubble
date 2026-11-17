@@ -15,9 +15,11 @@
             <div class="profile-name">
                 <h3>{{ userName }}</h3>
 
+                @if (canEdit) {
                 <button type="button" (click)="startEditing()">
                     Bearbeiten
                 </button>
+                }
             </div>
 
             <p class="profile-status">🟢 Aktiv</p>

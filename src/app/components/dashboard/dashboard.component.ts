@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   AddChannelModalComponent,
@@ -39,7 +40,7 @@ export interface ChatMessagePreview {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -55,6 +56,8 @@ export class DashboardComponent {
 
   activeChannelId = 'entwicklerteam';
   activeMemberId: string | null = null;
+  messageText = '';
+  selectedProfileMember: MemberPreview | null = null;
 
   readonly currentUser: MemberPreview = {
     id: 'frederik',
@@ -196,16 +199,65 @@ export class DashboardComponent {
   }
 
   openProfileSettings(): void {
+    this.openProfileMember(this.currentUser);
+  }
+
+  openProfileMember(member?: MemberPreview | null): void {
+    this.selectedProfileMember = member ?? this.currentUser;
     this.isSettingsPopupOpen = false;
     this.isProfilePopupOpen = true;
   }
 
   closeProfilePopup(): void {
     this.isProfilePopupOpen = false;
+    this.selectedProfileMember = null;
   }
 
   updateProfileName(newName: string): void {
     this.currentUser.name = newName;
+    if (this.selectedProfileMember?.id === this.currentUser.id) {
+      this.selectedProfileMember.name = newName;
+    }
+  }
+
+  getCurrentTimeString(): string {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes} Uhr`;
+  }
+
+  onComposerEnter(event: Event): void {
+    const keyEvent = event as KeyboardEvent;
+    if (!keyEvent.shiftKey) {
+      keyEvent.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  sendMessage(): void {
+    const text = this.messageText.trim();
+    if (!text) return;
+    const newMsg: ChatMessagePreview = {
+      id: `msg-${Date.now()}`,
+      author: this.currentUser.name,
+      avatar: this.currentUser.avatar,
+      time: this.getCurrentTimeString(),
+      text,
+      isOwn: true
+    };
+    this.appendMessage(newMsg);
+    this.messageText = '';
+  }
+
+  private appendMessage(msg: ChatMessagePreview): void {
+    if (this.activeMemberId) {
+      const current = this.directMessages[this.activeMemberId] ?? [];
+      this.directMessages[this.activeMemberId] = [...current, msg];
+      return;
+    }
+    const current = this.channelMessages[this.activeChannelId] ?? [];
+    this.channelMessages[this.activeChannelId] = [...current, msg];
   }
 
   @HostListener('document:keydown.escape')

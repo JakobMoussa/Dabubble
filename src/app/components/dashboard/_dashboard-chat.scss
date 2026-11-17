@@ -350,7 +350,21 @@
 .composer-send-btn {
   width: 36px;
   height: 36px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  opacity: 0.4;
+  cursor: not-allowed;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &--active,
+  &:not(:disabled) {
+    opacity: 1;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
 }

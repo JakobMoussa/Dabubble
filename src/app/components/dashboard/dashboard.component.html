@@ -128,7 +128,7 @@
     <main class="chat-panel" [class.chat-panel--mobile-hidden]="mobileView !== 'chat'" aria-label="Aktiver Chat">
       <header class="chat-header">
         @if (getActiveMember(); as member) {
-        <button type="button" class="chat-title-btn">
+        <button type="button" class="chat-title-btn" (click)="openProfileMember(member)">
           <span class="avatar-wrapper avatar-wrapper--sm">
             <img [src]="member.avatar" [alt]="member.name" width="50" height="50" class="avatar-wrapper__img" />
             <span class="status-dot status-dot--sm" [class.status-dot--online]="member.online"
@@ -162,11 +162,10 @@
 
       <div class="chat-messages" [class.chat-messages--empty]="getCurrentMessages().length === 0">
         @if (getActiveMember(); as member) {
-        @if (getCurrentMessages().length === 0) {
         <div class="direct-chat-intro">
           <div class="direct-chat-intro__header">
             <img [src]="member.avatar" [alt]="member.name" width="100" height="100" class="direct-chat-intro__avatar" />
-            <button type="button" class="direct-chat-intro__name-btn">
+            <button type="button" class="direct-chat-intro__name-btn" (click)="openProfileMember(member)">
               {{ member.name }}
             </button>
           </div>
@@ -175,12 +174,11 @@
             <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, erstelle To-do-Listen oder halte Links und Dateien griffbereit. Du kannst hier auch gerne mit dir selbst sprechen.
             } @else {
             Diese Unterhaltung findet nur zwischen
-            <span class="direct-chat-intro__mention">&#64;{{ member.name }}</span>
+            <span class="direct-chat-intro__mention" (click)="openProfileMember(member)">&#64;{{ member.name }}</span>
             und dir statt.
             }
           </p>
         </div>
-        }
         }
 
         @if (getCurrentMessages().length > 0) {
@@ -232,7 +230,7 @@
         <div class="composer-box">
           <label for="chat-message-input" class="visually-hidden">Nachricht schreiben</label>
           <textarea id="chat-message-input" rows="2" [placeholder]="'Nachricht an ' + getActiveTitle()"
-            class="composer-box__textarea"></textarea>
+            class="composer-box__textarea" [(ngModel)]="messageText" (keydown.enter)="onComposerEnter($event)"></textarea>
           <div class="composer-toolbar">
             <div class="composer-toolbar__left">
               <button type="button" class="composer-icon-btn" aria-label="Datei oder Option hinzufügen">
@@ -246,7 +244,8 @@
                 <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
               </button>
             </div>
-            <button type="button" class="composer-send-btn" aria-label="Nachricht senden">
+            <button type="button" class="composer-send-btn" [class.composer-send-btn--active]="messageText.trim().length > 0"
+              [disabled]="!messageText.trim()" aria-label="Nachricht senden" (click)="sendMessage()">
               <img src="assets/icons/send.svg" alt="" width="22" height="19" />
             </button>
           </div>
@@ -301,12 +300,9 @@
   </div>
   }
   @if (isProfilePopupOpen) {
-  <app-profile-popup [userName]="currentUser.name" [userAvatar]="currentUser.avatar"
-    (closed)="closeProfilePopup()"></app-profile-popup>
-  }
-
-  @if (isProfilePopupOpen) {
-  <app-profile-popup [userName]="currentUser.name" [userAvatar]="currentUser.avatar" (closed)="closeProfilePopup()"
+  <app-profile-popup [userName]="(selectedProfileMember ?? currentUser).name"
+    [userAvatar]="(selectedProfileMember ?? currentUser).avatar"
+    [canEdit]="(selectedProfileMember ?? currentUser).id === currentUser.id" (closed)="closeProfilePopup()"
     (nameSaved)="updateProfileName($event)">
   </app-profile-popup>
   }

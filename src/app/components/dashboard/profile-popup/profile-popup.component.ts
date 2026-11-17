@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -13,6 +13,13 @@ export class ProfilePopupComponent {
     isEditing = false;
     editedName = '';
 
+    @Input() userName = '';
+    @Input() userAvatar = '';
+    @Input() canEdit = true;
+
+    @Output() closed = new EventEmitter<void>();
+    @Output() nameSaved = new EventEmitter<string>();
+
     startEditing(): void {
         this.editedName = this.userName;
         this.isEditing = true;
@@ -23,16 +30,9 @@ export class ProfilePopupComponent {
         this.editedName = this.userName;
     }
 
-    @Input() userName = '';
-    @Input() userAvatar = '';
-
-    @Output() closed = new EventEmitter<void>();
-
     closePopup(): void {
         this.closed.emit();
     }
-
-    @Output() nameSaved = new EventEmitter<string>();
 
     saveProfile(): void {
         const newName = this.editedName.trim();
