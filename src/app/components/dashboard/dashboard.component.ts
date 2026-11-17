@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -58,6 +58,8 @@ export class DashboardComponent {
   activeMemberId: string | null = null;
   messageText = '';
   selectedProfileMember: MemberPreview | null = null;
+
+  @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
   readonly currentUser: MemberPreview = {
     id: 'frederik',
@@ -235,19 +237,36 @@ export class DashboardComponent {
     }
   }
 
+  scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.messagesContainer) {
+        const el = this.messagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 0);
+  }
+
+  insertEmoji(emoji = '😊'): void {
+    this.messageText += emoji;
+  }
+
+  insertMention(): void {
+    this.messageText += '@';
+  }
+
   sendMessage(): void {
     const text = this.messageText.trim();
     if (!text) return;
-    const newMsg: ChatMessagePreview = {
+    this.appendMessage({
       id: `msg-${Date.now()}`,
       author: this.currentUser.name,
       avatar: this.currentUser.avatar,
       time: this.getCurrentTimeString(),
       text,
       isOwn: true
-    };
-    this.appendMessage(newMsg);
+    });
     this.messageText = '';
+    this.scrollToBottom();
   }
 
   private appendMessage(msg: ChatMessagePreview): void {
@@ -297,12 +316,14 @@ export class DashboardComponent {
     this.activeChannelId = channelId;
     this.activeMemberId = null;
     this.mobileView = 'chat';
+    this.scrollToBottom();
   }
 
 
   selectMember(memberId: string): void {
     this.activeMemberId = memberId;
     this.mobileView = 'chat';
+    this.scrollToBottom();
   }
 
 
@@ -327,6 +348,18 @@ export class DashboardComponent {
   getActiveTitle(): string {
     const member = this.getActiveMember();
     return member ? member.name : `#${this.getActiveChannel().name}`;
+  }
+
+
+  getComposerPlaceholder(): string {
+    const member = this.getActiveMember();
+    if (!member) {
+      return `Nachricht an #${this.getActiveChannel().name}`;
+    }
+    if (member.isCurrentUser || member.id === this.currentUser.id) {
+      return 'Notiz an dich selbst...';
+    }
+    return `Nachricht an ${member.name}`;
   }
 
 
