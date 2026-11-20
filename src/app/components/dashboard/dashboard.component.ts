@@ -1,41 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   AddChannelModalComponent,
   CreatedChannelPayload
 } from './add-channel-modal/add-channel-modal.component';
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
 import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
+import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
+import { WorkspaceStore } from '../../services/workspace.store';
+import { MessageService } from '../../services/message.service';
+import { ChannelService } from '../../services/channel.service';
+import { UserService } from '../../services/user.service';
+import { AuthService, DEFAULT_AVATAR } from '../../services/auth.service';
 
+export type { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 
-export interface ChannelPreview {
-  id: string;
-  name: string;
-  description?: string;
-  memberIds?: string[];
-}
-
-export interface MemberPreview {
-  id: string;
-  name: string;
-  avatar: string;
-  online: boolean;
-  isCurrentUser?: boolean;
-}
-
-export interface ChatMessagePreview {
-  id: string;
-  author: string;
-  avatar: string;
-  time: string;
-  text: string;
-  isOwn: boolean;
-  repliesCount?: number;
-  lastReplyTime?: string;
-  reactions?: { emoji: string; count: number }[];
-}
+const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
 
 @Component({
   selector: 'app-dashboard',
@@ -45,125 +27,85 @@ export interface ChatMessagePreview {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
+  readonly store = inject(WorkspaceStore);
+  private readonly messageService = inject(MessageService);
+  private readonly channelService = inject(ChannelService);
+  private readonly userService = inject(UserService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   isSidebarHidden = false;
   isSettingsPopupOpen = false;
   isChannelPopupOpen = false;
   isProfilePopupOpen = false;
-  isThreadOpen = true;
   isChannelsOpen = true;
   isDirectMessagesOpen = true;
   mobileView: 'menu' | 'chat' | 'thread' = 'menu';
-
-  activeChannelId = 'entwicklerteam';
-  activeMemberId: string | null = null;
   messageText = '';
   selectedProfileMember: MemberPreview | null = null;
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
-  readonly currentUser: MemberPreview = {
-    id: 'frederik',
-    name: 'Frederik Beck',
-    avatar: 'assets/img/Frederik Beck.png',
-    online: true,
-    isCurrentUser: true
-  };
-
-  channels: ChannelPreview[] = [
-    { id: 'entwicklerteam', name: 'Entwicklerteam' },
-    { id: 'office-team', name: 'Office-team' }
-  ];
-
-  readonly members: MemberPreview[] = [
-    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/img/Frederik Beck.png', online: true, isCurrentUser: true },
-    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/img/Sofia Müller.png', online: true },
-    { id: 'noah', name: 'Noah Braun', avatar: 'assets/img/Noah Braun.png', online: true },
-    { id: 'elise', name: 'Elise Roth', avatar: 'assets/img/Elise Roth.png', online: false },
-    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/img/Elias Neumann.png', online: true },
-    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/img/Steffen Hoffmann.png', online: false }
-  ];
-
-  readonly channelMemberAvatars: string[] = [
-    'assets/img/Sofia Müller.png',
-    'assets/img/Noah Braun.png',
-    'assets/img/Frederik Beck.png'
-  ];
-
-  readonly channelMessages: Record<string, ChatMessagePreview[]> = {
-    'entwicklerteam': [
-      {
-        id: 'm1',
-        author: 'Noah Braun',
-        avatar: 'assets/img/Noah Braun.png',
-        time: '14:25 Uhr',
-        text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
-        isOwn: false,
-        repliesCount: 2,
-        lastReplyTime: '14:56'
-      },
-      {
-        id: 'm2',
-        author: 'Frederik Beck',
-        avatar: 'assets/img/Frederik Beck.png',
-        time: '15:06 Uhr',
-        text: 'Wir nutzen Angular 19 mit Standalone Components und SCSS. Sieht schon richtig sauber aus!',
-        isOwn: true,
-        reactions: [
-          { emoji: '🚀', count: 1 },
-          { emoji: '✅', count: 2 }
-        ]
-      }
-    ],
-    'office-team': [
-      {
-        id: 'ot-1',
-        author: 'Sofia Müller',
-        avatar: 'assets/img/Sofia Müller.png',
-        time: '10:15 Uhr',
-        text: 'Guten Morgen zusammen! Willkommen im Office-Team-Channel.',
-        isOwn: false
-      }
-    ]
-  };
-
-  readonly directMessages: Record<string, ChatMessagePreview[]> = {
-    'frederik': [],
-    'sofia': [],
-    'noah': [],
-    'elise': [],
-    'elias': [],
-    'steffen': []
-  };
+  constructor() {
+    effect(() => this.selectFirstChannelOnce());
+    effect(() => this.scrollOnNewMessages());
+  }
 
 
-  readonly threadRootMessage: ThreadMessage = {
-    id: 'm1',
-    author: 'Noah Braun',
-    avatar: 'assets/img/Noah Braun.png',
-    time: '14:25 Uhr',
-    text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
-    isOwn: false
-  };
+  get currentUser(): MemberPreview {
+    const me = this.store.me();
+    return me
+      ? { id: me.uid, name: me.name, avatar: me.avatar || DEFAULT_AVATAR, online: true, isCurrentUser: true }
+      : { id: '', name: '', avatar: DEFAULT_AVATAR, online: true, isCurrentUser: true };
+  }
 
-  readonly threadReplies: ThreadMessage[] = [
-    {
-      id: 'r1',
-      author: 'Sofia Müller',
-      avatar: 'assets/img/Sofia Müller.png',
-      time: '14:30 Uhr',
-      text: 'Ich habe hier Angular 19 mit Standalone Components und SCSS im Einsatz!',
-      isOwn: false
-    },
-    {
-      id: 'r2',
-      author: 'Frederik Beck',
-      avatar: 'assets/img/Frederik Beck.png',
-      time: '14:56 Uhr',
-      text: 'Genau, das nutzen wir im gesamten Projekt.',
-      isOwn: true,
-      reactions: [{ emoji: '👍', count: 1 }]
+
+  get channels(): ChannelPreview[] {
+    return this.store.channels();
+  }
+
+
+  get members(): MemberPreview[] {
+    return this.store.members();
+  }
+
+
+  get activeChannelId(): string {
+    const active = this.store.active();
+    return active?.type === 'channel' ? active.id : '';
+  }
+
+
+  get activeMemberId(): string | null {
+    const active = this.store.active();
+    if (active?.type !== 'direct') {
+      return null;
     }
-  ];
+    const uid = this.store.uid();
+    return active.id.split('_').find((id) => id !== uid) ?? uid;
+  }
+
+
+  get isThreadOpen(): boolean {
+    return !!this.threadRootMessage;
+  }
+
+
+  get threadRootMessage(): ThreadMessage | null {
+    const parentId = this.store.threadParentId();
+    return this.getCurrentMessages().find((msg) => msg.id === parentId) ?? null;
+  }
+
+
+  get threadReplies(): ThreadMessage[] {
+    return this.store.threadMessages();
+  }
+
+
+  get channelMemberAvatars(): string[] {
+    const memberIds = this.getActiveChannel().memberIds ?? [];
+    return memberIds.map((id) => this.store.userMap().get(id)?.avatar || DEFAULT_AVATAR);
+  }
 
 
   toggleSidebar(): void {
@@ -171,38 +113,44 @@ export class DashboardComponent {
   }
 
 
-  openThread(): void {
-    this.isThreadOpen = true;
+  openThread(messageId: string): void {
+    this.store.threadParentId.set(messageId);
     this.mobileView = 'thread';
   }
 
 
   closeThread(): void {
-    this.isThreadOpen = false;
+    this.store.threadParentId.set(null);
     if (this.mobileView === 'thread') {
       this.mobileView = 'chat';
     }
   }
 
+
   openChannelPopup(): void {
     this.isChannelPopupOpen = true;
   }
+
 
   closeChannelPopup(): void {
     this.isChannelPopupOpen = false;
   }
 
+
   openSettingsPopup(): void {
     this.isSettingsPopupOpen = true;
   }
+
 
   closeSettingsPopup(): void {
     this.isSettingsPopupOpen = false;
   }
 
+
   openProfileSettings(): void {
     this.openProfileMember(this.currentUser);
   }
+
 
   openProfileMember(member?: MemberPreview | null): void {
     this.selectedProfileMember = member ?? this.currentUser;
@@ -210,24 +158,29 @@ export class DashboardComponent {
     this.isProfilePopupOpen = true;
   }
 
+
   closeProfilePopup(): void {
     this.isProfilePopupOpen = false;
     this.selectedProfileMember = null;
   }
 
-  updateProfileName(newName: string): void {
-    this.currentUser.name = newName;
-    if (this.selectedProfileMember?.id === this.currentUser.id) {
-      this.selectedProfileMember.name = newName;
+
+  async updateProfileName(newName: string): Promise<void> {
+    const me = this.store.me();
+    if (me) {
+      await this.userService.updateProfile(me.uid, { name: newName, avatar: me.avatar });
     }
+    this.closeProfilePopup();
   }
 
-  getCurrentTimeString(): string {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes} Uhr`;
+
+  async logout(): Promise<void> {
+    this.closeSettingsPopup();
+    this.store.active.set(null);
+    await this.authService.logout();
+    await this.router.navigate(['/login']);
   }
+
 
   onComposerEnter(event: Event): void {
     const keyEvent = event as KeyboardEvent;
@@ -237,47 +190,48 @@ export class DashboardComponent {
     }
   }
 
+
   scrollToBottom(): void {
     setTimeout(() => {
-      if (this.messagesContainer) {
-        const el = this.messagesContainer.nativeElement;
+      const el = this.messagesContainer?.nativeElement;
+      if (el) {
         el.scrollTop = el.scrollHeight;
       }
     }, 0);
   }
 
+
   insertEmoji(emoji = '😊'): void {
     this.messageText += emoji;
   }
+
 
   insertMention(): void {
     this.messageText += '@';
   }
 
-  sendMessage(): void {
-    const text = this.messageText.trim();
-    if (!text) return;
-    this.appendMessage({
-      id: `msg-${Date.now()}`,
-      author: this.currentUser.name,
-      avatar: this.currentUser.avatar,
-      time: this.getCurrentTimeString(),
-      text,
-      isOwn: true
-    });
-    this.messageText = '';
-    this.scrollToBottom();
-  }
 
-  private appendMessage(msg: ChatMessagePreview): void {
-    if (this.activeMemberId) {
-      const current = this.directMessages[this.activeMemberId] ?? [];
-      this.directMessages[this.activeMemberId] = [...current, msg];
+  async sendMessage(): Promise<void> {
+    const text = this.messageText.trim();
+    const conversation = this.store.active();
+    const uid = this.store.uid();
+    if (!text || !conversation || !uid) {
       return;
     }
-    const current = this.channelMessages[this.activeChannelId] ?? [];
-    this.channelMessages[this.activeChannelId] = [...current, msg];
+    this.messageText = '';
+    await this.messageService.send(conversation, text, uid);
   }
+
+
+  async sendReply(text: string): Promise<void> {
+    const conversation = this.store.active();
+    const parentId = this.store.threadParentId();
+    const uid = this.store.uid();
+    if (conversation && parentId && uid && text.trim()) {
+      await this.messageService.reply(conversation, parentId, text, uid);
+    }
+  }
+
 
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
@@ -286,21 +240,24 @@ export class DashboardComponent {
     }
   }
 
+
   getExistingChannelNames(): string[] {
     return this.channels.map((channel) => channel.name);
   }
 
-  handleChannelCreated(payload: CreatedChannelPayload): void {
-    const id = `${payload.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-    const newChannel: ChannelPreview = {
-      id,
-      name: payload.name,
-      description: payload.description,
-      memberIds: payload.memberIds
-    };
-    this.channels = [...this.channels, newChannel];
-    this.selectChannel(id);
+
+  async handleChannelCreated(payload: CreatedChannelPayload): Promise<void> {
+    const uid = this.store.uid();
+    if (!uid) {
+      return;
+    }
+    const channelId = await this.channelService.create(payload.name, payload.description, uid);
+    if (payload.memberIds.length) {
+      await this.channelService.addMembers(channelId, payload.memberIds);
+    }
+    this.selectChannel(channelId);
   }
+
 
   toggleChannels(): void {
     this.isChannelsOpen = !this.isChannelsOpen;
@@ -313,17 +270,14 @@ export class DashboardComponent {
 
 
   selectChannel(channelId: string): void {
-    this.activeChannelId = channelId;
-    this.activeMemberId = null;
-    this.mobileView = 'chat';
-    this.scrollToBottom();
+    this.store.openChannel(channelId);
+    this.showChat();
   }
 
 
-  selectMember(memberId: string): void {
-    this.activeMemberId = memberId;
-    this.mobileView = 'chat';
-    this.scrollToBottom();
+  async selectMember(memberId: string): Promise<void> {
+    await this.store.openDirect(memberId);
+    this.showChat();
   }
 
 
@@ -333,15 +287,13 @@ export class DashboardComponent {
 
 
   getActiveChannel(): ChannelPreview {
-    return this.channels.find((c) => c.id === this.activeChannelId) ?? this.channels[0];
+    return this.channels.find((c) => c.id === this.activeChannelId) ?? EMPTY_CHANNEL;
   }
 
 
   getActiveMember(): MemberPreview | null {
-    if (!this.activeMemberId) {
-      return null;
-    }
-    return this.members.find((m) => m.id === this.activeMemberId) ?? null;
+    const memberId = this.activeMemberId;
+    return memberId ? this.members.find((m) => m.id === memberId) ?? null : null;
   }
 
 
@@ -356,17 +308,33 @@ export class DashboardComponent {
     if (!member) {
       return `Nachricht an #${this.getActiveChannel().name}`;
     }
-    if (member.isCurrentUser || member.id === this.currentUser.id) {
-      return 'Notiz an dich selbst...';
-    }
-    return `Nachricht an ${member.name}`;
+    return member.isCurrentUser ? 'Notiz an dich selbst...' : `Nachricht an ${member.name}`;
   }
 
 
   getCurrentMessages(): ChatMessagePreview[] {
-    if (this.activeMemberId) {
-      return this.directMessages[this.activeMemberId] ?? [];
+    return this.store.messages();
+  }
+
+
+  private showChat(): void {
+    this.mobileView = 'chat';
+    this.scrollToBottom();
+    setTimeout(() => document.getElementById('chat-message-input')?.focus(), 0);
+  }
+
+
+  private selectFirstChannelOnce(): void {
+    const first = this.store.channels()[0];
+    if (first && !this.store.active()) {
+      this.store.openChannel(first.id);
     }
-    return this.channelMessages[this.activeChannelId] ?? [];
+  }
+
+
+  private scrollOnNewMessages(): void {
+    if (this.store.messages().length) {
+      this.scrollToBottom();
+    }
   }
 }

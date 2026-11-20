@@ -203,7 +203,7 @@
 
             @if (msg.repliesCount) {
             <div class="message-thread-info">
-              <button type="button" class="thread-link" (click)="openThread()">
+              <button type="button" class="thread-link" (click)="openThread(msg.id)">
                 {{ msg.repliesCount }} Antworten
               </button>
               <span class="thread-last-time">Letzte Antwort {{ msg.lastReplyTime }}</span>
@@ -255,8 +255,8 @@
 
     @if (isThreadOpen) {
     <app-thread-panel [class.thread-panel--mobile-hidden]="mobileView !== 'thread'"
-      [channelName]="getActiveChannel().name" [rootMessage]="threadRootMessage" [replies]="threadReplies"
-      (closeThread)="closeThread()" />
+      [channelName]="getActiveChannel().name" [rootMessage]="threadRootMessage!" [replies]="threadReplies"
+      (closeThread)="closeThread()" (replySent)="sendReply($event)" />
     }
   </div>
 
@@ -289,13 +289,13 @@
         </span>
         <span>Profil</span>
       </button>
-      <a routerLink="/login" class="settings-popup__item" (click)="closeSettingsPopup()">
+      <button type="button" class="settings-popup__item" (click)="logout()">
         <span class="settings-popup__icon" aria-hidden="true">
           <img src="assets/icons/logout.svg" alt="" width="24" height="24" class="settings-popup__icon-default" />
           <img src="assets/icons/logout (1).svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
         </span>
         <span>Log out</span>
-      </a>
+      </button>
     </div>
   </div>
   }
