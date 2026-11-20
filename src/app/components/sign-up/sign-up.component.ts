@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { isValidEmail } from '../../shared/validators/email.validator';
+import { AuthService } from '../../services/auth.service';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 
 export interface AvatarOption {
     name: string;
@@ -46,6 +48,8 @@ export class SignUpComponent implements OnDestroy {
 
     private redirectTimer: ReturnType<typeof setTimeout> | null = null;
     private readonly namePattern = /^[\p{L}\p{M}'-]+(?:\s+[\p{L}\p{M}'-]+)+$/u;
+
+    private readonly authService = inject(AuthService);
 
     constructor(private readonly router: Router) { }
 
@@ -191,14 +195,35 @@ export class SignUpComponent implements OnDestroy {
     }
 
 
-    onCreateAccount(): void {
+    async onCreateAccount(): Promise<void> {
         if (!this.selectedAvatar || this.isSubmitting) {
             return;
         }
         this.isSubmitting = true;
+        try {
+            await this.registerUser();
+            this.showSuccessAndRedirect();
+        } catch (error) {
+            this.uploadError = toAuthMessage(error);
+            this.isSubmitting = false;
+        }
+    }
+
+
+    private registerUser(): Promise<void> {
+        return this.authService.register({
+            name: this.fullName,
+            email: this.email,
+            password: this.password,
+            avatar: this.selectedAvatar
+        });
+    }
+
+
+    private showSuccessAndRedirect(): void {
         this.showToast = true;
         this.redirectTimer = setTimeout(() => {
-            this.router.navigate(['/login']);
+            this.router.navigate(['/dashboard']);
         }, 1800);
     }
 }
