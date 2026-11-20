@@ -55,6 +55,12 @@ export class ChannelService {
   }
 
 
+  async joinDefaultChannels(uid: string): Promise<void> {
+    const defaults = await getDocs(query(this.channels, where('isDefault', '==', true)));
+    await Promise.all(defaults.docs.map((d) => this.addMembers(d.id, [uid])));
+  }
+
+
   private async assertNameIsFree(name: string, ownId?: string): Promise<void> {
     const sameName = query(this.channels, where('nameLower', '==', name.trim().toLowerCase()));
     const result = await getDocs(sameName);

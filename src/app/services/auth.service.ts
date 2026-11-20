@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { AppUser } from '../models/user.model';
 import { normalizeEmail } from '../shared/validators/email.validator';
 import { UserService } from './user.service';
+import { ChannelService } from './channel.service';
 
 export const DEFAULT_AVATAR = 'assets/img/avatars/default.svg';
 
@@ -22,6 +23,7 @@ export interface RegisterData {
 export class AuthService {
   private readonly auth = inject(Auth);
   private readonly users = inject(UserService);
+  private readonly channels = inject(ChannelService);
   readonly user$: Observable<User | null> = authState(this.auth);
 
 
@@ -36,6 +38,7 @@ export class AuthService {
     const { user } = await createUserWithEmailAndPassword(this.auth, email, data.password);
     await updateProfile(user, { displayName: name, photoURL: data.avatar });
     await this.users.createProfile(this.buildProfile(user.uid, name, email, data.avatar, false));
+    await this.channels.joinDefaultChannels(user.uid);
   }
 
 
@@ -86,6 +89,7 @@ export class AuthService {
     const name = isGuest ? 'Gast' : user.displayName ?? 'Neuer Nutzer';
     const avatar = isGuest ? DEFAULT_AVATAR : user.photoURL ?? DEFAULT_AVATAR;
     await this.users.createProfile(this.buildProfile(user.uid, name, user.email ?? '', avatar, isGuest));
+    await this.channels.joinDefaultChannels(user.uid);
   }
 
 

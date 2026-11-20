@@ -20,7 +20,14 @@ service cloud.firestore {
     match /channels/{channelId} {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if signedIn() && request.auth.uid in resource.data.memberIds;
+      allow update: if signedIn() && (request.auth.uid in resource.data.memberIds || joinsDefault());
+
+      function joinsDefault() {
+        let added = request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet());
+        return resource.data.get('isDefault', false) == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
+          && added == [request.auth.uid].toSet();
+      }
       allow delete: if false;
 
       match /messages/{messageId}/{document=**} {

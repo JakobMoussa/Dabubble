@@ -6,4 +6,6 @@ export interface Channel {
   createdBy: string;
   memberIds: string[];
   createdAt: number;
+  /** New users automatically join default channels. */
+  isDefault?: boolean;
 }
