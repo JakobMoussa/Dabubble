@@ -43,14 +43,16 @@ export class MessageService {
   }
 
 
-  edit(conversation: ConversationRef, messageId: string, text: string): Promise<void> {
-    return updateDoc(this.messageDoc(conversation, messageId), { text: text.trim(), editedAt: Date.now() });
+  edit(conversation: ConversationRef, messageId: string, text: string, parentId: string | null = null): Promise<void> {
+    return updateDoc(this.messageDoc(conversation, messageId, parentId), { text: text.trim(), editedAt: Date.now() });
   }
 
 
-  setReaction(conversation: ConversationRef, messageId: string, emoji: string, uid: string, active: boolean): Promise<void> {
+  setReaction(
+    conversation: ConversationRef, messageId: string, emoji: string, uid: string, active: boolean, parentId: string | null = null
+  ): Promise<void> {
     const change = active ? arrayUnion(uid) : arrayRemove(uid);
-    return updateDoc(this.messageDoc(conversation, messageId), new FieldPath('reactions', emoji), change);
+    return updateDoc(this.messageDoc(conversation, messageId, parentId), new FieldPath('reactions', emoji), change);
   }
 
 
@@ -104,7 +106,8 @@ export class MessageService {
   }
 
 
-  private messageDoc(conversation: ConversationRef, messageId: string) {
-    return doc(this.firestore, `${this.basePath(conversation)}/${messageId}`);
+  private messageDoc(conversation: ConversationRef, messageId: string, parentId: string | null = null) {
+    const path = parentId ? `${parentId}/thread/${messageId}` : messageId;
+    return doc(this.firestore, `${this.basePath(conversation)}/${path}`);
   }
 }
