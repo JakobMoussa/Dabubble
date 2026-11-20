@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { isValidEmail } from '../../shared/validators/email.validator';
 
 @Component({
   selector: 'app-login',
@@ -19,8 +20,6 @@ export class LoginComponent implements OnInit {
   passwordTouched = false;
   authError = '';
   introCompleted = false;
-
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   constructor(private readonly router: Router) {}
 
@@ -45,7 +44,7 @@ export class LoginComponent implements OnInit {
   }
 
   isEmailValid(): boolean {
-    return this.emailPattern.test(this.email.trim());
+    return isValidEmail(this.email);
   }
 
   isPasswordValid(): boolean {

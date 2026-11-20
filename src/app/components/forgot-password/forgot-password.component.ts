@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { isValidEmail } from '../../shared/validators/email.validator';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,7 +19,6 @@ export class ForgotPasswordComponent implements OnDestroy {
   isSubmitting = false;
 
   private redirectTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   constructor(private readonly router: Router) {}
 
@@ -31,7 +31,7 @@ export class ForgotPasswordComponent implements OnDestroy {
 
 
   isEmailValid(): boolean {
-    return this.emailPattern.test(this.email.trim());
+    return isValidEmail(this.email);
   }
 
 
