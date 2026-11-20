@@ -62,6 +62,8 @@
         rows="2"
         placeholder="Antworten..."
         class="thread-composer-box__textarea"
+        [(ngModel)]="replyText"
+        (keydown.enter)="onReplyEnter($event)"
       ></textarea>
       <div class="thread-composer-toolbar">
         <div class="thread-composer-toolbar__left">
@@ -76,7 +78,8 @@
             <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
           </button>
         </div>
-        <button type="button" class="composer-send-btn" aria-label="Antwort senden">
+        <button type="button" class="composer-send-btn" aria-label="Antwort senden"
+          [class.composer-send-btn--active]="replyText.trim().length > 0" [disabled]="!replyText.trim()" (click)="sendReply()">
           <img src="assets/icons/send.svg" alt="" width="22" height="19" />
         </button>
       </div>

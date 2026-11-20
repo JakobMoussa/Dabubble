@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export interface ThreadMessage {
@@ -14,7 +15,7 @@ export interface ThreadMessage {
 @Component({
   selector: 'app-thread-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './thread-panel.component.html',
   styleUrl: './thread-panel.component.scss'
 })
@@ -23,9 +24,29 @@ export class ThreadPanelComponent {
   @Input({ required: true }) rootMessage!: ThreadMessage;
   @Input() replies: ThreadMessage[] = [];
   @Output() closeThread = new EventEmitter<void>();
+  @Output() replySent = new EventEmitter<string>();
+  replyText = '';
 
 
   onClose(): void {
     this.closeThread.emit();
+  }
+
+
+  onReplyEnter(event: Event): void {
+    const keyEvent = event as KeyboardEvent;
+    if (!keyEvent.shiftKey) {
+      keyEvent.preventDefault();
+      this.sendReply();
+    }
+  }
+
+
+  sendReply(): void {
+    const text = this.replyText.trim();
+    if (text) {
+      this.replySent.emit(text);
+      this.replyText = '';
+    }
   }
 }
