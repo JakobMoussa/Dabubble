@@ -189,39 +189,9 @@
         </div>
 
         @for (msg of getCurrentMessages(); track msg.id) {
-        <article class="message-row" [class.message-row--own]="msg.isOwn">
-          <img [src]="msg.avatar" [alt]="msg.author" width="70" height="70" class="message-row__avatar" />
-          <div class="message-content" [class.message-content--own]="msg.isOwn">
-            <div class="message-meta" [class.message-meta--own]="msg.isOwn">
-              <span class="message-meta__author">{{ msg.author }}</span>
-              <span class="message-meta__time">{{ msg.time }}</span>
-            </div>
-
-            <div class="message-bubble" [class.message-bubble--own]="msg.isOwn">
-              {{ msg.text }}
-            </div>
-
-            @if (msg.repliesCount) {
-            <div class="message-thread-info">
-              <button type="button" class="thread-link" (click)="openThread(msg.id)">
-                {{ msg.repliesCount }} Antworten
-              </button>
-              <span class="thread-last-time">Letzte Antwort {{ msg.lastReplyTime }}</span>
-            </div>
-            }
-
-            @if (msg.reactions?.length) {
-            <div class="message-reactions">
-              @for (reaction of msg.reactions; track reaction.emoji) {
-              <span class="reaction-chip">{{ reaction.emoji }} {{ reaction.count }}</span>
-              }
-              <button type="button" class="reaction-add-btn" aria-label="Reaktion hinzufügen">
-                <img src="assets/icons/add_reaction.svg" alt="" width="20" height="20" />
-              </button>
-            </div>
-            }
-          </div>
-        </article>
+        <app-chat-message [message]="msg" [currentUid]="store.uid()" [userNames]="userNames"
+          (reactionToggled)="onReactionToggled($event)" (threadOpened)="openThread($event)"
+          (edited)="onMessageEdited($event)" (authorClicked)="openProfileById($event)" />
         }
         }
       </div>

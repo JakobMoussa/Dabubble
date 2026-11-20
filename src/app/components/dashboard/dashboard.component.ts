@@ -8,6 +8,7 @@ import {
 } from './add-channel-modal/add-channel-modal.component';
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
 import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
+import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-message.component';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 import { WorkspaceStore } from '../../services/workspace.store';
 import { MessageService } from '../../services/message.service';
@@ -22,7 +23,7 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -105,6 +106,39 @@ export class DashboardComponent {
   get channelMemberAvatars(): string[] {
     const memberIds = this.getActiveChannel().memberIds ?? [];
     return memberIds.map((id) => this.store.userMap().get(id)?.avatar || DEFAULT_AVATAR);
+  }
+
+
+  get userNames(): Map<string, string> {
+    return new Map([...this.store.userMap().values()].map((u) => [u.uid, u.name]));
+  }
+
+
+  onReactionToggled(event: ReactionToggle, inThread = false): void {
+    const conversation = this.store.active();
+    const uid = this.store.uid();
+    if (!conversation || !uid) {
+      return;
+    }
+    const parentId = inThread ? this.store.threadParentId() : null;
+    this.messageService.setReaction(conversation, event.messageId, event.emoji, uid, event.active, parentId);
+  }
+
+
+  onMessageEdited(event: { messageId: string; text: string }, inThread = false): void {
+    const conversation = this.store.active();
+    const parentId = inThread ? this.store.threadParentId() : null;
+    if (conversation) {
+      this.messageService.edit(conversation, event.messageId, event.text, parentId);
+    }
+  }
+
+
+  openProfileById(uid: string): void {
+    const member = this.members.find((m) => m.id === uid);
+    if (member) {
+      this.openProfileMember(member);
+    }
   }
 
 
