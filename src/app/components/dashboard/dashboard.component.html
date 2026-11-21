@@ -137,14 +137,14 @@
           <span class="chat-title-btn__text">{{ member.name }}</span>
         </button>
         } @else {
-        <button type="button" class="chat-title-btn">
+        <button type="button" class="chat-title-btn" (click)="isChannelSettingsOpen = true">
           <img src="assets/icons/tag.svg" alt="" width="24" height="24" />
           <span class="chat-title-btn__text">{{ getActiveChannel().name }}</span>
           <img src="assets/icons/keyboard_arrow_down.svg" alt="" width="24" height="24" />
         </button>
 
         <div class="chat-header__members">
-          <button type="button" class="member-stack-btn" aria-label="Channel-Mitglieder anzeigen">
+          <button type="button" class="member-stack-btn" aria-label="Channel-Mitglieder anzeigen" (click)="openMembers(false)">
             <span class="member-stack">
               @for (avatar of channelMemberAvatars; track avatar) {
               <img [src]="avatar" alt="" width="40" height="40" class="member-stack__img" />
@@ -153,7 +153,7 @@
             <span class="member-stack__count">{{ channelMemberAvatars.length }}</span>
           </button>
 
-          <button type="button" class="add-member-btn" aria-label="Mitglied hinzufügen">
+          <button type="button" class="add-member-btn" aria-label="Mitglied hinzufügen" (click)="openMembers(true)">
             <img src="assets/icons/person_add.svg" alt="" width="24" height="24" />
           </button>
         </div>
@@ -243,6 +243,18 @@
   @if (isChannelPopupOpen) {
   <app-add-channel-modal [existingChannelNames]="getExistingChannelNames()" [members]="members"
     (closed)="closeChannelPopup()" (channelCreated)="handleChannelCreated($event)" />
+  }
+
+  @if (isChannelSettingsOpen) {
+  <app-channel-settings [channel]="getActiveChannel()" [creatorName]="channelCreatorName"
+    [existingNames]="getExistingChannelNames()" [errorMessage]="channelError"
+    (closed)="isChannelSettingsOpen = false; channelError = ''" (saved)="saveChannel($event)" (left)="leaveChannel()" />
+  }
+
+  @if (membersDialogMode) {
+  <app-channel-members [channelName]="getActiveChannel().name" [members]="channelMembers" [candidates]="members"
+    [startInAddMode]="membersDialogMode === 'add'" (closed)="membersDialogMode = null"
+    (added)="addChannelMembers($event)" (memberClicked)="membersDialogMode = null; openProfileMember($event)" />
   }
 
   @if (isSettingsPopupOpen) {

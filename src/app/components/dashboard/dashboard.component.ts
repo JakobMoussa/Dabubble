@@ -9,6 +9,9 @@ import {
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
 import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
 import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-message.component';
+import { ChannelChanges, ChannelSettingsComponent } from './channel-settings/channel-settings.component';
+import { ChannelMembersComponent } from './channel-members/channel-members.component';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 import { WorkspaceStore } from '../../services/workspace.store';
 import { WorkspaceActions } from '../../services/workspace-actions.service';
@@ -21,7 +24,8 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent,
+    ChannelSettingsComponent, ChannelMembersComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -40,6 +44,9 @@ export class DashboardComponent {
   mobileView: 'menu' | 'chat' | 'thread' = 'menu';
   messageText = '';
   selectedProfileMember: MemberPreview | null = null;
+  isChannelSettingsOpen = false;
+  membersDialogMode: 'list' | 'add' | null = null;
+  channelError = '';
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -102,6 +109,44 @@ export class DashboardComponent {
   get channelMemberAvatars(): string[] {
     const memberIds = this.getActiveChannel().memberIds ?? [];
     return memberIds.map((id) => this.store.userMap().get(id)?.avatar || DEFAULT_AVATAR);
+  }
+
+
+  get channelMembers(): MemberPreview[] {
+    const ids = new Set(this.getActiveChannel().memberIds ?? []);
+    return this.members.filter((m) => ids.has(m.id));
+  }
+
+
+  get channelCreatorName(): string {
+    return this.store.userMap().get(this.getActiveChannel().createdBy ?? '')?.name ?? 'Unbekannt';
+  }
+
+
+  openMembers(addMode: boolean): void {
+    this.membersDialogMode = addMode ? 'add' : 'list';
+  }
+
+
+  async saveChannel(changes: ChannelChanges): Promise<void> {
+    try {
+      this.channelError = '';
+      await this.actions.updateChannel(this.activeChannelId, changes.name, changes.description);
+    } catch (error) {
+      this.channelError = error instanceof Error && error.message.startsWith('*') ? error.message : toAuthMessage(error);
+    }
+  }
+
+
+  async leaveChannel(): Promise<void> {
+    await this.actions.leaveChannel(this.activeChannelId);
+    this.isChannelSettingsOpen = false;
+    this.mobileView = 'menu';
+  }
+
+
+  addChannelMembers(memberIds: string[]): Promise<void> {
+    return this.actions.addMembers(this.activeChannelId, memberIds);
   }
 
 
