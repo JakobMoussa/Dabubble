@@ -1,5 +1,6 @@
 .members-dialog {
   width: min(480px, calc(100dvw - 24px));
+  margin: 190px 60px auto auto;
   padding: 0;
   border: none;
   border-radius: 30px;
@@ -166,6 +167,10 @@
 }
 
 @media (max-width: 768px) {
+  .members-dialog {
+    margin: auto;
+  }
+
   .members-card {
     padding: 24px 16px;
     border-radius: 30px;
