@@ -1,0 +1,41 @@
+<div class="composer-box" [class.composer-box--compact]="compact">
+  <label [for]="inputId" class="visually-hidden">{{ placeholder }}</label>
+  <textarea #field [id]="inputId" rows="2" class="composer-box__textarea" [placeholder]="placeholder"
+    [(ngModel)]="text" (ngModelChange)="onInput()" (keydown)="onKeydown($event)"
+    (click)="onInput()" aria-autocomplete="list"></textarea>
+
+  @if (options.length) {
+  <ul class="mentions" role="listbox" aria-label="Vorschläge">
+    @for (option of options; track option.key; let i = $index) {
+    <li>
+      <button type="button" class="mentions__item" role="option" [class.mentions__item--active]="i === activeIndex"
+        [attr.aria-selected]="i === activeIndex" (mousedown)="$event.preventDefault()" (click)="choose(option)">
+        @if (option.avatar) {
+        <img [src]="option.avatar" alt="" width="32" height="32" class="mentions__avatar" />
+        }
+        {{ option.label }}
+      </button>
+    </li>
+    }
+  </ul>
+  }
+
+  <div class="composer-toolbar">
+    <div class="composer-toolbar__left">
+      <button type="button" class="composer-icon-btn" aria-label="Emoticon einfügen" (click)="toggleEmoji($event)">
+        <img src="assets/icons/figma/sentiment-satisfied-default.svg" alt="" width="24" height="24" />
+      </button>
+      <button type="button" class="composer-icon-btn" aria-label="Person markieren" (click)="startMention()">
+        <img src="assets/icons/figma/alternate-email-default.svg" alt="" width="24" height="24" />
+      </button>
+      @if (isEmojiOpen) {
+      <app-emoji-picker class="composer-emoji" (picked)="addEmoji($event)" (dismissed)="isEmojiOpen = false" />
+      }
+    </div>
+    <button type="button" class="composer-send-btn" [disabled]="!text.trim()" aria-label="Nachricht senden"
+      (click)="send()">
+      <img [src]="text.trim() ? 'assets/icons/figma/send-icon-hover.svg' : 'assets/icons/figma/send-icon-default.svg'"
+        alt="" width="24" height="24" />
+    </button>
+  </div>
+</div>
