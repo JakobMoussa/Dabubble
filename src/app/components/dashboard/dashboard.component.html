@@ -17,11 +17,7 @@
       </a>
     </div>
 
-    <div class="header-search">
-      <label for="global-search" class="visually-hidden">Devspace durchsuchen</label>
-      <input type="search" id="global-search" placeholder="Devspace durchsuchen" class="header-search__input" />
-      <img src="assets/icons/search (2).svg" alt="" width="24" height="24" class="header-search__icon" />
-    </div>
+    <app-search-box class="header-search-slot" (selected)="onSearchSelected($event)" />
 
     <button type="button" class="user-menu-btn" aria-label="Benutzerprofil öffnen" aria-haspopup="dialog"
       [attr.aria-expanded]="isSettingsPopupOpen" (click)="openSettingsPopup()">
@@ -48,11 +44,8 @@
         </button>
       </div>
 
-      <div class="mobile-search-box">
-        <label for="mobile-search" class="visually-hidden">Gehe zu...</label>
-        <input type="search" id="mobile-search" placeholder="Gehe zu..." class="mobile-search-box__input" />
-        <img src="assets/icons/search (2).svg" alt="" width="20" height="20" />
-      </div>
+      <app-search-box class="mobile-search-slot" inputId="mobile-search" placeholder="Gehe zu..."
+        (selected)="onSearchSelected($event)" />
 
       <nav class="sidebar-scroll">
         <section class="sidebar-section">

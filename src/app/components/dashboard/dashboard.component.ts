@@ -12,6 +12,7 @@ import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-messag
 import { ChannelChanges, ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ChannelMembersComponent } from './channel-members/channel-members.component';
 import { toAuthMessage } from '../../shared/auth-error-messages';
+import { SearchBoxComponent, SearchSelection } from '../../shared/components/search-box/search-box.component';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 import { WorkspaceStore } from '../../services/workspace.store';
 import { WorkspaceActions } from '../../services/workspace-actions.service';
@@ -25,7 +26,7 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent,
-    ChannelSettingsComponent, ChannelMembersComponent],
+    ChannelSettingsComponent, ChannelMembersComponent, SearchBoxComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -120,6 +121,19 @@ export class DashboardComponent {
 
   get channelCreatorName(): string {
     return this.store.userMap().get(this.getActiveChannel().createdBy ?? '')?.name ?? 'Unbekannt';
+  }
+
+
+  onSearchSelected(selection: SearchSelection): void {
+    if (selection.conversation.type === 'channel') {
+      this.selectChannel(selection.conversation.id);
+      return;
+    }
+    const uid = this.store.uid();
+    const memberId = selection.memberId ?? selection.conversation.id.split('_').find((id) => id !== uid) ?? uid;
+    if (memberId) {
+      this.selectMember(memberId);
+    }
   }
 
 
