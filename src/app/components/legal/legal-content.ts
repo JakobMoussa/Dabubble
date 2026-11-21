@@ -8,7 +8,7 @@ export interface LegalPage {
   sections: LegalSection[];
 }
 
-const TEAM = 'Raphael Neuberger, Jakob Moussa und Samrawit';
+const TEAM = 'Raphael Neuberger, Jakob Moussa und Samrawit Tesfay';
 
 export const LEGAL_PAGES: Record<'imprint' | 'privacy', LegalPage> = {
   imprint: {
