@@ -19,6 +19,7 @@ import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/
 import { WorkspaceStore } from '../../services/workspace.store';
 import { WorkspaceActions } from '../../services/workspace-actions.service';
 import { AuthService, DEFAULT_AVATAR } from '../../services/auth.service';
+import { resolveAvatar } from '../../shared/avatars';
 
 export type { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 
@@ -64,7 +65,7 @@ export class DashboardComponent {
   get currentUser(): MemberPreview {
     const me = this.store.me();
     return me
-      ? { id: me.uid, name: me.name, avatar: me.avatar || DEFAULT_AVATAR, online: true, isCurrentUser: true }
+      ? { id: me.uid, name: me.name, avatar: resolveAvatar(me.avatar, DEFAULT_AVATAR), online: true, isCurrentUser: true }
       : { id: '', name: '', avatar: DEFAULT_AVATAR, online: true, isCurrentUser: true };
   }
 

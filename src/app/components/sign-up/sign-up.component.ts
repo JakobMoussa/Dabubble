@@ -38,12 +38,12 @@ export class SignUpComponent implements OnDestroy {
     privacyTouched = false;
 
     readonly avatarOptions: AvatarOption[] = [
-        { name: 'Elias Neumann', src: 'assets/img/Elias Neumann.png' },
-        { name: 'Elise Roth', src: 'assets/img/Elise Roth.png' },
-        { name: 'Frederik Beck', src: 'assets/img/Frederik Beck.png' },
-        { name: 'Noah Braun', src: 'assets/img/Noah Braun.png' },
-        { name: 'Sofia Müller', src: 'assets/img/Sofia Müller.png' },
-        { name: 'Steffen Hoffmann', src: 'assets/img/Steffen Hoffmann.png' }
+        { name: 'Elias Neumann', src: 'assets/img/elias-neumann.png' },
+        { name: 'Elise Roth', src: 'assets/img/elise-roth.png' },
+        { name: 'Frederik Beck', src: 'assets/img/frederik-beck.png' },
+        { name: 'Noah Braun', src: 'assets/img/noah-braun.png' },
+        { name: 'Sofia Müller', src: 'assets/img/sofia-mueller.png' },
+        { name: 'Steffen Hoffmann', src: 'assets/img/steffen-hoffmann.png' }
     ];
 
     private redirectTimer: ReturnType<typeof setTimeout> | null = null;

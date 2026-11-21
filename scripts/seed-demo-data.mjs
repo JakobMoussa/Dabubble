@@ -18,11 +18,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const PEOPLE = {
-  sofia: { name: 'Sofia Müller', avatar: 'assets/img/Sofia Müller.png' },
-  noah: { name: 'Noah Braun', avatar: 'assets/img/Noah Braun.png' },
-  elise: { name: 'Elise Roth', avatar: 'assets/img/Elise Roth.png' },
-  elias: { name: 'Elias Neumann', avatar: 'assets/img/Elias Neumann.png' },
-  steffen: { name: 'Steffen Hoffmann', avatar: 'assets/img/Steffen Hoffmann.png' }
+  sofia: { name: 'Sofia Müller', avatar: 'assets/img/sofia-mueller.png' },
+  noah: { name: 'Noah Braun', avatar: 'assets/img/noah-braun.png' },
+  elise: { name: 'Elise Roth', avatar: 'assets/img/elise-roth.png' },
+  elias: { name: 'Elias Neumann', avatar: 'assets/img/elias-neumann.png' },
+  steffen: { name: 'Steffen Hoffmann', avatar: 'assets/img/steffen-hoffmann.png' }
 };
 const uids = {};
 
