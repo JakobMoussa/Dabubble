@@ -223,6 +223,19 @@
   }
 }
 
+.reaction-add {
+  display: inline-flex;
+  padding: 4px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--bg-color);
+  }
+}
+
 .reaction-more {
   border: none;
   background: none;

@@ -53,6 +53,9 @@
       @if (visibleReactions.hidden > 0) {
       <button type="button" class="reaction-more" (click)="showAll = true">+ {{ visibleReactions.hidden }} weitere</button>
       }
+      <button type="button" class="reaction-add" aria-label="Reaktion hinzufügen" (click)="openPicker($event)">
+        <img src="assets/icons/figma/add-reaction-default.svg" alt="" width="24" height="24" />
+      </button>
     </div>
     }
   </div>
