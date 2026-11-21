@@ -11,9 +11,7 @@ import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
 import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-message.component';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 import { WorkspaceStore } from '../../services/workspace.store';
-import { MessageService } from '../../services/message.service';
-import { ChannelService } from '../../services/channel.service';
-import { UserService } from '../../services/user.service';
+import { WorkspaceActions } from '../../services/workspace-actions.service';
 import { AuthService, DEFAULT_AVATAR } from '../../services/auth.service';
 
 export type { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
@@ -29,9 +27,7 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
 })
 export class DashboardComponent {
   readonly store = inject(WorkspaceStore);
-  private readonly messageService = inject(MessageService);
-  private readonly channelService = inject(ChannelService);
-  private readonly userService = inject(UserService);
+  private readonly actions = inject(WorkspaceActions);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -115,22 +111,12 @@ export class DashboardComponent {
 
 
   onReactionToggled(event: ReactionToggle, inThread = false): void {
-    const conversation = this.store.active();
-    const uid = this.store.uid();
-    if (!conversation || !uid) {
-      return;
-    }
-    const parentId = inThread ? this.store.threadParentId() : null;
-    this.messageService.setReaction(conversation, event.messageId, event.emoji, uid, event.active, parentId);
+    this.actions.react(event.messageId, event.emoji, event.active, inThread);
   }
 
 
   onMessageEdited(event: { messageId: string; text: string }, inThread = false): void {
-    const conversation = this.store.active();
-    const parentId = inThread ? this.store.threadParentId() : null;
-    if (conversation) {
-      this.messageService.edit(conversation, event.messageId, event.text, parentId);
-    }
+    this.actions.edit(event.messageId, event.text, inThread);
   }
 
 
@@ -200,10 +186,7 @@ export class DashboardComponent {
 
 
   async updateProfileName(newName: string): Promise<void> {
-    const me = this.store.me();
-    if (me) {
-      await this.userService.updateProfile(me.uid, { name: newName, avatar: me.avatar });
-    }
+    await this.actions.updateProfile(newName, this.store.me()?.avatar ?? DEFAULT_AVATAR);
     this.closeProfilePopup();
   }
 
@@ -246,24 +229,14 @@ export class DashboardComponent {
 
 
   async sendMessage(): Promise<void> {
-    const text = this.messageText.trim();
-    const conversation = this.store.active();
-    const uid = this.store.uid();
-    if (!text || !conversation || !uid) {
-      return;
-    }
+    const text = this.messageText;
     this.messageText = '';
-    await this.messageService.send(conversation, text, uid);
+    await this.actions.send(text);
   }
 
 
-  async sendReply(text: string): Promise<void> {
-    const conversation = this.store.active();
-    const parentId = this.store.threadParentId();
-    const uid = this.store.uid();
-    if (conversation && parentId && uid && text.trim()) {
-      await this.messageService.reply(conversation, parentId, text, uid);
-    }
+  sendReply(text: string): Promise<void> {
+    return this.actions.reply(text);
   }
 
 
@@ -280,16 +253,8 @@ export class DashboardComponent {
   }
 
 
-  async handleChannelCreated(payload: CreatedChannelPayload): Promise<void> {
-    const uid = this.store.uid();
-    if (!uid) {
-      return;
-    }
-    const channelId = await this.channelService.create(payload.name, payload.description, uid);
-    if (payload.memberIds.length) {
-      await this.channelService.addMembers(channelId, payload.memberIds);
-    }
-    this.selectChannel(channelId);
+  handleChannelCreated(payload: CreatedChannelPayload): Promise<void> {
+    return this.actions.createChannel(payload.name, payload.description, payload.memberIds);
   }
 
 
