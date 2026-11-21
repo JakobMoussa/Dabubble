@@ -111,3 +111,9 @@
     right: 16px;
   }
 }
+
+@media (max-width: 768px) {
+  .search__input {
+    border-color: var(--light-purple);
+  }
+}
