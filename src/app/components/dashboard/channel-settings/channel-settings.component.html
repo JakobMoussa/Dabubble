@@ -1,0 +1,56 @@
+<dialog #dialog class="settings-dialog" (cancel)="close()" (click)="$event.target === dialog && close()"
+  aria-labelledby="channel-settings-title">
+  <div class="settings-card">
+    <header class="settings-card__header">
+      <h2 id="channel-settings-title" class="settings-card__title"># {{ channel.name }}</h2>
+      <button type="button" class="icon-btn" aria-label="Schließen" (click)="close()">
+        <img src="assets/icons/figma/close-default.svg" alt="" width="24" height="24" />
+      </button>
+    </header>
+
+    <section class="field-box" [class.field-box--editing]="editing === 'name'">
+      <div class="field-box__head">
+        <h3 class="field-box__label">Channel-Name</h3>
+        @if (editing === 'name') {
+        <button type="button" class="text-btn" [disabled]="!!nameError" (click)="save()">Speichern</button>
+        } @else {
+        <button type="button" class="text-btn" (click)="startEdit('name')">Bearbeiten</button>
+        }
+      </div>
+      @if (editing === 'name') {
+      <input class="field-box__input" [(ngModel)]="draftName" aria-label="Channel-Name" (keydown.enter)="save()" />
+      <p class="field-box__error" aria-live="polite">{{ nameError }}</p>
+      } @else {
+      <p class="field-box__value"># {{ channel.name }}</p>
+      }
+    </section>
+
+    <section class="field-box" [class.field-box--editing]="editing === 'description'">
+      <div class="field-box__head">
+        <h3 class="field-box__label">Beschreibung</h3>
+        @if (editing === 'description') {
+        <button type="button" class="text-btn" (click)="save()">Speichern</button>
+        } @else {
+        <button type="button" class="text-btn" (click)="startEdit('description')">Bearbeiten</button>
+        }
+      </div>
+      @if (editing === 'description') {
+      <textarea class="field-box__input field-box__input--area" rows="3" [(ngModel)]="draftDescription"
+        aria-label="Beschreibung"></textarea>
+      } @else {
+      <p class="field-box__text">{{ channel.description || 'Keine Beschreibung' }}</p>
+      }
+      <hr class="field-box__divider" />
+      <h3 class="field-box__label">Erstellt von</h3>
+      <p class="field-box__creator">{{ creatorName }}</p>
+    </section>
+
+    @if (errorMessage) {
+    <p class="settings-card__error" role="alert">{{ errorMessage }}</p>
+    }
+
+    <div class="settings-card__actions">
+      <button type="button" class="btn-primary" (click)="left.emit()">Channel verlassen</button>
+    </div>
+  </div>
+</dialog>
