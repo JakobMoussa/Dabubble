@@ -12,6 +12,7 @@ import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-messag
 import { ChannelChanges, ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ChannelMembersComponent } from './channel-members/channel-members.component';
 import { toAuthMessage } from '../../shared/auth-error-messages';
+import { MessageComposerComponent } from './message-composer/message-composer.component';
 import { SearchBoxComponent, SearchSelection } from '../../shared/components/search-box/search-box.component';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 import { WorkspaceStore } from '../../services/workspace.store';
@@ -26,7 +27,8 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent,
-    ChannelSettingsComponent, ChannelMembersComponent, SearchBoxComponent],
+    ChannelSettingsComponent, ChannelMembersComponent, SearchBoxComponent,
+    MessageComposerComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -43,7 +45,6 @@ export class DashboardComponent {
   isChannelsOpen = true;
   isDirectMessagesOpen = true;
   mobileView: 'menu' | 'chat' | 'thread' = 'menu';
-  messageText = '';
   selectedProfileMember: MemberPreview | null = null;
   isChannelSettingsOpen = false;
   membersDialogMode: 'list' | 'add' | null = null;
@@ -258,15 +259,6 @@ export class DashboardComponent {
   }
 
 
-  onComposerEnter(event: Event): void {
-    const keyEvent = event as KeyboardEvent;
-    if (!keyEvent.shiftKey) {
-      keyEvent.preventDefault();
-      this.sendMessage();
-    }
-  }
-
-
   scrollToBottom(): void {
     setTimeout(() => {
       const el = this.messagesContainer?.nativeElement;
@@ -277,20 +269,8 @@ export class DashboardComponent {
   }
 
 
-  insertEmoji(emoji = '😊'): void {
-    this.messageText += emoji;
-  }
-
-
-  insertMention(): void {
-    this.messageText += '@';
-  }
-
-
-  async sendMessage(): Promise<void> {
-    const text = this.messageText;
-    this.messageText = '';
-    await this.actions.send(text);
+  sendMessage(text: string): Promise<void> {
+    return this.actions.send(text);
   }
 
 

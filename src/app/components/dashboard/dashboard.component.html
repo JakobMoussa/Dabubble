@@ -190,36 +190,18 @@
       </div>
 
       <div class="composer-wrapper">
-        <div class="composer-box">
-          <label for="chat-message-input" class="visually-hidden">Nachricht schreiben</label>
-          <textarea id="chat-message-input" rows="2" [placeholder]="getComposerPlaceholder()"
-            class="composer-box__textarea" [(ngModel)]="messageText" (keydown.enter)="onComposerEnter($event)"></textarea>
-          <div class="composer-toolbar">
-            <div class="composer-toolbar__left">
-              <button type="button" class="composer-icon-btn" aria-label="Datei oder Option hinzufügen">
-                <img src="assets/icons/add.svg" alt="" width="24" height="24" />
-              </button>
-              <span class="composer-divider" aria-hidden="true"></span>
-              <button type="button" class="composer-icon-btn" aria-label="Emoticon einfügen" (click)="insertEmoji()">
-                <img src="assets/icons/sentiment_satisfied.svg" alt="" width="20" height="20" />
-              </button>
-              <button type="button" class="composer-icon-btn" aria-label="Person markieren" (click)="insertMention()">
-                <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
-              </button>
-            </div>
-            <button type="button" class="composer-send-btn" [class.composer-send-btn--active]="messageText.trim().length > 0"
-              [disabled]="!messageText.trim()" aria-label="Nachricht senden" (click)="sendMessage()">
-              <img [src]="messageText.trim() ? 'assets/icons/send (1).svg' : 'assets/icons/send.svg'" alt="" width="22" height="19" />
-            </button>
-          </div>
-        </div>
+        <app-message-composer [placeholder]="getComposerPlaceholder()" [members]="members" [channels]="channels"
+          (sent)="sendMessage($event)" />
       </div>
     </main>
 
     @if (isThreadOpen) {
     <app-thread-panel [class.thread-panel--mobile-hidden]="mobileView !== 'thread'"
       [channelName]="getActiveChannel().name" [rootMessage]="threadRootMessage!" [replies]="threadReplies"
-      (closeThread)="closeThread()" (replySent)="sendReply($event)" />
+      [members]="members" [channels]="channels" [currentUid]="store.uid()" [userNames]="userNames"
+      (closeThread)="closeThread()" (replySent)="sendReply($event)"
+      (reactionToggled)="onReactionToggled($event, true)" (rootReaction)="onReactionToggled($event)"
+      (edited)="onMessageEdited($event, true)" />
     }
   </div>
 
