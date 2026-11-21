@@ -63,7 +63,7 @@ export class AuthService {
 
 
   sendResetMail(email: string): Promise<void> {
-    const url = `${location.origin}${location.pathname.replace(/\/[^/]*$/, '')}/login`;
+    const url = `${location.origin}${location.pathname}#/login`;
     return sendPasswordResetEmail(this.auth, normalizeEmail(email), { url });
   }
 
