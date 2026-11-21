@@ -260,7 +260,7 @@
   <app-profile-popup [userName]="(selectedProfileMember ?? currentUser).name"
     [userAvatar]="(selectedProfileMember ?? currentUser).avatar"
     [canEdit]="(selectedProfileMember ?? currentUser).id === currentUser.id" (closed)="closeProfilePopup()"
-    (nameSaved)="updateProfileName($event)">
+    (profileSaved)="updateProfile($event)">
   </app-profile-popup>
   }
 </div>

@@ -1,5 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AVATAR_OPTIONS } from '../../../shared/avatars';
+
+export interface ProfileChanges {
+    name: string;
+    avatar: string;
+}
 
 @Component({
     selector: 'app-profile-popup',
@@ -12,16 +18,19 @@ export class ProfilePopupComponent {
 
     isEditing = false;
     editedName = '';
+    editedAvatar = '';
+    readonly avatars = AVATAR_OPTIONS;
 
     @Input() userName = '';
     @Input() userAvatar = '';
     @Input() canEdit = true;
 
     @Output() closed = new EventEmitter<void>();
-    @Output() nameSaved = new EventEmitter<string>();
+    @Output() profileSaved = new EventEmitter<ProfileChanges>();
 
     startEditing(): void {
         this.editedName = this.userName;
+        this.editedAvatar = this.userAvatar;
         this.isEditing = true;
     }
 
@@ -41,7 +50,7 @@ export class ProfilePopupComponent {
             return;
         }
 
-        this.nameSaved.emit(newName);
+        this.profileSaved.emit({ name: newName, avatar: this.editedAvatar });
         this.isEditing = false;
     }
 }

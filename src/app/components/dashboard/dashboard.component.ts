@@ -7,7 +7,7 @@ import {
   CreatedChannelPayload
 } from './add-channel-modal/add-channel-modal.component';
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
-import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
+import { ProfileChanges, ProfilePopupComponent } from './profile-popup/profile-popup.component';
 import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-message.component';
 import { ChannelChanges, ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ChannelMembersComponent } from './channel-members/channel-members.component';
@@ -245,8 +245,8 @@ export class DashboardComponent {
   }
 
 
-  async updateProfileName(newName: string): Promise<void> {
-    await this.actions.updateProfile(newName, this.store.me()?.avatar ?? DEFAULT_AVATAR);
+  async updateProfile(changes: ProfileChanges): Promise<void> {
+    await this.actions.updateProfile(changes.name, changes.avatar || DEFAULT_AVATAR);
     this.closeProfilePopup();
   }
 
