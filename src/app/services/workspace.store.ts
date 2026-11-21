@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { Observable, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, map, of, retry, switchMap } from 'rxjs';
 import { AppUser } from '../models/user.model';
 import { ConversationRef, Message } from '../models/message.model';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../models/view.models';
@@ -9,6 +9,20 @@ import { AuthService } from './auth.service';
 import { ChannelService } from './channel.service';
 import { MessageService } from './message.service';
 import { UserService } from './user.service';
+
+/**
+ * Keeps a Firestore listener alive: a short-lived permission error right after a write
+ * (e.g. a freshly created channel) is retried instead of killing the signal for good.
+ */
+function resilient<T>(source: Observable<T[]>): Observable<T[]> {
+  return source.pipe(
+    retry({ count: 3, delay: 800 }),
+    catchError((error) => {
+      console.warn('Firestore listener stopped:', error?.code ?? error);
+      return of([] as T[]);
+    })
+  );
+}
 
 /** Central reactive state for the workspace (current user, lists, active chat, thread). */
 @Injectable({ providedIn: 'root' })
@@ -25,11 +39,11 @@ export class WorkspaceStore {
   private readonly uid$ = toObservable(this.uid);
   private readonly rawUsers = toSignal(this.whenSignedIn(() => this.userService.allUsers$()), { initialValue: [] });
   private readonly rawChannels = toSignal(
-    this.uid$.pipe(switchMap((uid) => (uid ? this.channelService.channelsOf$(uid) : of([])))),
+    this.uid$.pipe(switchMap((uid) => (uid ? resilient(this.channelService.channelsOf$(uid)) : of([])))),
     { initialValue: [] }
   );
   private readonly rawMessages = toSignal(
-    toObservable(this.active).pipe(switchMap((c) => (c ? this.messageService.messages$(c) : of([])))),
+    toObservable(this.active).pipe(switchMap((c) => (c ? resilient(this.messageService.messages$(c)) : of([])))),
     { initialValue: [] as Message[] }
   );
   private readonly rawThread = toSignal(this.threadStream(), { initialValue: [] as Message[] });
@@ -65,7 +79,7 @@ export class WorkspaceStore {
 
 
   private whenSignedIn<T>(source: () => Observable<T[]>): Observable<T[]> {
-    return this.uid$.pipe(switchMap((uid) => (uid ? source() : of([] as T[]))));
+    return this.uid$.pipe(switchMap((uid) => (uid ? resilient(source()) : of([] as T[]))));
   }
 
 
@@ -73,7 +87,7 @@ export class WorkspaceStore {
     return toObservable(this.threadParentId).pipe(
       switchMap((parentId) => {
         const conversation = this.active();
-        return parentId && conversation ? this.messageService.thread$(conversation, parentId) : of([]);
+        return parentId && conversation ? resilient(this.messageService.thread$(conversation, parentId)) : of([]);
       })
     );
   }
