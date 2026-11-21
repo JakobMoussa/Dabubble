@@ -22,6 +22,16 @@ export class WorkspaceActions {
   }
 
 
+  async sendTo(target: { kind: 'channel' | 'member'; id: string }, text: string): Promise<void> {
+    if (target.kind === 'channel') {
+      this.store.openChannel(target.id);
+    } else {
+      await this.store.openDirect(target.id);
+    }
+    await this.send(text);
+  }
+
+
   async reply(text: string): Promise<void> {
     const conversation = this.store.active();
     const parentId = this.store.threadParentId();

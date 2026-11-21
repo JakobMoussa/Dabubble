@@ -12,6 +12,7 @@ import { ChatMessageComponent, ReactionToggle } from './chat-message/chat-messag
 import { ChannelChanges, ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ChannelMembersComponent } from './channel-members/channel-members.component';
 import { toAuthMessage } from '../../shared/auth-error-messages';
+import { NewMessageHeaderComponent, Recipient } from './new-message-header/new-message-header.component';
 import { MessageComposerComponent } from './message-composer/message-composer.component';
 import { SearchBoxComponent, SearchSelection } from '../../shared/components/search-box/search-box.component';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
@@ -28,7 +29,7 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent,
     ChannelSettingsComponent, ChannelMembersComponent, SearchBoxComponent,
-    MessageComposerComponent],
+    MessageComposerComponent, NewMessageHeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -49,6 +50,8 @@ export class DashboardComponent {
   isChannelSettingsOpen = false;
   membersDialogMode: 'list' | 'add' | null = null;
   channelError = '';
+  isNewMessage = false;
+  newRecipient: Recipient | null = null;
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -126,15 +129,9 @@ export class DashboardComponent {
 
 
   onSearchSelected(selection: SearchSelection): void {
-    if (selection.conversation.type === 'channel') {
-      this.selectChannel(selection.conversation.id);
-      return;
-    }
-    const uid = this.store.uid();
-    const memberId = selection.memberId ?? selection.conversation.id.split('_').find((id) => id !== uid) ?? uid;
-    if (memberId) {
-      this.selectMember(memberId);
-    }
+    this.isNewMessage = false;
+    this.store.openConversation(selection.conversation);
+    this.showChat();
   }
 
 
@@ -269,6 +266,22 @@ export class DashboardComponent {
   }
 
 
+  startNewMessage(): void {
+    this.isNewMessage = true;
+    this.newRecipient = null;
+    this.store.threadParentId.set(null);
+    this.mobileView = 'chat';
+  }
+
+
+  async sendNewMessage(text: string): Promise<void> {
+    if (this.newRecipient) {
+      this.isNewMessage = false;
+      await this.actions.sendTo(this.newRecipient, text);
+    }
+  }
+
+
   sendMessage(text: string): Promise<void> {
     return this.actions.send(text);
   }
@@ -308,12 +321,14 @@ export class DashboardComponent {
 
 
   selectChannel(channelId: string): void {
+    this.isNewMessage = false;
     this.store.openChannel(channelId);
     this.showChat();
   }
 
 
   async selectMember(memberId: string): Promise<void> {
+    this.isNewMessage = false;
     await this.store.openDirect(memberId);
     this.showChat();
   }

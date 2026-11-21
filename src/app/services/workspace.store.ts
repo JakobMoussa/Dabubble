@@ -48,6 +48,12 @@ export class WorkspaceStore {
   }
 
 
+  openConversation(conversation: ConversationRef): void {
+    this.active.set(conversation);
+    this.threadParentId.set(null);
+  }
+
+
   async openDirect(memberId: string): Promise<void> {
     const uid = this.uid();
     if (!uid) {

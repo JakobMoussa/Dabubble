@@ -39,7 +39,7 @@
           <img src="assets/icons/workspaces.svg" alt="" width="36" height="36" class="workspace-title__icon" />
           <h1 class="workspace-title__text">Devspace</h1>
         </div>
-        <button type="button" class="icon-btn" aria-label="Neue Nachricht verfassen">
+        <button type="button" class="icon-btn" aria-label="Neue Nachricht verfassen" (click)="startNewMessage()">
           <img src="assets/icons/edit_square.svg" alt="" width="24" height="24" />
         </button>
       </div>
@@ -119,6 +119,10 @@
     </aside>
 
     <main class="chat-panel" [class.chat-panel--mobile-hidden]="mobileView !== 'chat'" aria-label="Aktiver Chat">
+      @if (isNewMessage) {
+      <app-new-message-header [channels]="channels" [members]="members" [recipient]="newRecipient"
+        (recipientChange)="newRecipient = $event" />
+      } @else {
       <header class="chat-header">
         @if (getActiveMember(); as member) {
         <button type="button" class="chat-title-btn" (click)="openProfileMember(member)">
@@ -152,7 +156,11 @@
         </div>
         }
       </header>
+      }
 
+      @if (isNewMessage) {
+      <div class="chat-messages chat-messages--empty"></div>
+      } @else {
       <div class="chat-messages" #messagesContainer [class.chat-messages--empty]="getCurrentMessages().length === 0">
         @if (getActiveMember(); as member) {
         <div class="direct-chat-intro">
@@ -189,9 +197,11 @@
         }
       </div>
 
+      }
+
       <div class="composer-wrapper">
-        <app-message-composer [placeholder]="getComposerPlaceholder()" [members]="members" [channels]="channels"
-          (sent)="sendMessage($event)" />
+        <app-message-composer [placeholder]="isNewMessage ? 'Starte eine neue Nachricht' : getComposerPlaceholder()"
+          [members]="members" [channels]="channels" (sent)="isNewMessage ? sendNewMessage($event) : sendMessage($event)" />
       </div>
     </main>
 
