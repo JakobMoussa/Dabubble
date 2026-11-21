@@ -1,0 +1,58 @@
+<dialog #dialog class="members-dialog" (cancel)="close()" (click)="$event.target === dialog && close()"
+  aria-labelledby="members-title">
+  <div class="members-card">
+    <header class="members-card__header">
+      <h2 id="members-title" class="members-card__title">{{ mode === 'list' ? 'Mitglieder' : 'Leute hinzufügen' }}</h2>
+      <button type="button" class="icon-btn" aria-label="Schließen" (click)="close()">
+        <img src="assets/icons/figma/close-default.svg" alt="" width="24" height="24" />
+      </button>
+    </header>
+
+    @if (mode === 'list') {
+    <ul class="member-list">
+      @for (member of members; track member.id) {
+      <li>
+        <button type="button" class="member-row" (click)="memberClicked.emit(member)">
+          <span class="avatar">
+            <img [src]="member.avatar" [alt]="member.name" width="50" height="50" />
+            <span class="avatar__dot" [class.avatar__dot--online]="member.online"></span>
+          </span>
+          <span>{{ member.name }}</span>
+        </button>
+      </li>
+      }
+    </ul>
+    <button type="button" class="member-row member-row--add" (click)="mode = 'add'">
+      <img src="assets/icons/figma/person-add-default.svg" alt="" width="24" height="24" />
+      <span>Mitglieder hinzufügen</span>
+    </button>
+    } @else {
+    <p class="channel-tag"># {{ channelName }}</p>
+    <div class="picker">
+      @for (member of selected; track member.id) {
+      <span class="chip">
+        <img [src]="member.avatar" alt="" width="24" height="24" />{{ member.name }}
+        <button type="button" class="chip__remove" [attr.aria-label]="member.name + ' entfernen'"
+          (click)="unpick(member.id)">×</button>
+      </span>
+      }
+      <input class="picker__input" [(ngModel)]="search" placeholder="Name eingeben" aria-label="Name eingeben" />
+    </div>
+    @if (suggestions.length) {
+    <ul class="suggestions" role="listbox">
+      @for (member of suggestions; track member.id) {
+      <li>
+        <button type="button" class="member-row" role="option" (click)="pick(member)">
+          <img [src]="member.avatar" alt="" width="40" height="40" class="suggestions__avatar" />
+          <span>{{ member.name }}</span>
+        </button>
+      </li>
+      }
+    </ul>
+    }
+    <div class="members-card__actions">
+      <button type="button" class="btn-primary" [disabled]="!selected.length" (click)="confirm()">Hinzufügen</button>
+    </div>
+    }
+  </div>
+</dialog>
