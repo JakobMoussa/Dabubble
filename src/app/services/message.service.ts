@@ -74,7 +74,10 @@ export class MessageService {
 
 
   private async searchIn(conversation: ConversationRef, needle: string): Promise<MessageHit[]> {
-    const snapshot = await getDocs(this.messagesRef(conversation));
+    const snapshot = await getDocs(this.messagesRef(conversation)).catch(() => null);
+    if (!snapshot) {
+      return [];
+    }
     return snapshot.docs
       .map((d) => ({ ...(d.data() as Message), id: d.id }))
       .filter((message) => message.text.toLowerCase().includes(needle))
