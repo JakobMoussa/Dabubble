@@ -231,6 +231,18 @@ a {
     opacity: 1;
   }
 }
+/* Figma mobile: smaller input pills (50px) with ~30px between fields */
+@media (max-width: 768px) {
+  .input-pill {
+    padding: 12px 24px;
+    gap: 20px;
+  }
+
+  .input-group {
+    margin-bottom: 6px;
+  }
+}
+
 /* Thin, design-coloured scrollbars instead of the grey browser default (Figma shows none). */
 * {
   scrollbar-width: thin;
