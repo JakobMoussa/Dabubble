@@ -1,73 +1,73 @@
 <div class="profile-overlay" (click)="closePopup()">
 
-    <div class="profile-popup" role="dialog" aria-modal="true" aria-label="Profil" (click)="$event.stopPropagation()">
+  <div class="profile-popup" role="dialog" aria-modal="true" aria-label="Profil" (click)="$event.stopPropagation()">
 
-        @if (!isEditing) {
+    @if (!isEditing) {
 
-        <div class="profile-header">
-            <h2>Profil</h2>
-            <button type="button" (click)="closePopup()">✕</button>
-        </div>
-
-        <img class="profile-avatar" [src]="userAvatar" [alt]="userName" />
-
-        <div class="profile-info">
-            <div class="profile-name">
-                <h3>{{ userName }}</h3>
-
-                @if (canEdit) {
-                <button type="button" (click)="startEditing()">
-                    Bearbeiten
-                </button>
-                }
-            </div>
-
-            <p class="profile-status">🟢 Aktiv</p>
-
-            <div class="profile-email">
-                <strong>E-Mail-Adresse</strong>
-                <p>fred.beck&#64;email.com</p>
-            </div>
-        </div>
-
-        } @else {
-
-        <div class="profile-header">
-            <h2>Dein Profil bearbeiten</h2>
-            <button type="button" (click)="closePopup()">✕</button>
-        </div>
-
-        <img class="profile-avatar" [src]="editedAvatar" [alt]="userName" />
-
-        <div class="avatar-choice" role="radiogroup" aria-label="Avatar wählen">
-            @for (avatar of avatars; track avatar) {
-            <button type="button" class="avatar-choice__item" role="radio" [attr.aria-checked]="avatar === editedAvatar"
-                [class.avatar-choice__item--selected]="avatar === editedAvatar" (click)="editedAvatar = avatar">
-                <img [src]="avatar" alt="" width="56" height="56" />
-            </button>
-            }
-        </div>
-
-        <div class="edit-profile">
-            <label for="profile-name">Vollständiger Name</label>
-
-            <input id="profile-name" type="text" [(ngModel)]="editedName" />
-            @if (!editedName.trim()) {
-            <p class="edit-profile__error" aria-live="polite">*Bitte gib deinen Namen ein.</p>
-            }
-
-            <div class="edit-profile-actions">
-                <button type="button" (click)="cancelEditing()">
-                    Abbrechen
-                </button>
-
-                <button type="button" [disabled]="!editedName.trim()" (click)="saveProfile()">
-                    Speichern
-                </button>
-            </div>
-        </div>
-
-        }
-
+    <div class="profile-header">
+      <h2>Profil</h2>
+      <button type="button" (click)="closePopup()">✕</button>
     </div>
+
+    <img class="profile-avatar" [src]="userAvatar" [alt]="userName" />
+
+    <div class="profile-info">
+      <div class="profile-name">
+        <h3>{{ userName }}</h3>
+
+        @if (canEdit) {
+        <button type="button" (click)="startEditing()">
+          Bearbeiten
+        </button>
+        }
+      </div>
+
+      <p class="profile-status">🟢 Aktiv</p>
+
+      <div class="profile-email">
+        <strong>E-Mail-Adresse</strong>
+        <p>fred.beck&#64;email.com</p>
+      </div>
+    </div>
+
+    } @else {
+
+    <div class="profile-header">
+      <h2>Dein Profil bearbeiten</h2>
+      <button type="button" (click)="closePopup()">✕</button>
+    </div>
+
+    <img class="profile-avatar" [src]="editedAvatar" [alt]="userName" />
+
+    <div class="avatar-choice" role="radiogroup" aria-label="Avatar wählen">
+      @for (avatar of avatars; track avatar) {
+      <button type="button" class="avatar-choice__item" role="radio" [attr.aria-checked]="avatar === editedAvatar"
+        [class.avatar-choice__item--selected]="avatar === editedAvatar" (click)="editedAvatar = avatar">
+        <img [src]="avatar" alt="" width="56" height="56" />
+      </button>
+      }
+    </div>
+
+    <div class="edit-profile">
+      <label for="profile-name">Vollständiger Name</label>
+
+      <input id="profile-name" type="text" [(ngModel)]="editedName" />
+      @if (!editedName.trim()) {
+      <p class="edit-profile__error" aria-live="polite">*Bitte gib deinen Namen ein.</p>
+      }
+
+      <div class="edit-profile-actions">
+        <button type="button" (click)="cancelEditing()">
+          Abbrechen
+        </button>
+
+        <button type="button" [disabled]="!editedName.trim()" (click)="saveProfile()">
+          Speichern
+        </button>
+      </div>
+    </div>
+
+    }
+
+  </div>
 </div>

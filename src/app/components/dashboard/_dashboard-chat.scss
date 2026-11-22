@@ -90,7 +90,8 @@
   overflow-y: auto;
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
-  padding: 24px 36px;
+  --row-bleed: 36px;
+  padding: 24px var(--row-bleed);
   display: flex;
   flex-direction: column;
   gap: 24px;
