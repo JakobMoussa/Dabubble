@@ -69,6 +69,9 @@ export class DashboardComponent {
   messageText = '';
   selectedProfileMember: MemberPreview | null = null;
 
+  editingMessageId: string | null = null;
+  editingMessageText = '';
+
   @ViewChild('messagesContainer')
   private messagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -361,6 +364,10 @@ export class DashboardComponent {
     if (this.isSettingsPopupOpen) {
       this.closeSettingsPopup();
     }
+
+    if (this.editingMessageId) {
+      this.cancelEditingMessage();
+    }
   }
 
   getExistingChannelNames(): string[] {
@@ -395,6 +402,7 @@ export class DashboardComponent {
   }
 
   selectChannel(channelId: string): void {
+    this.cancelEditingMessage();
     this.activeChannelId = channelId;
     this.activeMemberId = null;
     this.mobileView = 'chat';
@@ -402,6 +410,7 @@ export class DashboardComponent {
   }
 
   selectMember(memberId: string): void {
+    this.cancelEditingMessage();
     this.activeMemberId = memberId;
     this.mobileView = 'chat';
     this.scrollToBottom();
@@ -477,6 +486,35 @@ export class DashboardComponent {
       emoji,
       count: 1
     });
+  }
+
+  startEditingMessage(message: ChatMessagePreview): void {
+    if (!message.isOwn) {
+      return;
+    }
+
+    this.editingMessageId = message.id;
+    this.editingMessageText = message.text;
+  }
+
+  cancelEditingMessage(): void {
+    this.editingMessageId = null;
+    this.editingMessageText = '';
+  }
+
+  saveEditedMessage(message: ChatMessagePreview): void {
+    if (!message.isOwn) {
+      return;
+    }
+
+    const text = this.editingMessageText.trim();
+
+    if (!text) {
+      return;
+    }
+
+    message.text = text;
+    this.cancelEditingMessage();
   }
 
   getCurrentMessages(): ChatMessagePreview[] {

@@ -177,6 +177,7 @@
 }
 
 .message-row {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 20px;
@@ -192,9 +193,18 @@
     object-fit: cover;
     flex-shrink: 0;
   }
+
+  &:hover .message-action-bar,
+  &:focus-within .message-action-bar {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }
 
 .message-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -240,6 +250,138 @@
   }
 }
 
+/* Nachricht bearbeiten */
+
+.message-edit {
+  width: min(420px, 100%);
+  min-width: 320px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--white);
+  border: 1px solid var(--light-purple);
+  border-radius: 20px;
+}
+
+.message-edit__textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  resize: vertical;
+  border: 1px solid var(--light-purple);
+  border-radius: 12px;
+  background-color: var(--white);
+  color: var(--black);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+
+  &:focus {
+    outline: none;
+    border-color: var(--purple-3);
+  }
+}
+
+.message-edit__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.message-edit__cancel,
+.message-edit__save {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.message-edit__cancel {
+  border: 1px solid var(--purple-2);
+  background-color: var(--white);
+  color: var(--purple-2);
+
+  &:hover {
+    background-color: var(--bg-color);
+  }
+}
+
+.message-edit__save {
+  border: 1px solid var(--purple-2);
+  background-color: var(--purple-2);
+  color: var(--white);
+
+  &:hover:not(:disabled) {
+    transform: scale(1.03);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+/* Hover-Leiste */
+
+.message-action-bar {
+  position: absolute;
+  top: 20px;
+  right: -150px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: var(--white);
+  border: 1px solid var(--light-purple);
+  border-radius: 25px 25px 25px 0;
+  box-shadow: var(--card-shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s ease;
+
+  &--own {
+    right: auto;
+    left: -150px;
+    border-radius: 25px 25px 0 25px;
+  }
+}
+
+.message-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  background-color: transparent;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--bg-color);
+    transform: scale(1.08);
+  }
+
+  img {
+    display: block;
+  }
+}
+
 .message-thread-info {
   display: flex;
   align-items: center;
@@ -260,6 +402,8 @@
   color: var(--text-gray);
 }
 
+/* Emoji-Reaktionen */
+
 .message-reactions {
   display: flex;
   align-items: center;
@@ -272,6 +416,15 @@
   border: 1px solid var(--light-purple);
   border-radius: 20px;
   font-size: 15px;
+  background-color: var(--white);
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    background-color: var(--bg-color);
+    transform: scale(1.04);
+  }
 }
 
 .reaction-add-btn {
@@ -281,11 +434,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background-color: transparent;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
 
   &:hover {
     background-color: var(--bg-color);
+    transform: scale(1.05);
+  }
+
+  img {
+    display: block;
   }
 }
+
+/* Nachricht schreiben */
 
 .composer-wrapper {
   padding: 0 36px 28px;
@@ -356,7 +520,9 @@
   justify-content: center;
   opacity: 0.4;
   cursor: not-allowed;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 
   &--active,
   &:not(:disabled) {
@@ -366,5 +532,31 @@
     &:hover {
       transform: scale(1.1);
     }
+  }
+}
+
+/* Tablet / Mobile */
+
+@media (max-width: 960px) {
+  .message-action-bar {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    align-self: flex-start;
+
+    &--own {
+      align-self: flex-end;
+    }
+  }
+
+  .message-edit {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .message-edit__actions {
+    flex-wrap: wrap;
   }
 }
