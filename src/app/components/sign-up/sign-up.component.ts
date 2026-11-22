@@ -7,209 +7,209 @@ import { AuthService } from '../../services/auth.service';
 import { toAuthMessage } from '../../shared/auth-error-messages';
 
 export interface AvatarOption {
-    name: string;
-    src: string;
+  name: string;
+  src: string;
 }
 
 @Component({
-    selector: 'app-sign-up',
-    standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './sign-up.component.html',
-    styleUrl: './sign-up.component.scss'
+  selector: 'app-sign-up',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './sign-up.component.html',
+  styleUrl: './sign-up.component.scss'
 })
 export class SignUpComponent implements OnDestroy {
-    step: 'form' | 'avatar' = 'form';
-    fullName = '';
-    email = '';
-    password = '';
-    privacyAccepted = false;
-    selectedAvatar = '';
-    uploadError = '';
-    showToast = false;
-    isSubmitting = false;
+  step: 'form' | 'avatar' = 'form';
+  fullName = '';
+  email = '';
+  password = '';
+  privacyAccepted = false;
+  selectedAvatar = '';
+  uploadError = '';
+  showToast = false;
+  isSubmitting = false;
 
-    nameFocused = false;
-    emailFocused = false;
-    passwordFocused = false;
-    nameTouched = false;
-    emailTouched = false;
-    passwordTouched = false;
-    privacyTouched = false;
+  nameFocused = false;
+  emailFocused = false;
+  passwordFocused = false;
+  nameTouched = false;
+  emailTouched = false;
+  passwordTouched = false;
+  privacyTouched = false;
 
-    readonly avatarOptions: AvatarOption[] = [
-        { name: 'Elias Neumann', src: 'assets/img/elias-neumann.png' },
-        { name: 'Elise Roth', src: 'assets/img/elise-roth.png' },
-        { name: 'Frederik Beck', src: 'assets/img/frederik-beck.png' },
-        { name: 'Noah Braun', src: 'assets/img/noah-braun.png' },
-        { name: 'Sofia Müller', src: 'assets/img/sofia-mueller.png' },
-        { name: 'Steffen Hoffmann', src: 'assets/img/steffen-hoffmann.png' }
-    ];
+  readonly avatarOptions: AvatarOption[] = [
+    { name: 'Elias Neumann', src: 'assets/img/elias-neumann.png' },
+    { name: 'Elise Roth', src: 'assets/img/elise-roth.png' },
+    { name: 'Frederik Beck', src: 'assets/img/frederik-beck.png' },
+    { name: 'Noah Braun', src: 'assets/img/noah-braun.png' },
+    { name: 'Sofia Müller', src: 'assets/img/sofia-mueller.png' },
+    { name: 'Steffen Hoffmann', src: 'assets/img/steffen-hoffmann.png' }
+  ];
 
-    private redirectTimer: ReturnType<typeof setTimeout> | null = null;
-    private readonly namePattern = /^[\p{L}\p{M}'-]+(?:\s+[\p{L}\p{M}'-]+)+$/u;
+  private redirectTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly namePattern = /^[\p{L}\p{M}'-]+(?:\s+[\p{L}\p{M}'-]+)+$/u;
 
-    private readonly authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
 
-    constructor(private readonly router: Router) { }
+  constructor(private readonly router: Router) { }
 
 
-    ngOnDestroy(): void {
-        if (this.redirectTimer) {
-            clearTimeout(this.redirectTimer);
-        }
+  ngOnDestroy(): void {
+    if (this.redirectTimer) {
+      clearTimeout(this.redirectTimer);
     }
+  }
 
 
-    isNameValid(): boolean {
-        return this.namePattern.test(this.fullName.trim());
+  isNameValid(): boolean {
+    return this.namePattern.test(this.fullName.trim());
+  }
+
+
+  isEmailValid(): boolean {
+    return isValidEmail(this.email);
+  }
+
+
+  isPasswordValid(): boolean {
+    return this.password.trim().length >= 8;
+  }
+
+
+  isStepOneValid(): boolean {
+    return (
+      this.isNameValid() &&
+      this.isEmailValid() &&
+      this.isPasswordValid() &&
+      this.privacyAccepted
+    );
+  }
+
+
+  showNameError(): boolean {
+    return this.nameTouched && !this.isNameValid();
+  }
+
+
+  showEmailError(): boolean {
+    return this.emailTouched && !this.isEmailValid();
+  }
+
+
+  showPasswordError(): boolean {
+    return this.passwordTouched && !this.isPasswordValid();
+  }
+
+
+  showPrivacyError(): boolean {
+    return this.privacyTouched && !this.privacyAccepted;
+  }
+
+
+  isFieldActive(focused: boolean, value: string): boolean {
+    return focused || value.trim().length > 0;
+  }
+
+
+  getMailIcon(): string {
+    return this.isFieldActive(this.emailFocused, this.email)
+      ? 'assets/icons/mail-black.svg'
+      : 'assets/icons/mail.svg';
+  }
+
+
+  getLockIcon(): string {
+    return this.isFieldActive(this.passwordFocused, this.password)
+      ? 'assets/icons/lock-black.svg'
+      : 'assets/icons/lock.svg';
+  }
+
+
+  onNameBlur(): void {
+    this.nameFocused = false;
+    if (this.fullName.length > 0) {
+      this.nameTouched = true;
     }
+  }
 
 
-    isEmailValid(): boolean {
-        return isValidEmail(this.email);
+  onEmailBlur(): void {
+    this.emailFocused = false;
+    if (this.email.length > 0) {
+      this.emailTouched = true;
     }
+  }
 
 
-    isPasswordValid(): boolean {
-        return this.password.trim().length >= 8;
+  onPasswordBlur(): void {
+    this.passwordFocused = false;
+    if (this.password.length > 0) {
+      this.passwordTouched = true;
     }
+  }
 
 
-    isStepOneValid(): boolean {
-        return (
-            this.isNameValid() &&
-            this.isEmailValid() &&
-            this.isPasswordValid() &&
-            this.privacyAccepted
-        );
+  onPrivacyChange(): void {
+    this.privacyTouched = true;
+  }
+
+
+  onProceedToAvatar(): void {
+    this.markFormTouched();
+    if (!this.isStepOneValid()) {
+      return;
     }
+    this.step = 'avatar';
+  }
 
 
-    showNameError(): boolean {
-        return this.nameTouched && !this.isNameValid();
+  private markFormTouched(): void {
+    this.nameTouched = true;
+    this.emailTouched = true;
+    this.passwordTouched = true;
+    this.privacyTouched = true;
+  }
+
+
+  goBackToForm(): void {
+    this.step = 'form';
+  }
+
+
+  selectAvatar(src: string): void {
+    this.uploadError = '';
+    this.selectedAvatar = src;
+  }
+
+  async onCreateAccount(): Promise<void> {
+    if (!this.selectedAvatar || this.isSubmitting) {
+      return;
     }
-
-
-    showEmailError(): boolean {
-        return this.emailTouched && !this.isEmailValid();
+    this.isSubmitting = true;
+    try {
+      await this.registerUser();
+      this.showSuccessAndRedirect();
+    } catch (error) {
+      this.uploadError = toAuthMessage(error);
+      this.isSubmitting = false;
     }
+  }
 
 
-    showPasswordError(): boolean {
-        return this.passwordTouched && !this.isPasswordValid();
-    }
+  private registerUser(): Promise<void> {
+    return this.authService.register({
+      name: this.fullName,
+      email: this.email,
+      password: this.password,
+      avatar: this.selectedAvatar
+    });
+  }
 
 
-    showPrivacyError(): boolean {
-        return this.privacyTouched && !this.privacyAccepted;
-    }
-
-
-    isFieldActive(focused: boolean, value: string): boolean {
-        return focused || value.trim().length > 0;
-    }
-
-
-    getMailIcon(): string {
-        return this.isFieldActive(this.emailFocused, this.email)
-            ? 'assets/icons/mail-black.svg'
-            : 'assets/icons/mail.svg';
-    }
-
-
-    getLockIcon(): string {
-        return this.isFieldActive(this.passwordFocused, this.password)
-            ? 'assets/icons/lock-black.svg'
-            : 'assets/icons/lock.svg';
-    }
-
-
-    onNameBlur(): void {
-        this.nameFocused = false;
-        if (this.fullName.length > 0) {
-            this.nameTouched = true;
-        }
-    }
-
-
-    onEmailBlur(): void {
-        this.emailFocused = false;
-        if (this.email.length > 0) {
-            this.emailTouched = true;
-        }
-    }
-
-
-    onPasswordBlur(): void {
-        this.passwordFocused = false;
-        if (this.password.length > 0) {
-            this.passwordTouched = true;
-        }
-    }
-
-
-    onPrivacyChange(): void {
-        this.privacyTouched = true;
-    }
-
-
-    onProceedToAvatar(): void {
-        this.markFormTouched();
-        if (!this.isStepOneValid()) {
-            return;
-        }
-        this.step = 'avatar';
-    }
-
-
-    private markFormTouched(): void {
-        this.nameTouched = true;
-        this.emailTouched = true;
-        this.passwordTouched = true;
-        this.privacyTouched = true;
-    }
-
-
-    goBackToForm(): void {
-        this.step = 'form';
-    }
-
-
-    selectAvatar(src: string): void {
-        this.uploadError = '';
-        this.selectedAvatar = src;
-    }
-
-    async onCreateAccount(): Promise<void> {
-        if (!this.selectedAvatar || this.isSubmitting) {
-            return;
-        }
-        this.isSubmitting = true;
-        try {
-            await this.registerUser();
-            this.showSuccessAndRedirect();
-        } catch (error) {
-            this.uploadError = toAuthMessage(error);
-            this.isSubmitting = false;
-        }
-    }
-
-
-    private registerUser(): Promise<void> {
-        return this.authService.register({
-            name: this.fullName,
-            email: this.email,
-            password: this.password,
-            avatar: this.selectedAvatar
-        });
-    }
-
-
-    private showSuccessAndRedirect(): void {
-        this.showToast = true;
-        this.redirectTimer = setTimeout(() => {
-            this.router.navigate(['/dashboard']);
-        }, 1800);
-    }
+  private showSuccessAndRedirect(): void {
+    this.showToast = true;
+    this.redirectTimer = setTimeout(() => {
+      this.router.navigate(['/dashboard']);
+    }, 1800);
+  }
 }
