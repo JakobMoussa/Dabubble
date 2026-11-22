@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     setTimeout(() => {
       this.introCompleted = true;
       sessionStorage.setItem('dabubble_intro_done', 'true');
-    }, 2600);
+    }, 1800);
   }
 
   isEmailValid(): boolean {

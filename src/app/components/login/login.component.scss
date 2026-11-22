@@ -1,75 +1,9 @@
+@use './login-intro';
+
 :host {
   display: block;
   min-height: 100dvh;
   background-color: var(--bg-color);
-}
-
-.intro-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: var(--intro-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: all;
-  animation: introOverlayFadeOut 0.6s ease-in-out 2s forwards;
-}
-
-.intro-logo-stage {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  transform-origin: top left;
-  animation: introStageMoveToCorner 0.85s cubic-bezier(0.4, 0, 0.2, 1) 1.55s forwards;
-}
-
-.intro-logo-icon {
-  width: 187px;
-  height: 184px;
-  flex-shrink: 0;
-  z-index: 2;
-  transform: translateX(140px);
-  animation: introIconSlideLeft 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.35s forwards;
-}
-
-.intro-logo-text-mask {
-  overflow: hidden;
-  width: 472px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-}
-
-.intro-logo-text {
-  width: 472px;
-  height: 72px;
-  transform: translateX(-110%);
-  animation: introTextReveal 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.45s forwards;
-}
-
-@keyframes introIconSlideLeft {
-  from { transform: translateX(140px); }
-  to { transform: translateX(0); }
-}
-
-@keyframes introTextReveal {
-  from { transform: translateX(-110%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes introStageMoveToCorner {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(max(calc(-50vw + 190px), -530px), calc(-50vh + 110px)) scale(0.37); }
-}
-
-@keyframes introOverlayFadeOut {
-  from { opacity: 1; }
-  to {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
 }
 
 .login-page {
@@ -329,23 +263,6 @@
 }
 
 @media (max-width: 768px) {
-  .intro-logo-stage {
-    gap: 14px;
-    transform-origin: center center;
-  }
-
-  .intro-logo-icon {
-    width: 80px;
-    height: 78px;
-    transform: translateX(65px);
-  }
-
-  .intro-logo-text-mask,
-  .intro-logo-text {
-    width: 200px;
-    height: 36px;
-  }
-
   .login-page {
     padding: 36px 16px 24px;
     gap: 24px;
