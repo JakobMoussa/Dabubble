@@ -1,0 +1,39 @@
+<div class="search">
+  <label [for]="inputId" class="visually-hidden">{{ placeholder }}</label>
+  <input type="search" [id]="inputId" class="search__input" [placeholder]="placeholder" autocomplete="off"
+    [(ngModel)]="term" (ngModelChange)="onInput()" (keydown.escape)="term = ''; hits = []" />
+  <img src="assets/icons/figma/search-default.svg" alt="" width="24" height="24" class="search__icon" />
+
+  @if (term.trim().length) {
+  <div class="search__results" role="listbox" aria-label="Suchergebnisse">
+    @switch (mode) {
+    @case ('channels') {
+    @for (channel of channelHits; track channel.id) {
+    <button type="button" class="result" role="option" (click)="pickChannel(channel)"># {{ channel.name }}</button>
+    } @empty {
+    <p class="search__empty">Kein Channel gefunden.</p>
+    }
+    }
+    @case ('members') {
+    @for (member of memberHits; track member.id) {
+    <button type="button" class="result" role="option" (click)="pickMember(member)">
+      <img [src]="member.avatar" alt="" width="32" height="32" class="result__avatar" /> {{ member.name }}
+    </button>
+    } @empty {
+    <p class="search__empty">Kein Mitglied gefunden.</p>
+    }
+    }
+    @default {
+    @for (hit of hits; track hit.message.id) {
+    <button type="button" class="result result--message" role="option" (click)="pickHit(hit)">
+      <span class="result__meta">{{ channelName(hit.conversation) }} · {{ authorName(hit) }}</span>
+      <span class="result__text">{{ hit.message.text }}</span>
+    </button>
+    } @empty {
+    <p class="search__empty">{{ isSearching ? 'Suche läuft...' : query.length < 2 ? 'Mindestens 2 Zeichen eingeben, # für Channels, @ für Personen.' : 'Keine Nachricht gefunden.' }}</p>
+    }
+    }
+    }
+  </div>
+  }
+</div>

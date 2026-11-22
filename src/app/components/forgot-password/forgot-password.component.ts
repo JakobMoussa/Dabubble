@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { isValidEmail } from '../../shared/validators/email.validator';
+import { AuthService } from '../../services/auth.service';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 
 @Component({
   selector: 'app-forgot-password',
@@ -17,8 +20,10 @@ export class ForgotPasswordComponent implements OnDestroy {
   showToast = false;
   isSubmitting = false;
 
+  submitError = '';
+
   private redirectTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  private readonly authService = inject(AuthService);
 
   constructor(private readonly router: Router) {}
 
@@ -31,7 +36,7 @@ export class ForgotPasswordComponent implements OnDestroy {
 
 
   isEmailValid(): boolean {
-    return this.emailPattern.test(this.email.trim());
+    return isValidEmail(this.email);
   }
 
 
@@ -75,11 +80,23 @@ export class ForgotPasswordComponent implements OnDestroy {
   }
 
 
-  private sendResetEmail(): void {
+  private async sendResetEmail(): Promise<void> {
     this.isSubmitting = true;
+    this.submitError = '';
+    try {
+      await this.authService.sendResetMail(this.email);
+      this.showSuccessAndRedirect();
+    } catch (error) {
+      this.submitError = toAuthMessage(error);
+      this.isSubmitting = false;
+    }
+  }
+
+
+  private showSuccessAndRedirect(): void {
     this.showToast = true;
     this.redirectTimer = setTimeout(() => {
-      this.router.navigate(['/reset-password']);
+      this.router.navigate(['/login']);
     }, 1800);
   }
 }

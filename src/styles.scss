@@ -55,7 +55,7 @@
   --card-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
   --font-primary: 'Nunito', sans-serif;
   --font-secondary: 'Nunito', sans-serif;
-  --max-content-width: 1440px;
+  --max-content-width: 1920px;
 }
 
 *,
@@ -230,4 +230,38 @@ a {
     visibility: visible;
     opacity: 1;
   }
+
+  /* a hidden message must not wrap and push the next field down on narrow screens */
+  &:not(.input-error--visible) {
+    max-height: 19px;
+    overflow: hidden;
+  }
+}
+/* Figma mobile: smaller input pills (50px) with ~30px between fields */
+@media (max-width: 768px) {
+  .input-pill {
+    padding: 12px 24px;
+    gap: 20px;
+  }
+
+  .input-group {
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 380px) {
+  .input-pill {
+    padding: 12px 18px;
+    gap: 12px;
+  }
+
+  .input-pill__field {
+    font-size: 16px;
+  }
+}
+
+/* Thin, design-coloured scrollbars instead of the grey browser default (Figma shows none). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--light-purple) transparent;
 }

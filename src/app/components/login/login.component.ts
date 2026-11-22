@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { isValidEmail } from '../../shared/validators/email.validator';
+import { AuthService } from '../../services/auth.service';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +23,8 @@ export class LoginComponent implements OnInit {
   authError = '';
   introCompleted = false;
 
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  isSubmitting = false;
+  private readonly authService = inject(AuthService);
 
   constructor(private readonly router: Router) {}
 
@@ -45,7 +49,7 @@ export class LoginComponent implements OnInit {
   }
 
   isEmailValid(): boolean {
-    return this.emailPattern.test(this.email.trim());
+    return isValidEmail(this.email);
   }
 
   isPasswordValid(): boolean {
@@ -113,19 +117,33 @@ export class LoginComponent implements OnInit {
     this.passwordTouched = true;
   }
 
-  private performLogin(): void {
-    this.authError = '';
-    this.router.navigate(['/dashboard']);
+  private performLogin(): Promise<void> {
+    return this.runAuth(() => this.authService.login(this.email, this.password));
   }
 
   onGuestLogin(): void {
-    this.authError = '';
     this.emailTouched = false;
     this.passwordTouched = false;
-    this.router.navigate(['/dashboard']);
+    this.runAuth(() => this.authService.loginAsGuest());
   }
 
   onGoogleLogin(): void {
+    this.runAuth(() => this.authService.loginWithGoogle());
+  }
+
+  private async runAuth(action: () => Promise<void>): Promise<void> {
+    if (this.isSubmitting) {
+      return;
+    }
     this.authError = '';
+    this.isSubmitting = true;
+    try {
+      await action();
+      await this.router.navigate(['/dashboard']);
+    } catch (error) {
+      this.authError = toAuthMessage(error);
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 }

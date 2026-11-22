@@ -1,0 +1,24 @@
+<header class="new-message">
+  <h2 class="new-message__title">Neue Nachricht</h2>
+  <div class="recipient">
+    @if (recipient) {
+    <span class="recipient__chip">
+      {{ recipient.label }}
+      <button type="button" class="recipient__remove" aria-label="Empfänger entfernen" (click)="clear()">×</button>
+    </span>
+    } @else {
+    <label for="new-message-to" class="visually-hidden">Empfänger</label>
+    <input id="new-message-to" class="recipient__input" [(ngModel)]="term" autocomplete="off"
+      placeholder="An: #channel, oder @jemand oder E-Mail Adresse" (keydown.enter)="options[0] && pick(options[0])" />
+    }
+    @if (options.length && !recipient) {
+    <ul class="recipient__list" role="listbox">
+      @for (option of options; track option.kind + option.id) {
+      <li>
+        <button type="button" class="recipient__option" role="option" (click)="pick(option)">{{ option.label }}</button>
+      </li>
+      }
+    </ul>
+    }
+  </div>
+</header>

@@ -1,0 +1,90 @@
+<article class="message-row" [class.message-row--own]="message.isOwn" [class.message-row--editing]="isEditing"
+  (mouseleave)="isMenuOpen = false">
+  <img [src]="message.avatar" [alt]="message.author" width="70" height="70" class="message-row__avatar" />
+
+  <div class="message-content" [class.message-content--own]="message.isOwn">
+    <div class="message-meta" [class.message-meta--own]="message.isOwn">
+      <button type="button" class="message-meta__author" (click)="authorClicked.emit(message.authorId)">
+        {{ message.author }}
+      </button>
+      <span class="message-meta__time">{{ message.time }}</span>
+    </div>
+
+    @if (isEditing) {
+    <div class="edit-box">
+      <textarea class="edit-box__field" rows="3" [(ngModel)]="editText" aria-label="Nachricht bearbeiten"
+        (keydown.enter)="$event.preventDefault(); saveEdit()" (keydown.escape)="isEditing = false"></textarea>
+      <div class="edit-box__actions">
+        <button type="button" class="btn-secondary" (click)="isEditing = false">Abbrechen</button>
+        <button type="button" class="btn-primary" [disabled]="!editText.trim()" (click)="saveEdit()">Speichern</button>
+      </div>
+    </div>
+    } @else {
+    <div class="message-bubble" [class.message-bubble--own]="message.isOwn">
+      {{ message.text }}
+      @if (message.edited) {
+      <span class="message-bubble__edited">(bearbeitet)</span>
+      }
+    </div>
+    }
+
+    @if (showThreadLink && message.repliesCount) {
+    <div class="message-thread-info">
+      <button type="button" class="thread-link" (click)="threadOpened.emit(message.id)">
+        {{ message.repliesCount }} {{ message.repliesCount === 1 ? 'Antwort' : 'Antworten' }}
+      </button>
+      <span class="thread-last-time">Letzte Antwort {{ message.lastReplyTime }}</span>
+    </div>
+    }
+
+    @if (message.reactions?.length) {
+    <div class="message-reactions">
+      @for (reaction of visibleReactions.visible; track reaction.emoji) {
+      <button type="button" class="reaction-chip" [class.reaction-chip--mine]="hasReacted(reaction)"
+        (click)="toggleReaction(reaction.emoji)">
+        {{ reaction.emoji }} {{ reaction.count }}
+        <span class="reaction-tooltip" role="tooltip">
+          <span class="reaction-tooltip__emoji">{{ reaction.emoji }}</span>
+          <strong>{{ reactedBy(reaction) }}</strong>
+          <span>{{ reactedVerb(reaction) }}</span>
+        </span>
+      </button>
+      }
+      @if (visibleReactions.hidden > 0) {
+      <button type="button" class="reaction-more" (click)="showAll = true">+ {{ visibleReactions.hidden }} weitere</button>
+      }
+      <button type="button" class="reaction-add" aria-label="Reaktion hinzufügen" (click)="openPicker($event)">
+        <img src="assets/icons/figma/add-reaction-default.svg" alt="" width="24" height="24" />
+      </button>
+    </div>
+    }
+  </div>
+
+  @if (!isEditing) {
+  <div class="message-actions" [class.message-actions--own]="message.isOwn" [class.message-actions--visible]="isPickerOpen || isMenuOpen">
+    @for (emoji of quickEmojis; track emoji) {
+    <button type="button" class="message-actions__btn" [attr.aria-label]="'Mit ' + emoji + ' reagieren'"
+      (click)="toggleReaction(emoji)">{{ emoji }}</button>
+    }
+    <button type="button" class="message-actions__btn" aria-label="Reaktion hinzufügen" (click)="openPicker($event)">
+      <img src="assets/icons/figma/add-reaction-default.svg" alt="" width="24" height="24" />
+    </button>
+    @if (showThreadLink) {
+    <button type="button" class="message-actions__btn" aria-label="In Thread antworten" (click)="threadOpened.emit(message.id)">
+      <img src="assets/icons/figma/comment-default.svg" alt="" width="24" height="24" />
+    </button>
+    }
+    @if (message.isOwn) {
+    <button type="button" class="message-actions__btn" aria-label="Weitere Optionen" (click)="isMenuOpen = !isMenuOpen">
+      <span class="message-actions__dots" aria-hidden="true">⋮</span>
+    </button>
+    }
+    @if (isMenuOpen) {
+    <button type="button" class="message-actions__menu" (click)="startEditing()">Nachricht bearbeiten</button>
+    }
+    @if (isPickerOpen) {
+    <app-emoji-picker class="message-actions__picker" (picked)="toggleReaction($event)" (dismissed)="isPickerOpen = false" />
+    }
+  </div>
+  }
+</article>

@@ -1,0 +1,178 @@
+.members-dialog {
+  width: min(480px, calc(100dvw - 24px));
+  margin: 190px 60px auto auto;
+  padding: 0;
+  border: none;
+  border-radius: 30px;
+  background: transparent;
+
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+}
+
+.members-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px;
+  background-color: var(--white);
+  border-radius: 30px 0 30px 30px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.icon-btn {
+  display: inline-flex;
+  padding: 8px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--bg-color);
+  }
+}
+
+.member-list,
+.suggestions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 35px;
+  background: none;
+  font: inherit;
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 80ms ease-in;
+
+  &:hover {
+    background-color: var(--bg-color);
+  }
+
+  &--add:hover {
+    color: var(--purple-1);
+    font-weight: 700;
+  }
+}
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+
+  img {
+    border-radius: 50%;
+  }
+
+  &__dot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    background-color: var(--text-gray);
+
+    &--online {
+      background-color: var(--online-green);
+    }
+  }
+}
+
+.channel-tag {
+  margin: 0;
+  color: var(--purple-2);
+  font-size: 18px;
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--light-purple);
+  border-radius: 30px;
+
+  &:focus-within {
+    border-color: var(--purple-1);
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    font: inherit;
+    font-size: 18px;
+    outline: none;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background-color: var(--bg-color);
+
+  img {
+    border-radius: 50%;
+  }
+
+  &__remove {
+    border: none;
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+  }
+}
+
+.suggestions {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--light-purple);
+  border-radius: 20px;
+
+  &__avatar {
+    border-radius: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .members-dialog {
+    margin: auto;
+  }
+
+  .members-card {
+    padding: 24px 16px;
+    border-radius: 30px;
+  }
+}

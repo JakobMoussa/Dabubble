@@ -64,7 +64,8 @@
   overflow-y: auto;
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
-  padding: 24px 24px;
+  --row-bleed: 24px;
+  padding: 24px var(--row-bleed);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -250,6 +251,7 @@
   }
 
   .thread-messages {
+    --row-bleed: 16px;
     padding: 16px;
   }
 
