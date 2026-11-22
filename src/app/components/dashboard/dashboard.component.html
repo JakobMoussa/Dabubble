@@ -5,7 +5,7 @@
       @if (mobileView !== 'menu') {
       <button type="button" class="mobile-back-btn" aria-label="Zurück"
         (click)="mobileView === 'thread' ? closeThread() : openMobileMenu()">
-        <img src="assets/icons/keyboard_arrow_down (1).svg" alt="" width="10" height="16" />
+        <img src="assets/icons/chevron_left.svg" alt="" width="10" height="16" />
         <img src="assets/icons/workspaces.svg" alt="" width="24" height="24" />
         <span class="mobile-back-btn__title">Devspace</span>
       </button>
@@ -20,7 +20,7 @@
     <div class="header-search">
       <label for="global-search" class="visually-hidden">Devspace durchsuchen</label>
       <input type="search" id="global-search" placeholder="Devspace durchsuchen" class="header-search__input" />
-      <img src="assets/icons/search (2).svg" alt="" width="24" height="24" class="header-search__icon" />
+      <img src="assets/icons/search-gray.svg" alt="" width="24" height="24" class="header-search__icon" />
     </div>
 
     <button type="button" class="user-menu-btn" aria-label="Benutzerprofil öffnen" aria-haspopup="dialog"
@@ -51,7 +51,7 @@
       <div class="mobile-search-box">
         <label for="mobile-search" class="visually-hidden">Gehe zu...</label>
         <input type="search" id="mobile-search" placeholder="Gehe zu..." class="mobile-search-box__input" />
-        <img src="assets/icons/search (2).svg" alt="" width="20" height="20" />
+        <img src="assets/icons/search-gray.svg" alt="" width="20" height="20" />
       </div>
 
       <nav class="sidebar-scroll">
@@ -65,7 +65,7 @@
               <span>Channels</span>
             </button>
             <button type="button" class="icon-btn" aria-label="Channel erstellen" (click)="openChannelPopup()">
-              <img src="/assets/icons/add (1).svg" alt="" width="24" height="24" />
+              <img src="/assets/icons/add-button.svg" alt="" width="24" height="24" />
             </button>
           </div>
 
@@ -77,7 +77,7 @@
                 [class.channel-item--active]="!activeMemberId && activeChannelId === channel.id"
                 (click)="selectChannel(channel.id)">
                 <img
-                  [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag (1).svg' : 'assets/icons/tag.svg'"
+                  [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag-purple.svg' : 'assets/icons/tag.svg'"
                   alt="" width="24" height="24" />
                 <span>{{ channel.name }}</span>
               </button>
@@ -171,7 +171,8 @@
           </div>
           <p class="direct-chat-intro__text">
             @if (member.isCurrentUser) {
-            <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, erstelle To-do-Listen oder halte Links und Dateien griffbereit. Du kannst hier auch gerne mit dir selbst sprechen.
+            <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, erstelle To-do-Listen oder halte Links
+            und Dateien griffbereit. Du kannst hier auch gerne mit dir selbst sprechen.
             } @else {
             Diese Unterhaltung findet nur zwischen
             <span class="direct-chat-intro__mention" (click)="openProfileMember(member)">&#64;{{ member.name }}</span>
@@ -190,20 +191,85 @@
 
         @for (msg of getCurrentMessages(); track msg.id) {
         <article class="message-row" [class.message-row--own]="msg.isOwn">
+          <div class="message-actions-bar" [class.message-actions-bar--own]="msg.isOwn"
+            (click)="$event.stopPropagation()">
+            <button type="button" class="action-btn" aria-label="Reagiere mit Haken" (click)="toggleReaction(msg, '✅')">
+              <span class="action-emoji">✅</span>
+            </button>
+            <button type="button" class="action-btn" aria-label="Reagiere mit Rakete"
+              (click)="toggleReaction(msg, '🚀')">
+              <span class="action-emoji">🚀</span>
+            </button>
+            <button type="button" class="action-btn" aria-label="Reaktion hinzufügen"
+              (click)="openEmojiPicker(msg, $event)">
+              <img src="assets/icons/add_reaction.svg" alt="" width="20" height="20" />
+            </button>
+            <button type="button" class="action-btn" aria-label="Im Thread antworten"
+              (click)="openThreadForMessage(msg)">
+              <img src="assets/icons/comment.svg" alt="" width="20" height="20" />
+            </button>
+            @if (msg.isOwn) {
+            <button type="button" class="action-btn" aria-label="Optionen" (click)="openMessageOptions(msg, $event)">
+              <img src="assets/icons/options.svg" alt="options" width="16" height="16" />
+            </button>
+            }
+          </div>
+
+          @if (activeOptionsMessageId === msg.id) {
+          <div class="message-options-popup" [class.message-options-popup--own]="msg.isOwn"
+            (click)="$event.stopPropagation()">
+            <button type="button" class="message-options-popup__item" (click)="startEditMessage(msg)">
+              Nachricht bearbeiten
+            </button>
+          </div>
+          }
+
+          @if (activeEmojiPickerMessageId === msg.id) {
+          <div class="emoji-picker-popup" [class.emoji-picker-popup--own]="msg.isOwn"
+            (click)="$event.stopPropagation()">
+            @for (emoji of availableEmojis; track emoji) {
+            <button type="button" class="emoji-pick-btn" (click)="addReactionAndClose(msg, emoji)">
+              {{ emoji }}
+            </button>
+            }
+          </div>
+          }
+
           <img [src]="msg.avatar" [alt]="msg.author" width="70" height="70" class="message-row__avatar" />
-          <div class="message-content" [class.message-content--own]="msg.isOwn">
+          <div class="message-content" [class.message-content--own]="msg.isOwn"
+            [class.message-content--editing]="editingMessageId === msg.id">
             <div class="message-meta" [class.message-meta--own]="msg.isOwn">
               <span class="message-meta__author">{{ msg.author }}</span>
               <span class="message-meta__time">{{ msg.time }}</span>
             </div>
 
+            @if (editingMessageId === msg.id) {
+            <div class="message-edit-box" (click)="$event.stopPropagation()">
+              <label [for]="'edit-input-' + msg.id" class="visually-hidden">Nachricht bearbeiten</label>
+              <textarea [id]="'edit-input-' + msg.id" class="message-edit-box__textarea" rows="2"
+                [(ngModel)]="editedMessageText" (keydown)="onEditKeydown($event, msg)"></textarea>
+              <div class="message-edit-box__actions">
+                <button type="button" class="edit-action-btn edit-action-btn--cancel" (click)="cancelEditMessage()">
+                  Abbrechen
+                </button>
+                <button type="button" class="edit-action-btn edit-action-btn--save"
+                  [disabled]="!editedMessageText.trim()" (click)="saveEditMessage(msg)">
+                  Speichern
+                </button>
+              </div>
+            </div>
+            } @else {
             <div class="message-bubble" [class.message-bubble--own]="msg.isOwn">
               {{ msg.text }}
+              @if (msg.isEdited) {
+              <span class="message-edited-tag" aria-label="Bearbeitet">(bearbeitet)</span>
+              }
             </div>
+            }
 
             @if (msg.repliesCount) {
             <div class="message-thread-info">
-              <button type="button" class="thread-link" (click)="openThread()">
+              <button type="button" class="thread-link" (click)="openThreadForMessage(msg)">
                 {{ msg.repliesCount }} Antworten
               </button>
               <span class="thread-last-time">Letzte Antwort {{ msg.lastReplyTime }}</span>
@@ -213,9 +279,13 @@
             @if (msg.reactions?.length) {
             <div class="message-reactions">
               @for (reaction of msg.reactions; track reaction.emoji) {
-              <span class="reaction-chip">{{ reaction.emoji }} {{ reaction.count }}</span>
+              <button type="button" class="reaction-chip" (click)="toggleReaction(msg, reaction.emoji)">
+                <span>{{ reaction.emoji }}</span>
+                <span>{{ reaction.count }}</span>
+              </button>
               }
-              <button type="button" class="reaction-add-btn" aria-label="Reaktion hinzufügen">
+              <button type="button" class="reaction-add-btn" aria-label="Reaktion hinzufügen"
+                (click)="openEmojiPicker(msg, $event)">
                 <img src="assets/icons/add_reaction.svg" alt="" width="20" height="20" />
               </button>
             </div>
@@ -230,7 +300,8 @@
         <div class="composer-box">
           <label for="chat-message-input" class="visually-hidden">Nachricht schreiben</label>
           <textarea id="chat-message-input" rows="2" [placeholder]="getComposerPlaceholder()"
-            class="composer-box__textarea" [(ngModel)]="messageText" (keydown.enter)="onComposerEnter($event)"></textarea>
+            class="composer-box__textarea" [(ngModel)]="messageText"
+            (keydown.enter)="onComposerEnter($event)"></textarea>
           <div class="composer-toolbar">
             <div class="composer-toolbar__left">
               <button type="button" class="composer-icon-btn" aria-label="Datei oder Option hinzufügen">
@@ -244,9 +315,11 @@
                 <img src="assets/icons/alternate_email.svg" alt="" width="20" height="20" />
               </button>
             </div>
-            <button type="button" class="composer-send-btn" [class.composer-send-btn--active]="messageText.trim().length > 0"
-              [disabled]="!messageText.trim()" aria-label="Nachricht senden" (click)="sendMessage()">
-              <img [src]="messageText.trim() ? 'assets/icons/send (1).svg' : 'assets/icons/send.svg'" alt="" width="22" height="19" />
+            <button type="button" class="composer-send-btn"
+              [class.composer-send-btn--active]="messageText.trim().length > 0" [disabled]="!messageText.trim()"
+              aria-label="Nachricht senden" (click)="sendMessage()">
+              <img [src]="messageText.trim() ? 'assets/icons/send-purple.svg' : 'assets/icons/send.svg'" alt="" width="22"
+                height="19" />
             </button>
           </div>
         </div>
@@ -265,7 +338,7 @@
     (click)="toggleSidebar()">
     <span class="workspace-toggle-tab__label">
       {{ isSidebarHidden ? 'Workspace-Menü öffnen' : 'Workspace-Menü schließen' }}
-      <img class="hide-icon" [class.hide-icon--flipped]="isSidebarHidden" src="/assets/icons/Group 2.svg"
+      <img class="hide-icon" [class.hide-icon--flipped]="isSidebarHidden" src="/assets/icons/hide-navigation.svg"
         alt="hide-icon" />
     </span>
   </button>
@@ -284,7 +357,7 @@
         <span class="settings-popup__icon" aria-hidden="true">
           <img src="assets/icons/account_circle.svg" alt="" width="24" height="24"
             class="settings-popup__icon-default" />
-          <img src="assets/icons/account_circle (1).svg" alt="" width="24" height="24"
+          <img src="assets/icons/account_circle-purple.svg" alt="" width="24" height="24"
             class="settings-popup__icon-hover" />
         </span>
         <span>Profil</span>
@@ -292,7 +365,7 @@
       <a routerLink="/login" class="settings-popup__item" (click)="closeSettingsPopup()">
         <span class="settings-popup__icon" aria-hidden="true">
           <img src="assets/icons/logout.svg" alt="" width="24" height="24" class="settings-popup__icon-default" />
-          <img src="assets/icons/logout (1).svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
+          <img src="assets/icons/logout-purple.svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
         </span>
         <span>Log out</span>
       </a>

@@ -8,34 +8,19 @@ import {
 } from './add-channel-modal/add-channel-modal.component';
 import { ThreadMessage, ThreadPanelComponent } from './thread-panel/thread-panel.component';
 import { ProfilePopupComponent } from './profile-popup/profile-popup.component';
+import { ChannelPreview, ChatMessagePreview, MemberPreview } from './dashboard.models';
+import {
+  CURRENT_USER,
+  INITIAL_CHANNELS,
+  INITIAL_MEMBERS,
+  INITIAL_CHANNEL_AVATARS,
+  INITIAL_CHANNEL_MESSAGES,
+  INITIAL_DIRECT_MESSAGES,
+  INITIAL_THREAD_ROOT,
+  INITIAL_THREAD_REPLIES
+} from './dashboard-mock-data';
 
-
-export interface ChannelPreview {
-  id: string;
-  name: string;
-  description?: string;
-  memberIds?: string[];
-}
-
-export interface MemberPreview {
-  id: string;
-  name: string;
-  avatar: string;
-  online: boolean;
-  isCurrentUser?: boolean;
-}
-
-export interface ChatMessagePreview {
-  id: string;
-  author: string;
-  avatar: string;
-  time: string;
-  text: string;
-  isOwn: boolean;
-  repliesCount?: number;
-  lastReplyTime?: string;
-  reactions?: { emoji: string; count: number }[];
-}
+export * from './dashboard.models';
 
 @Component({
   selector: 'app-dashboard',
@@ -58,112 +43,24 @@ export class DashboardComponent {
   activeMemberId: string | null = null;
   messageText = '';
   selectedProfileMember: MemberPreview | null = null;
+  activeEmojiPickerMessageId: string | null = null;
+  activeOptionsMessageId: string | null = null;
+  editingMessageId: string | null = null;
+  editedMessageText = '';
+  readonly availableEmojis = ['👍', '❤️', '🚀', '✅', '🎉', '😂', '🔥', '👏'];
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
-  readonly currentUser: MemberPreview = {
-    id: 'frederik',
-    name: 'Frederik Beck',
-    avatar: 'assets/img/Frederik Beck.png',
-    online: true,
-    isCurrentUser: true
-  };
+  readonly currentUser: MemberPreview = CURRENT_USER;
+  channels: ChannelPreview[] = [...INITIAL_CHANNELS];
+  readonly members: MemberPreview[] = [...INITIAL_MEMBERS];
+  readonly channelMemberAvatars: string[] = [...INITIAL_CHANNEL_AVATARS];
 
-  channels: ChannelPreview[] = [
-    { id: 'entwicklerteam', name: 'Entwicklerteam' },
-    { id: 'office-team', name: 'Office-team' }
-  ];
+  readonly channelMessages: Record<string, ChatMessagePreview[]> = { ...INITIAL_CHANNEL_MESSAGES };
+  readonly directMessages: Record<string, ChatMessagePreview[]> = { ...INITIAL_DIRECT_MESSAGES };
 
-  readonly members: MemberPreview[] = [
-    { id: 'frederik', name: 'Frederik Beck (Du)', avatar: 'assets/img/Frederik Beck.png', online: true, isCurrentUser: true },
-    { id: 'sofia', name: 'Sofia Müller', avatar: 'assets/img/Sofia Müller.png', online: true },
-    { id: 'noah', name: 'Noah Braun', avatar: 'assets/img/Noah Braun.png', online: true },
-    { id: 'elise', name: 'Elise Roth', avatar: 'assets/img/Elise Roth.png', online: false },
-    { id: 'elias', name: 'Elias Neumann', avatar: 'assets/img/Elias Neumann.png', online: true },
-    { id: 'steffen', name: 'Steffen Hoffmann', avatar: 'assets/img/Steffen Hoffmann.png', online: false }
-  ];
-
-  readonly channelMemberAvatars: string[] = [
-    'assets/img/Sofia Müller.png',
-    'assets/img/Noah Braun.png',
-    'assets/img/Frederik Beck.png'
-  ];
-
-  readonly channelMessages: Record<string, ChatMessagePreview[]> = {
-    'entwicklerteam': [
-      {
-        id: 'm1',
-        author: 'Noah Braun',
-        avatar: 'assets/img/Noah Braun.png',
-        time: '14:25 Uhr',
-        text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
-        isOwn: false,
-        repliesCount: 2,
-        lastReplyTime: '14:56'
-      },
-      {
-        id: 'm2',
-        author: 'Frederik Beck',
-        avatar: 'assets/img/Frederik Beck.png',
-        time: '15:06 Uhr',
-        text: 'Wir nutzen Angular 19 mit Standalone Components und SCSS. Sieht schon richtig sauber aus!',
-        isOwn: true,
-        reactions: [
-          { emoji: '🚀', count: 1 },
-          { emoji: '✅', count: 2 }
-        ]
-      }
-    ],
-    'office-team': [
-      {
-        id: 'ot-1',
-        author: 'Sofia Müller',
-        avatar: 'assets/img/Sofia Müller.png',
-        time: '10:15 Uhr',
-        text: 'Guten Morgen zusammen! Willkommen im Office-Team-Channel.',
-        isOwn: false
-      }
-    ]
-  };
-
-  readonly directMessages: Record<string, ChatMessagePreview[]> = {
-    'frederik': [],
-    'sofia': [],
-    'noah': [],
-    'elise': [],
-    'elias': [],
-    'steffen': []
-  };
-
-
-  readonly threadRootMessage: ThreadMessage = {
-    id: 'm1',
-    author: 'Noah Braun',
-    avatar: 'assets/img/Noah Braun.png',
-    time: '14:25 Uhr',
-    text: 'Welche Version von Angular nutzen wir aktuell für das DABubble-Projekt?',
-    isOwn: false
-  };
-
-  readonly threadReplies: ThreadMessage[] = [
-    {
-      id: 'r1',
-      author: 'Sofia Müller',
-      avatar: 'assets/img/Sofia Müller.png',
-      time: '14:30 Uhr',
-      text: 'Ich habe hier Angular 19 mit Standalone Components und SCSS im Einsatz!',
-      isOwn: false
-    },
-    {
-      id: 'r2',
-      author: 'Frederik Beck',
-      avatar: 'assets/img/Frederik Beck.png',
-      time: '14:56 Uhr',
-      text: 'Genau, das nutzen wir im gesamten Projekt.',
-      isOwn: true,
-      reactions: [{ emoji: '👍', count: 1 }]
-    }
-  ];
+  threadRootMessage: ThreadMessage = INITIAL_THREAD_ROOT;
+  readonly threadReplies: ThreadMessage[] = [...INITIAL_THREAD_REPLIES];
 
 
   toggleSidebar(): void {
@@ -284,6 +181,100 @@ export class DashboardComponent {
     if (this.isSettingsPopupOpen) {
       this.closeSettingsPopup();
     }
+    if (this.activeEmojiPickerMessageId) {
+      this.closeEmojiPicker();
+    }
+    if (this.activeOptionsMessageId) {
+      this.closeMessageOptions();
+    }
+    if (this.editingMessageId) {
+      this.cancelEditMessage();
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.activeEmojiPickerMessageId) {
+      this.closeEmojiPicker();
+    }
+    if (this.activeOptionsMessageId) {
+      this.closeMessageOptions();
+    }
+  }
+
+  openMessageOptions(msg: ChatMessagePreview, event?: Event): void {
+    event?.stopPropagation();
+    this.activeOptionsMessageId = this.activeOptionsMessageId === msg.id ? null : msg.id;
+  }
+
+  closeMessageOptions(): void {
+    this.activeOptionsMessageId = null;
+  }
+
+  startEditMessage(msg: ChatMessagePreview): void {
+    if (!msg.isOwn) return;
+    this.editingMessageId = msg.id;
+    this.editedMessageText = msg.text;
+    this.closeMessageOptions();
+  }
+
+  cancelEditMessage(): void {
+    this.editingMessageId = null;
+    this.editedMessageText = '';
+  }
+
+  saveEditMessage(msg: ChatMessagePreview): void {
+    const trimmed = this.editedMessageText.trim();
+    if (!trimmed) return;
+    msg.text = trimmed;
+    msg.isEdited = true;
+    this.cancelEditMessage();
+  }
+
+  onEditKeydown(event: KeyboardEvent, msg: ChatMessagePreview): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.saveEditMessage(msg);
+    }
+  }
+
+  toggleReaction(msg: ChatMessagePreview, emoji: string): void {
+    if (!msg.reactions) {
+      msg.reactions = [];
+    }
+    const existing = msg.reactions.find((r) => r.emoji === emoji);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      msg.reactions.push({ emoji, count: 1 });
+    }
+  }
+
+  openEmojiPicker(msg: ChatMessagePreview, event?: Event): void {
+    event?.stopPropagation();
+    this.activeEmojiPickerMessageId = this.activeEmojiPickerMessageId === msg.id ? null : msg.id;
+  }
+
+  addReactionAndClose(msg: ChatMessagePreview, emoji: string): void {
+    this.toggleReaction(msg, emoji);
+    this.activeEmojiPickerMessageId = null;
+  }
+
+  closeEmojiPicker(): void {
+    this.activeEmojiPickerMessageId = null;
+  }
+
+  openThreadForMessage(msg: ChatMessagePreview): void {
+    this.threadRootMessage = {
+      id: msg.id,
+      author: msg.author,
+      avatar: msg.avatar,
+      time: msg.time,
+      text: msg.text,
+      isOwn: msg.isOwn
+    };
+    this.isThreadOpen = true;
+    this.mobileView = 'thread';
   }
 
   getExistingChannelNames(): string[] {

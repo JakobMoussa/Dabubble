@@ -1,0 +1,127 @@
+.message-options-popup {
+  position: absolute;
+  top: 19px;
+  right: 32px;
+  z-index: 25;
+  background-color: var(--white);
+  border-radius: 0 30px 30px 30px;
+  padding: 10px 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--light-purple);
+
+  &--own {
+    right: auto;
+    left: 215px;
+    border-radius: 0 30px 30px 30px;
+  }
+
+  &__item {
+    padding: 8px 18px;
+    border: none;
+    background: transparent;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--black);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background-color: var(--bg-color);
+      color: var(--purple-3);
+      font-weight: 700;
+    }
+  }
+}
+
+.message-content--editing {
+  width: 100%;
+  align-items: stretch;
+}
+
+.message-edit-box {
+  width: 100%;
+  min-width: min(100%, 460px);
+  background-color: var(--white);
+  border: 1px solid var(--light-purple);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  &:focus-within {
+    border-color: var(--purple-3);
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 56px;
+    resize: none;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.35;
+    border: none;
+    outline: none;
+    color: var(--black);
+    background: transparent;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
+.edit-action-btn {
+  padding: 6px 16px;
+  border-radius: 25px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+
+  &--cancel {
+    background-color: transparent;
+    color: var(--black);
+    border: 1px solid var(--light-purple);
+
+    &:hover {
+      background-color: var(--bg-color);
+      color: var(--purple-1);
+    }
+  }
+
+  &--save {
+    background-color: var(--purple-1);
+    color: var(--white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--purple-2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.message-edited-tag {
+  font-size: 12px;
+  color: var(--text-gray);
+  margin-left: 6px;
+  font-style: italic;
+  font-weight: 400;
+
+  .message-bubble--own & {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}

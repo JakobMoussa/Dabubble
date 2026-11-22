@@ -1,0 +1,81 @@
+.composer-wrapper {
+  padding: 0 36px 28px;
+  flex-shrink: 0;
+}
+
+.composer-box {
+  border: 1px solid var(--light-purple);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &:focus-within {
+    border-color: var(--purple-3);
+  }
+
+  &__textarea {
+    width: 100%;
+    resize: none;
+    font-size: 18px;
+    color: var(--black);
+
+    &::placeholder {
+      color: var(--text-gray);
+    }
+  }
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.composer-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.composer-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--bg-color);
+  }
+}
+
+.composer-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--light-purple);
+}
+
+.composer-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  cursor: not-allowed;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &--active,
+  &:not(:disabled) {
+    opacity: 1;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

@@ -1,5 +1,7 @@
 @use './dashboard-header';
 @use './dashboard-chat';
+@use './dashboard-composer';
+@use './dashboard-message-edit';
 
 :host {
   display: block;
