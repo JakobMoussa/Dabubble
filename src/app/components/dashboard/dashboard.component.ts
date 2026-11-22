@@ -114,7 +114,7 @@ export class DashboardComponent {
 
   get channelMemberAvatars(): string[] {
     const memberIds = this.getActiveChannel().memberIds ?? [];
-    return memberIds.map((id) => this.store.userMap().get(id)?.avatar || DEFAULT_AVATAR);
+    return memberIds.map((id) => resolveAvatar(this.store.userMap().get(id)?.avatar, DEFAULT_AVATAR));
   }
 
 
