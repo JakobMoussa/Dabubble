@@ -80,7 +80,9 @@
     </button>
     }
     @if (isMenuOpen) {
-    <button type="button" class="message-actions__menu" (click)="startEditing()">Nachricht bearbeiten</button>
+    <div class="message-actions__menu">
+      <button type="button" class="message-actions__menu-item" (click)="startEditing()">Nachricht bearbeiten</button>
+    </div>
     }
     @if (isPickerOpen) {
     <app-emoji-picker class="message-actions__picker" (picked)="toggleReaction($event)" (dismissed)="isPickerOpen = false" />
