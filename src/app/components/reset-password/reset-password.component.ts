@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 
 @Component({
   selector: 'app-reset-password',
@@ -20,7 +22,11 @@ export class ResetPasswordComponent implements OnDestroy {
   showToast = false;
   isSubmitting = false;
 
+  submitError = '';
+
   private redirectTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly authService = inject(AuthService);
+  private readonly oobCode = inject(ActivatedRoute).snapshot.queryParamMap.get('oobCode') ?? '';
 
   constructor(private readonly router: Router) {}
 
@@ -89,8 +95,20 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
-  private applyNewPassword(): void {
+  private async applyNewPassword(): Promise<void> {
     this.isSubmitting = true;
+    this.submitError = '';
+    try {
+      await this.authService.confirmReset(this.oobCode, this.password);
+      this.showSuccessAndRedirect();
+    } catch (error) {
+      this.submitError = toAuthMessage(error);
+      this.isSubmitting = false;
+    }
+  }
+
+
+  private showSuccessAndRedirect(): void {
     this.showToast = true;
     this.redirectTimer = setTimeout(() => {
       this.router.navigate(['/login']);

@@ -138,3 +138,37 @@
         color: white;
     }
 }
+.avatar-choice {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+
+    &__item {
+        padding: 0;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        background: none;
+        cursor: pointer;
+        transition: border-color 80ms ease-in, transform 80ms ease-in;
+
+        img {
+            display: block;
+            border-radius: 50%;
+        }
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        &--selected {
+            border-color: var(--purple-1);
+        }
+    }
+}
+
+.edit-profile__error {
+    margin: 4px 0 0;
+    color: var(--error-pink);
+    font-size: 14px;
+}

@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { isValidEmail } from '../../shared/validators/email.validator';
+import { AuthService } from '../../services/auth.service';
+import { toAuthMessage } from '../../shared/auth-error-messages';
 
 export interface AvatarOption {
     name: string;
@@ -35,17 +38,18 @@ export class SignUpComponent implements OnDestroy {
     privacyTouched = false;
 
     readonly avatarOptions: AvatarOption[] = [
-        { name: 'Elias Neumann', src: 'assets/img/Elias Neumann.png' },
-        { name: 'Elise Roth', src: 'assets/img/Elise Roth.png' },
-        { name: 'Frederik Beck', src: 'assets/img/Frederik Beck.png' },
-        { name: 'Noah Braun', src: 'assets/img/Noah Braun.png' },
-        { name: 'Sofia Müller', src: 'assets/img/Sofia Müller.png' },
-        { name: 'Steffen Hoffmann', src: 'assets/img/Steffen Hoffmann.png' }
+        { name: 'Elias Neumann', src: 'assets/img/elias-neumann.png' },
+        { name: 'Elise Roth', src: 'assets/img/elise-roth.png' },
+        { name: 'Frederik Beck', src: 'assets/img/frederik-beck.png' },
+        { name: 'Noah Braun', src: 'assets/img/noah-braun.png' },
+        { name: 'Sofia Müller', src: 'assets/img/sofia-mueller.png' },
+        { name: 'Steffen Hoffmann', src: 'assets/img/steffen-hoffmann.png' }
     ];
 
     private redirectTimer: ReturnType<typeof setTimeout> | null = null;
     private readonly namePattern = /^[\p{L}\p{M}'-]+(?:\s+[\p{L}\p{M}'-]+)+$/u;
-    private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    private readonly authService = inject(AuthService);
 
     constructor(private readonly router: Router) { }
 
@@ -63,7 +67,7 @@ export class SignUpComponent implements OnDestroy {
 
 
     isEmailValid(): boolean {
-        return this.emailPattern.test(this.email.trim());
+        return isValidEmail(this.email);
     }
 
 
@@ -191,14 +195,35 @@ export class SignUpComponent implements OnDestroy {
     }
 
 
-    onCreateAccount(): void {
+    async onCreateAccount(): Promise<void> {
         if (!this.selectedAvatar || this.isSubmitting) {
             return;
         }
         this.isSubmitting = true;
+        try {
+            await this.registerUser();
+            this.showSuccessAndRedirect();
+        } catch (error) {
+            this.uploadError = toAuthMessage(error);
+            this.isSubmitting = false;
+        }
+    }
+
+
+    private registerUser(): Promise<void> {
+        return this.authService.register({
+            name: this.fullName,
+            email: this.email,
+            password: this.password,
+            avatar: this.selectedAvatar
+        });
+    }
+
+
+    private showSuccessAndRedirect(): void {
         this.showToast = true;
         this.redirectTimer = setTimeout(() => {
-            this.router.navigate(['/login']);
+            this.router.navigate(['/dashboard']);
         }, 1800);
     }
 }

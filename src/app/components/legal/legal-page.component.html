@@ -1,0 +1,32 @@
+<div class="auth-page">
+  <header class="auth-header">
+    <a routerLink="/" class="brand-logo" aria-label="DABubble Startseite">
+      <img src="assets/icons/Logo.svg" alt="DABubble Logo" width="70" height="70" class="brand-logo__icon" />
+      <img src="assets/icons/logo-name-black.svg" alt="DABubble" width="156" height="24" class="brand-logo__name" />
+    </a>
+  </header>
+
+  <main class="auth-main">
+    <article class="auth-card auth-card--wide legal-card" aria-labelledby="legal-heading">
+      <a routerLink="/login" class="back-btn" aria-label="Zurück zur Anmeldung">
+        <img src="assets/icons/arrow_back.svg" alt="" class="back-btn__icon" />
+      </a>
+      <div class="auth-card__head">
+        <h1 id="legal-heading" class="auth-card__title">{{ page().title }}</h1>
+      </div>
+      @for (section of page().sections; track section.heading) {
+        <section class="legal-section">
+          <h2 class="legal-section__heading">{{ section.heading }}</h2>
+          @for (paragraph of section.paragraphs; track $index) {
+            <p class="legal-section__text">{{ paragraph }}</p>
+          }
+        </section>
+      }
+    </article>
+  </main>
+
+  <footer class="auth-footer">
+    <a routerLink="/imprint" class="footer-link">Impressum</a>
+    <a routerLink="/privacy" class="footer-link">Datenschutz</a>
+  </footer>
+</div>
