@@ -5,7 +5,7 @@
       @if (mobileView !== 'menu') {
       <button type="button" class="mobile-back-btn" aria-label="Zurück"
         (click)="mobileView === 'thread' ? closeThread() : openMobileMenu()">
-        <img src="assets/icons/keyboard_arrow_down (1).svg" alt="" width="10" height="16" />
+        <img src="assets/icons/chevron_left.svg" alt="" width="10" height="16" />
         <img src="assets/icons/workspaces.svg" alt="" width="24" height="24" />
         <span class="mobile-back-btn__title">Devspace</span>
       </button>
@@ -58,7 +58,7 @@
               <span>Channels</span>
             </button>
             <button type="button" class="icon-btn" aria-label="Channel erstellen" (click)="openChannelPopup()">
-              <img src="/assets/icons/add (1).svg" alt="" width="24" height="24" />
+              <img src="/assets/icons/add-button.svg" alt="" width="24" height="24" />
             </button>
           </div>
 
@@ -70,7 +70,7 @@
                 [class.channel-item--active]="!activeMemberId && activeChannelId === channel.id"
                 (click)="selectChannel(channel.id)">
                 <img
-                  [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag (1).svg' : 'assets/icons/tag.svg'"
+                  [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag-purple.svg' : 'assets/icons/tag.svg'"
                   alt="" width="24" height="24" />
                 <span>{{ channel.name }}</span>
               </button>
@@ -220,7 +220,7 @@
     (click)="toggleSidebar()">
     <span class="workspace-toggle-tab__label">
       {{ isSidebarHidden ? 'Workspace-Menü öffnen' : 'Workspace-Menü schließen' }}
-      <img class="hide-icon" [class.hide-icon--flipped]="isSidebarHidden" src="/assets/icons/Group 2.svg"
+      <img class="hide-icon" [class.hide-icon--flipped]="isSidebarHidden" src="/assets/icons/hide-navigation.svg"
         alt="hide-icon" />
     </span>
   </button>
@@ -251,7 +251,7 @@
         <span class="settings-popup__icon" aria-hidden="true">
           <img src="assets/icons/account_circle.svg" alt="" width="24" height="24"
             class="settings-popup__icon-default" />
-          <img src="assets/icons/account_circle (1).svg" alt="" width="24" height="24"
+          <img src="assets/icons/account_circle-purple.svg" alt="" width="24" height="24"
             class="settings-popup__icon-hover" />
         </span>
         <span>Profil</span>
@@ -259,7 +259,7 @@
       <button type="button" class="settings-popup__item" (click)="logout()">
         <span class="settings-popup__icon" aria-hidden="true">
           <img src="assets/icons/logout.svg" alt="" width="24" height="24" class="settings-popup__icon-default" />
-          <img src="assets/icons/logout (1).svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
+          <img src="assets/icons/logout-purple.svg" alt="" width="24" height="24" class="settings-popup__icon-hover" />
         </span>
         <span>Log out</span>
       </button>
