@@ -181,20 +181,6 @@ export class SignUpComponent implements OnDestroy {
         this.selectedAvatar = src;
     }
 
-    private readAvatarFile(file: File): void {
-        if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
-            this.uploadError = '*Bitte wähle ein Bild unter 2 MB aus.';
-            return;
-        }
-        this.uploadError = '';
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.selectedAvatar = String(reader.result ?? '');
-        };
-        reader.readAsDataURL(file);
-    }
-
-
     async onCreateAccount(): Promise<void> {
         if (!this.selectedAvatar || this.isSubmitting) {
             return;
