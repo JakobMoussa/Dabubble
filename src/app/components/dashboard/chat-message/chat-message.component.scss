@@ -116,8 +116,9 @@
 
 .message-row {
   position: relative;
-  padding: 10px 45px;
-  margin: 0 -45px;
+  /* bleeds the hover background to the edges of the scrolling list; the list sets --row-bleed to its own padding */
+  padding: 10px var(--row-bleed, 36px);
+  margin: 0 calc(-1 * var(--row-bleed, 36px));
   transition: background-color 80ms ease-in;
 
   &:hover,
@@ -319,8 +320,6 @@
 
 @media (max-width: 768px) {
   .message-row {
-    padding: 10px 16px;
-    margin: 0 -16px;
     gap: 10px;
 
     &__avatar {

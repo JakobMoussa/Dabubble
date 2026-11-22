@@ -231,3 +231,8 @@ a {
     opacity: 1;
   }
 }
+/* Thin, design-coloured scrollbars instead of the grey browser default (Figma shows none). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--light-purple) transparent;
+}
