@@ -130,6 +130,12 @@
     }
   }
 
+  &--editing .message-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   &:hover .message-actions {
     opacity: 1;
     pointer-events: auto;
@@ -156,7 +162,7 @@
 }
 
 .edit-box {
-  width: min(720px, 100%);
+  width: 100%;
   padding: 20px;
   background-color: var(--white);
   border: 1px solid var(--light-purple);
@@ -291,15 +297,10 @@
     }
   }
 
-  &__dots {
-    font-size: 22px;
-    line-height: 1;
-  }
-
   &__menu {
     position: absolute;
     top: 100%;
-    left: 100%;
+    left: 88%;
     white-space: nowrap;
     padding: 10px 20px;
     border: none;
