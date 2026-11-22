@@ -230,6 +230,12 @@ a {
     visibility: visible;
     opacity: 1;
   }
+
+  /* a hidden message must not wrap and push the next field down on narrow screens */
+  &:not(.input-error--visible) {
+    max-height: 19px;
+    overflow: hidden;
+  }
 }
 /* Figma mobile: smaller input pills (50px) with ~30px between fields */
 @media (max-width: 768px) {
@@ -240,6 +246,17 @@ a {
 
   .input-group {
     margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 380px) {
+  .input-pill {
+    padding: 12px 18px;
+    gap: 12px;
+  }
+
+  .input-pill__field {
+    font-size: 16px;
   }
 }
 
