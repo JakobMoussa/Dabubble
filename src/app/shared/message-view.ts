@@ -13,8 +13,13 @@ export function formatTime(timestamp: number): string {
 
 export function formatDay(timestamp: number): string {
   const date = new Date(timestamp);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
   if (date.toDateString() === new Date().toDateString()) {
     return 'Heute';
+  }
+  if (date.toDateString() === yesterday.toDateString()) {
+    return 'Gestern';
   }
   return date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 }
