@@ -24,6 +24,7 @@ export class NewMessageHeaderComponent {
   term = '';
 
 
+  /** Matching channel and member suggestions for the search term, limited to eight. */
   get options(): Recipient[] {
     const term = this.term.trim().toLowerCase();
     if (!term) {
@@ -34,17 +35,20 @@ export class NewMessageHeaderComponent {
   }
 
 
+  /** Selects the recipient and resets the search term. */
   pick(recipient: Recipient): void {
     this.term = '';
     this.recipientChange.emit(recipient);
   }
 
 
+  /** Clears the selected recipient. */
   clear(): void {
     this.recipientChange.emit(null);
   }
 
 
+  /** Channel suggestions matching the query, none when searching members with '@'. */
   private channelOptions(term: string, query: string): Recipient[] {
     if (term.startsWith('@')) {
       return [];
@@ -55,6 +59,7 @@ export class NewMessageHeaderComponent {
   }
 
 
+  /** Member suggestions matching the query by name or email, none when searching channels with '#'. */
   private memberOptions(term: string, query: string): Recipient[] {
     if (term.startsWith('#')) {
       return [];
