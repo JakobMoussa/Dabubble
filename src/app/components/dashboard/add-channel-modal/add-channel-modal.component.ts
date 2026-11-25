@@ -95,7 +95,10 @@ export class AddChannelModalComponent implements AfterViewInit {
 
   getFilteredMembers(): ModalMemberOption[] {
     const query = this.memberSearch.trim().toLowerCase();
-    return this.members.filter((m) => this.isAvailableMember(m, query));
+    const isGuest = (m: ModalMemberOption) => Number(m.name.startsWith('Gast'));
+    return this.members
+      .filter((m) => this.isAvailableMember(m, query))
+      .sort((a, b) => isGuest(a) - isGuest(b) || a.name.localeCompare(b.name));
   }
 
   private isAvailableMember(member: ModalMemberOption, query: string): boolean {
