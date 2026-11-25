@@ -158,6 +158,7 @@
         <button
           type="button"
           class="google-btn"
+          [disabled]="isSubmitting"
           (click)="onGoogleLogin()"
         >
           <img
@@ -171,15 +172,17 @@
         </button>
 
         <div class="action-buttons">
-          <button type="submit" class="btn-primary">
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
             Anmelden
           </button>
           <button
             type="button"
             class="btn-secondary"
+            [disabled]="isSubmitting"
+            [attr.aria-busy]="isGuestLoading"
             (click)="onGuestLogin()"
           >
-            Gäste-Login
+            {{ isGuestLoading ? 'Wird geladen …' : 'Gäste-Login' }}
           </button>
         </div>
       </form>

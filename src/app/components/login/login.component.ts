@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit {
   introCompleted = false;
 
   isSubmitting = false;
+  isGuestLoading = false;
   private readonly authService = inject(AuthService);
 
   constructor(private readonly router: Router) {}
@@ -121,10 +122,13 @@ export class LoginComponent implements OnInit {
     return this.runAuth(() => this.authService.login(this.email, this.password));
   }
 
-  onGuestLogin(): void {
+  /** Signs in anonymously and shows a loading label on the guest button meanwhile. */
+  async onGuestLogin(): Promise<void> {
     this.emailTouched = false;
     this.passwordTouched = false;
-    this.runAuth(() => this.authService.loginAsGuest());
+    this.isGuestLoading = true;
+    await this.runAuth(() => this.authService.loginAsGuest());
+    this.isGuestLoading = false;
   }
 
   onGoogleLogin(): void {
