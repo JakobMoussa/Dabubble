@@ -38,17 +38,20 @@ export class ChatMessageComponent {
   quickEmojis = readRecentEmojis();
 
 
+  /** Maximum number of reactions shown before collapsing, depending on screen size. */
   get reactionLimit(): number {
     return this.compact || window.innerWidth < 768 ? MAX_REACTIONS_COMPACT : MAX_REACTIONS_DESKTOP;
   }
 
 
+  /** Reactions to display and the count of hidden ones. */
   get visibleReactions(): { visible: ReactionView[]; hidden: number } {
     const all = this.message.reactions ?? [];
     return this.showAll ? { visible: all, hidden: 0 } : limitReactions(all, this.reactionLimit);
   }
 
 
+  /** Whether the current user has given the reaction. */
   hasReacted(reaction: ReactionView): boolean {
     return !!this.currentUid && reaction.userIds.includes(this.currentUid);
   }
@@ -62,6 +65,7 @@ export class ChatMessageComponent {
   }
 
 
+  /** Verb phrase matching the number of reacting users and whether the current user is among them. */
   reactedVerb(reaction: ReactionView): string {
     if (reaction.userIds.length > 1) {
       return 'haben reagiert';
@@ -70,6 +74,7 @@ export class ChatMessageComponent {
   }
 
 
+  /** Toggles the current user's reaction with the emoji and emits the change. */
   toggleReaction(emoji: string): void {
     const existing = this.message.reactions?.find((r) => r.emoji === emoji);
     const active = !existing || !this.hasReacted(existing);
@@ -82,12 +87,14 @@ export class ChatMessageComponent {
   }
 
 
+  /** Toggles the emoji picker. */
   openPicker(event: Event): void {
     event.stopPropagation();
     this.isPickerOpen = !this.isPickerOpen;
   }
 
 
+  /** Switches the message into edit mode. */
   startEditing(): void {
     this.isMenuOpen = false;
     this.editText = this.message.text;
@@ -95,6 +102,7 @@ export class ChatMessageComponent {
   }
 
 
+  /** Emits the edited text if it changed and leaves edit mode. */
   saveEdit(): void {
     const text = this.editText.trim();
     if (text && text !== this.message.text) {
