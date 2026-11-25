@@ -3,7 +3,9 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { routeFirebaseActionLink } from './app/shared/action-link';
 
+const BOOT_ERROR = 'DABubble konnte nicht geladen werden. Bitte in ein paar Minuten erneut versuchen.';
+
 routeFirebaseActionLink();
 
 bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+  .catch(() => { document.body.textContent = BOOT_ERROR; });
