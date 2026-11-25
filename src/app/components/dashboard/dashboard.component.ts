@@ -21,6 +21,7 @@ import { WorkspaceActions } from '../../services/workspace-actions.service';
 import { AuthService, DEFAULT_AVATAR } from '../../services/auth.service';
 import { resolveAvatar } from '../../shared/avatars';
 import { DayLabelPipe } from '../../shared/day-label.pipe';
+import { DashboardPanels } from './dashboard-panels';
 
 export type { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 
@@ -35,22 +36,14 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent {
+export class DashboardComponent extends DashboardPanels {
   readonly store = inject(WorkspaceStore);
   private readonly actions = inject(WorkspaceActions);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  isSidebarHidden = false;
-  isSettingsPopupOpen = false;
-  isChannelPopupOpen = false;
-  isProfilePopupOpen = false;
-  isChannelsOpen = true;
-  isDirectMessagesOpen = true;
   mobileView: 'menu' | 'chat' | 'thread' = 'menu';
   selectedProfileMember: MemberPreview | null = null;
-  isChannelSettingsOpen = false;
-  membersDialogMode: 'list' | 'add' | null = null;
   channelError = '';
   isNewMessage = false;
   newRecipient: Recipient | null = null;
@@ -59,6 +52,7 @@ export class DashboardComponent {
 
   /** Sets up effects that select the first channel and scroll to new messages. */
   constructor() {
+    super();
     effect(() => this.selectFirstChannelOnce());
     effect(() => this.scrollOnNewMessages());
   }
@@ -150,12 +144,6 @@ export class DashboardComponent {
   }
 
 
-  /** Opens the members dialog in add or list mode. */
-  openMembers(addMode: boolean): void {
-    this.membersDialogMode = addMode ? 'add' : 'list';
-  }
-
-
   /** Saves channel name and description changes and stores any error message. */
   async saveChannel(changes: ChannelChanges): Promise<void> {
     try {
@@ -208,12 +196,6 @@ export class DashboardComponent {
   }
 
 
-  /** Shows or hides the sidebar. */
-  toggleSidebar(): void {
-    this.isSidebarHidden = !this.isSidebarHidden;
-  }
-
-
   /** Opens the thread for the given message and focuses the reply input. */
   openThread(messageId: string): void {
     this.store.threadParentId.set(messageId);
@@ -228,30 +210,6 @@ export class DashboardComponent {
     if (this.mobileView === 'thread') {
       this.mobileView = 'chat';
     }
-  }
-
-
-  /** Opens the add-channel popup. */
-  openChannelPopup(): void {
-    this.isChannelPopupOpen = true;
-  }
-
-
-  /** Closes the add-channel popup. */
-  closeChannelPopup(): void {
-    this.isChannelPopupOpen = false;
-  }
-
-
-  /** Opens the settings popup. */
-  openSettingsPopup(): void {
-    this.isSettingsPopupOpen = true;
-  }
-
-
-  /** Closes the settings popup. */
-  closeSettingsPopup(): void {
-    this.isSettingsPopupOpen = false;
   }
 
 
@@ -351,18 +309,6 @@ export class DashboardComponent {
   /** Creates a channel from the payload of the add-channel modal. */
   handleChannelCreated(payload: CreatedChannelPayload): Promise<void> {
     return this.actions.createChannel(payload.name, payload.description, payload.memberIds);
-  }
-
-
-  /** Expands or collapses the channel list. */
-  toggleChannels(): void {
-    this.isChannelsOpen = !this.isChannelsOpen;
-  }
-
-
-  /** Expands or collapses the direct message list. */
-  toggleDirectMessages(): void {
-    this.isDirectMessagesOpen = !this.isDirectMessagesOpen;
   }
 
 
