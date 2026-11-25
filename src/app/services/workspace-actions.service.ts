@@ -13,6 +13,7 @@ export class WorkspaceActions {
   private readonly users = inject(UserService);
 
 
+  /** Sends a message to the active conversation. */
   async send(text: string): Promise<void> {
     const conversation = this.store.active();
     const uid = this.store.uid();
@@ -22,6 +23,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Opens the target channel or direct chat and sends the message there. */
   async sendTo(target: { kind: 'channel' | 'member'; id: string }, text: string): Promise<void> {
     if (target.kind === 'channel') {
       this.store.openChannel(target.id);
@@ -32,6 +34,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Replies to the open thread of the active conversation. */
   async reply(text: string): Promise<void> {
     const conversation = this.store.active();
     const parentId = this.store.threadParentId();
@@ -42,6 +45,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Adds or removes the current user's reaction on a message or thread reply. */
   async react(messageId: string, emoji: string, active: boolean, inThread: boolean): Promise<void> {
     const conversation = this.store.active();
     const uid = this.store.uid();
@@ -52,6 +56,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Edits a message or thread reply in the active conversation. */
   async edit(messageId: string, text: string, inThread: boolean): Promise<void> {
     const conversation = this.store.active();
     if (conversation) {
@@ -61,6 +66,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Creates a channel, adds the given members and opens it. */
   async createChannel(name: string, description: string, memberIds: string[]): Promise<void> {
     const uid = this.store.uid();
     if (!uid) {
@@ -74,16 +80,19 @@ export class WorkspaceActions {
   }
 
 
+  /** Updates name and description of a channel. */
   updateChannel(channelId: string, name: string, description: string): Promise<void> {
     return this.channels.rename(channelId, name, description);
   }
 
 
+  /** Adds the given users to a channel. */
   addMembers(channelId: string, memberIds: string[]): Promise<void> {
     return this.channels.addMembers(channelId, memberIds);
   }
 
 
+  /** Removes the current user from the channel and closes the active chat. */
   async leaveChannel(channelId: string): Promise<void> {
     const uid = this.store.uid();
     if (uid) {
@@ -93,6 +102,7 @@ export class WorkspaceActions {
   }
 
 
+  /** Updates name and avatar of the current user. */
   async updateProfile(name: string, avatar: string): Promise<void> {
     const uid = this.store.uid();
     if (uid) {
