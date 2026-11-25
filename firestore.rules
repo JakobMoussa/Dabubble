@@ -30,8 +30,14 @@ service cloud.firestore {
     match /channels/{channelId} {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if signedIn() && (request.auth.uid in resource.data.memberIds || joinsDefault());
+      allow update: if signedIn() && ((request.auth.uid in resource.data.memberIds && memberEdit()) || joinsDefault());
 
+      // Members may rename the channel, add people or leave; nobody can remove others.
+      function memberEdit() {
+        let removed = resource.data.memberIds.toSet().difference(request.resource.data.memberIds.toSet());
+        return changed().hasOnly(['name', 'nameLower', 'description', 'memberIds'])
+          && removed.hasOnly([request.auth.uid]);
+      }
       function joinsDefault() {
         let added = request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet());
         return resource.data.get('isDefault', false) == true
