@@ -27,11 +27,13 @@ export class AuthService {
   readonly user$: Observable<User | null> = authState(this.auth);
 
 
+  /** Uid of the signed-in user, or null when nobody is signed in. */
   get currentUid(): string | null {
     return this.auth.currentUser?.uid ?? null;
   }
 
 
+  /** Creates the auth account, stores the profile and joins the default channels. */
   async register(data: RegisterData): Promise<void> {
     const email = normalizeEmail(data.email);
     const name = data.name.trim();
@@ -42,12 +44,14 @@ export class AuthService {
   }
 
 
+  /** Signs in with email and password and marks the user online. */
   async login(email: string, password: string): Promise<void> {
     const { user } = await signInWithEmailAndPassword(this.auth, normalizeEmail(email), password);
     await this.users.setStatus(user.uid, 'online');
   }
 
 
+  /** Signs in via Google popup, creates a profile on first login and marks the user online. */
   async loginWithGoogle(): Promise<void> {
     const { user } = await signInWithPopup(this.auth, new GoogleAuthProvider());
     await this.ensureProfile(user, false);
@@ -55,6 +59,7 @@ export class AuthService {
   }
 
 
+  /** Signs in anonymously as a guest, creates a guest profile if needed and marks the user online. */
   async loginAsGuest(): Promise<void> {
     const { user } = await signInAnonymously(this.auth);
     await this.ensureProfile(user, true);
@@ -62,17 +67,20 @@ export class AuthService {
   }
 
 
+  /** Sends a password reset mail that links back to the login page. */
   sendResetMail(email: string): Promise<void> {
     const url = `${location.origin}${location.pathname}#/login`;
     return sendPasswordResetEmail(this.auth, normalizeEmail(email), { url });
   }
 
 
+  /** Sets a new password using the code from the reset mail. */
   confirmReset(oobCode: string, newPassword: string): Promise<void> {
     return confirmPasswordReset(this.auth, oobCode, newPassword);
   }
 
 
+  /** Marks the user offline and signs out. */
   async logout(): Promise<void> {
     const uid = this.currentUid;
     if (uid) {
@@ -82,6 +90,7 @@ export class AuthService {
   }
 
 
+  /** Creates the profile and joins the default channels if the user has no profile yet. */
   private async ensureProfile(user: User, isGuest: boolean): Promise<void> {
     if (await this.users.profileExists(user.uid)) {
       return;
@@ -93,6 +102,7 @@ export class AuthService {
   }
 
 
+  /** Builds a new online profile object for the given account data. */
   private buildProfile(uid: string, name: string, email: string, avatar: string, isGuest: boolean): AppUser {
     return { uid, name, email, avatar, status: 'online', isGuest };
   }
