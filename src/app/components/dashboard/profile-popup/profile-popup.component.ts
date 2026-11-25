@@ -23,6 +23,8 @@ export class ProfilePopupComponent {
 
   @Input() userName = '';
   @Input() userAvatar = '';
+  @Input() userEmail = '';
+  @Input() userOnline = true;
   @Input() canEdit = true;
 
   @Output() closed = new EventEmitter<void>();

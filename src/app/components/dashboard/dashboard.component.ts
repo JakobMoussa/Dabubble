@@ -66,7 +66,7 @@ export class DashboardComponent {
   get currentUser(): MemberPreview {
     const me = this.store.me();
     return me
-      ? { id: me.uid, name: me.name, avatar: resolveAvatar(me.avatar, DEFAULT_AVATAR), online: true, isCurrentUser: true }
+      ? { id: me.uid, name: me.name, email: me.email, avatar: resolveAvatar(me.avatar, DEFAULT_AVATAR), online: true, isCurrentUser: true }
       : { id: '', name: '', avatar: DEFAULT_AVATAR, online: true, isCurrentUser: true };
   }
 

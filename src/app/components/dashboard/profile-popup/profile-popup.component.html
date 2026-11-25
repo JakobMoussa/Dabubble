@@ -22,12 +22,17 @@
         }
       </div>
 
-      <p class="profile-status">🟢 Aktiv</p>
+      <p class="profile-status" [class.profile-status--offline]="!userOnline">
+        <span class="profile-status__dot" aria-hidden="true"></span>
+        {{ userOnline ? 'Aktiv' : 'Abwesend' }}
+      </p>
 
+      @if (userEmail) {
       <div class="profile-email">
         <strong>E-Mail-Adresse</strong>
-        <p>fred.beck&#64;email.com</p>
+        <a [href]="'mailto:' + userEmail">{{ userEmail }}</a>
       </div>
+      }
     </div>
 
     } @else {

@@ -270,6 +270,8 @@
   @if (isProfilePopupOpen) {
   <app-profile-popup [userName]="(selectedProfileMember ?? currentUser).name"
     [userAvatar]="(selectedProfileMember ?? currentUser).avatar"
+    [userEmail]="(selectedProfileMember ?? currentUser).email ?? ''"
+    [userOnline]="(selectedProfileMember ?? currentUser).online"
     [canEdit]="(selectedProfileMember ?? currentUser).id === currentUser.id" (closed)="closeProfilePopup()"
     (profileSaved)="updateProfile($event)">
   </app-profile-popup>
