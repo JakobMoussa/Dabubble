@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConversationRef } from '../../../models/message.model';
 import { buildDirectChatId } from '../../../models/direct-chat.model';
@@ -25,11 +25,21 @@ export class SearchBoxComponent implements OnDestroy {
 
   private readonly store = inject(WorkspaceStore);
   private readonly messageService = inject(MessageService);
+  private readonly host = inject(ElementRef<HTMLElement>);
   private timer: ReturnType<typeof setTimeout> | null = null;
 
   term = '';
   hits: MessageHit[] = [];
   isSearching = false;
+  isOpen = false;
+
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.host.nativeElement.contains(event.target as Node)) {
+      this.isOpen = false;
+    }
+  }
 
 
   get mode(): 'channels' | 'members' | 'messages' {
@@ -60,6 +70,7 @@ export class SearchBoxComponent implements OnDestroy {
       clearTimeout(this.timer);
     }
     this.hits = [];
+    this.isOpen = true;
     if (this.mode === 'messages' && this.query.length >= 2) {
       this.timer = setTimeout(() => this.searchMessages(), 300);
     }
