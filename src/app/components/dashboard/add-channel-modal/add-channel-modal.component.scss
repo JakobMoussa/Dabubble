@@ -48,7 +48,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease;
+  transition: background-color 100ms ease;
 
   &:hover {
     background-color: var(--bg-color);
@@ -91,7 +91,7 @@
   padding: 16px 20px;
   border: 1px solid var(--light-purple);
   border-radius: 40px;
-  transition: border-color 0.15s ease;
+  transition: border-color 100ms ease;
 
   &:hover,
   &:focus-within {
@@ -152,7 +152,7 @@
     border-radius: 50%;
     border: 2px solid var(--light-purple);
     flex-shrink: 0;
-    transition: border-color 0.15s ease;
+    transition: border-color 100ms ease;
   }
 
   &__input:checked + &__circle {

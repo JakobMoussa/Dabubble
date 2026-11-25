@@ -17,10 +17,7 @@ import { UserService } from './user.service';
 function resilient<T>(source: Observable<T[]>): Observable<T[]> {
   return source.pipe(
     retry({ count: 5, delay: (_error, attempt) => timer(attempt * 600) }),
-    catchError((error) => {
-      console.warn('Firestore listener stopped:', error?.code ?? error);
-      return of([] as T[]);
-    })
+    catchError(() => of([] as T[]))
   );
 }
 
