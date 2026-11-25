@@ -65,7 +65,9 @@
 .message-thread-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 4px;
 }
 
 .thread-link {
