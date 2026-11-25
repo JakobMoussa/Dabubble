@@ -7,6 +7,19 @@ service cloud.firestore {
     function isChannelMember(channelId) {
       return request.auth.uid in get(/databases/$(database)/documents/channels/$(channelId)).data.memberIds;
     }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+
+    // New messages must be written in the sender's own name.
+    function isOwnNewMessage() {
+      return request.resource.data.authorId == request.auth.uid;
+    }
+    // Only the author may change the text; everyone in the conversation may react or reply.
+    function isAllowedMessageUpdate() {
+      return (resource.data.authorId == request.auth.uid
+          && request.resource.data.authorId == resource.data.authorId
+          && changed().hasOnly(['text', 'editedAt']))
+        || changed().hasOnly(['reactions', 'threadCount', 'lastThreadAt']);
+    }
 
     match /users/{uid} {
       allow read: if signedIn();
@@ -22,13 +35,23 @@ service cloud.firestore {
       function joinsDefault() {
         let added = request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet());
         return resource.data.get('isDefault', false) == true
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
+          && changed().hasOnly(['memberIds'])
           && added == [request.auth.uid].toSet();
       }
       allow delete: if false;
 
-      match /messages/{messageId}/{document=**} {
-        allow read, write: if signedIn() && isChannelMember(channelId);
+      match /messages/{messageId} {
+        allow read: if signedIn() && isChannelMember(channelId);
+        allow create: if signedIn() && isChannelMember(channelId) && isOwnNewMessage();
+        allow update: if signedIn() && isChannelMember(channelId) && isAllowedMessageUpdate();
+        allow delete: if false;
+
+        match /thread/{replyId} {
+          allow read: if signedIn() && isChannelMember(channelId);
+          allow create: if signedIn() && isChannelMember(channelId) && isOwnNewMessage();
+          allow update: if signedIn() && isChannelMember(channelId) && isAllowedMessageUpdate();
+          allow delete: if false;
+        }
       }
     }
 
@@ -39,8 +62,18 @@ service cloud.firestore {
         && request.resource.data.memberIds.toSet() == chatId.split('_').toSet();
       allow delete: if false;
 
-      match /messages/{messageId}/{document=**} {
-        allow read, write: if inChat();
+      match /messages/{messageId} {
+        allow read: if inChat();
+        allow create: if inChat() && isOwnNewMessage();
+        allow update: if inChat() && isAllowedMessageUpdate();
+        allow delete: if false;
+
+        match /thread/{replyId} {
+          allow read: if inChat();
+          allow create: if inChat() && isOwnNewMessage();
+          allow update: if inChat() && isAllowedMessageUpdate();
+          allow delete: if false;
+        }
       }
     }
   }
