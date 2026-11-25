@@ -57,12 +57,14 @@ export class DashboardComponent {
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
+  /** Sets up effects that select the first channel and scroll to new messages. */
   constructor() {
     effect(() => this.selectFirstChannelOnce());
     effect(() => this.scrollOnNewMessages());
   }
 
 
+  /** The signed-in user as a member preview, with a default fallback while not loaded. */
   get currentUser(): MemberPreview {
     const me = this.store.me();
     return me
@@ -71,22 +73,26 @@ export class DashboardComponent {
   }
 
 
+  /** All channels of the workspace. */
   get channels(): ChannelPreview[] {
     return this.store.channels();
   }
 
 
+  /** All members of the workspace. */
   get members(): MemberPreview[] {
     return this.store.members();
   }
 
 
+  /** Id of the active channel, or an empty string if a direct chat is active. */
   get activeChannelId(): string {
     const active = this.store.active();
     return active?.type === 'channel' ? active.id : '';
   }
 
 
+  /** Id of the other participant in the active direct chat, or null if no direct chat is active. */
   get activeMemberId(): string | null {
     const active = this.store.active();
     if (active?.type !== 'direct') {
@@ -97,39 +103,46 @@ export class DashboardComponent {
   }
 
 
+  /** Whether a thread panel is currently open. */
   get isThreadOpen(): boolean {
     return !!this.threadRootMessage;
   }
 
 
+  /** The root message of the open thread, or null if none is open. */
   get threadRootMessage(): ThreadMessage | null {
     const parentId = this.store.threadParentId();
     return this.getCurrentMessages().find((msg) => msg.id === parentId) ?? null;
   }
 
 
+  /** Replies of the open thread. */
   get threadReplies(): ThreadMessage[] {
     return this.store.threadMessages();
   }
 
 
+  /** Avatar URLs of the active channel's members. */
   get channelMemberAvatars(): string[] {
     const memberIds = this.getActiveChannel().memberIds ?? [];
     return memberIds.map((id) => resolveAvatar(this.store.userMap().get(id)?.avatar, DEFAULT_AVATAR));
   }
 
 
+  /** Members that belong to the active channel. */
   get channelMembers(): MemberPreview[] {
     const ids = new Set(this.getActiveChannel().memberIds ?? []);
     return this.members.filter((m) => ids.has(m.id));
   }
 
 
+  /** Name of the active channel's creator, or 'Unbekannt' if unknown. */
   get channelCreatorName(): string {
     return this.store.userMap().get(this.getActiveChannel().createdBy ?? '')?.name ?? 'Unbekannt';
   }
 
 
+  /** Opens the conversation chosen in the search box and shows the chat. */
   onSearchSelected(selection: SearchSelection): void {
     this.isNewMessage = false;
     this.store.openConversation(selection.conversation);
@@ -137,11 +150,13 @@ export class DashboardComponent {
   }
 
 
+  /** Opens the members dialog in add or list mode. */
   openMembers(addMode: boolean): void {
     this.membersDialogMode = addMode ? 'add' : 'list';
   }
 
 
+  /** Saves channel name and description changes and stores any error message. */
   async saveChannel(changes: ChannelChanges): Promise<void> {
     try {
       this.channelError = '';
@@ -152,6 +167,7 @@ export class DashboardComponent {
   }
 
 
+  /** Leaves the active channel and returns to the mobile menu. */
   async leaveChannel(): Promise<void> {
     await this.actions.leaveChannel(this.activeChannelId);
     this.isChannelSettingsOpen = false;
@@ -159,26 +175,31 @@ export class DashboardComponent {
   }
 
 
+  /** Adds the given members to the active channel. */
   addChannelMembers(memberIds: string[]): Promise<void> {
     return this.actions.addMembers(this.activeChannelId, memberIds);
   }
 
 
+  /** Map of user ids to user names. */
   get userNames(): Map<string, string> {
     return new Map([...this.store.userMap().values()].map((u) => [u.uid, u.name]));
   }
 
 
+  /** Forwards a reaction toggle to the workspace actions. */
   onReactionToggled(event: ReactionToggle, inThread = false): void {
     this.actions.react(event.messageId, event.emoji, event.active, inThread);
   }
 
 
+  /** Forwards an edited message text to the workspace actions. */
   onMessageEdited(event: { messageId: string; text: string }, inThread = false): void {
     this.actions.edit(event.messageId, event.text, inThread);
   }
 
 
+  /** Opens the profile popup for the member with the given user id, if found. */
   openProfileById(uid: string): void {
     const member = this.members.find((m) => m.id === uid);
     if (member) {
@@ -187,11 +208,13 @@ export class DashboardComponent {
   }
 
 
+  /** Shows or hides the sidebar. */
   toggleSidebar(): void {
     this.isSidebarHidden = !this.isSidebarHidden;
   }
 
 
+  /** Opens the thread for the given message and focuses the reply input. */
   openThread(messageId: string): void {
     this.store.threadParentId.set(messageId);
     this.mobileView = 'thread';
@@ -199,6 +222,7 @@ export class DashboardComponent {
   }
 
 
+  /** Closes the thread panel. */
   closeThread(): void {
     this.store.threadParentId.set(null);
     if (this.mobileView === 'thread') {
@@ -207,31 +231,37 @@ export class DashboardComponent {
   }
 
 
+  /** Opens the add-channel popup. */
   openChannelPopup(): void {
     this.isChannelPopupOpen = true;
   }
 
 
+  /** Closes the add-channel popup. */
   closeChannelPopup(): void {
     this.isChannelPopupOpen = false;
   }
 
 
+  /** Opens the settings popup. */
   openSettingsPopup(): void {
     this.isSettingsPopupOpen = true;
   }
 
 
+  /** Closes the settings popup. */
   closeSettingsPopup(): void {
     this.isSettingsPopupOpen = false;
   }
 
 
+  /** Opens the profile popup for the current user. */
   openProfileSettings(): void {
     this.openProfileMember(this.currentUser);
   }
 
 
+  /** Opens the profile popup for the given member, defaulting to the current user. */
   openProfileMember(member?: MemberPreview | null): void {
     this.selectedProfileMember = member ?? this.currentUser;
     this.isSettingsPopupOpen = false;
@@ -239,18 +269,21 @@ export class DashboardComponent {
   }
 
 
+  /** Closes the profile popup and clears the selected member. */
   closeProfilePopup(): void {
     this.isProfilePopupOpen = false;
     this.selectedProfileMember = null;
   }
 
 
+  /** Saves the profile changes and closes the profile popup. */
   async updateProfile(changes: ProfileChanges): Promise<void> {
     await this.actions.updateProfile(changes.name, changes.avatar || DEFAULT_AVATAR);
     this.closeProfilePopup();
   }
 
 
+  /** Logs the user out and navigates to the login page. */
   async logout(): Promise<void> {
     this.closeSettingsPopup();
     this.store.active.set(null);
@@ -259,6 +292,7 @@ export class DashboardComponent {
   }
 
 
+  /** Scrolls the message list to the bottom. */
   scrollToBottom(): void {
     setTimeout(() => {
       const el = this.messagesContainer?.nativeElement;
@@ -269,6 +303,7 @@ export class DashboardComponent {
   }
 
 
+  /** Starts composing a new message with no recipient selected. */
   startNewMessage(): void {
     this.isNewMessage = true;
     this.newRecipient = null;
@@ -277,6 +312,7 @@ export class DashboardComponent {
   }
 
 
+  /** Sends a message to the selected recipient of a new message. */
   async sendNewMessage(text: string): Promise<void> {
     if (this.newRecipient) {
       this.isNewMessage = false;
@@ -285,16 +321,19 @@ export class DashboardComponent {
   }
 
 
+  /** Sends a message to the active conversation. */
   sendMessage(text: string): Promise<void> {
     return this.actions.send(text);
   }
 
 
+  /** Sends a reply in the open thread. */
   sendReply(text: string): Promise<void> {
     return this.actions.reply(text);
   }
 
 
+  /** Closes the settings popup when Escape is pressed. */
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
     if (this.isSettingsPopupOpen) {
@@ -303,26 +342,31 @@ export class DashboardComponent {
   }
 
 
+  /** Names of all existing channels. */
   getExistingChannelNames(): string[] {
     return this.channels.map((channel) => channel.name);
   }
 
 
+  /** Creates a channel from the payload of the add-channel modal. */
   handleChannelCreated(payload: CreatedChannelPayload): Promise<void> {
     return this.actions.createChannel(payload.name, payload.description, payload.memberIds);
   }
 
 
+  /** Expands or collapses the channel list. */
   toggleChannels(): void {
     this.isChannelsOpen = !this.isChannelsOpen;
   }
 
 
+  /** Expands or collapses the direct message list. */
   toggleDirectMessages(): void {
     this.isDirectMessagesOpen = !this.isDirectMessagesOpen;
   }
 
 
+  /** Opens the channel with the given id and shows the chat. */
   selectChannel(channelId: string): void {
     this.isNewMessage = false;
     this.store.openChannel(channelId);
@@ -330,6 +374,7 @@ export class DashboardComponent {
   }
 
 
+  /** Opens the direct chat with the given member and shows the chat. */
   async selectMember(memberId: string): Promise<void> {
     this.isNewMessage = false;
     await this.store.openDirect(memberId);
@@ -337,28 +382,33 @@ export class DashboardComponent {
   }
 
 
+  /** Switches the mobile view to the menu. */
   openMobileMenu(): void {
     this.mobileView = 'menu';
   }
 
 
+  /** The active channel, or an empty channel if none is active. */
   getActiveChannel(): ChannelPreview {
     return this.channels.find((c) => c.id === this.activeChannelId) ?? EMPTY_CHANNEL;
   }
 
 
+  /** The member of the active direct chat, or null if none. */
   getActiveMember(): MemberPreview | null {
     const memberId = this.activeMemberId;
     return memberId ? this.members.find((m) => m.id === memberId) ?? null : null;
   }
 
 
+  /** Title of the active conversation: the member name or the channel name. */
   getActiveTitle(): string {
     const member = this.getActiveMember();
     return member ? member.name : `#${this.getActiveChannel().name}`;
   }
 
 
+  /** Placeholder text for the message composer of the active conversation. */
   getComposerPlaceholder(): string {
     const member = this.getActiveMember();
     if (!member) {
@@ -368,11 +418,13 @@ export class DashboardComponent {
   }
 
 
+  /** Messages of the active conversation. */
   getCurrentMessages(): ChatMessagePreview[] {
     return this.store.messages();
   }
 
 
+  /** Switches to the chat view, scrolls down and focuses the message input. */
   private showChat(): void {
     this.mobileView = 'chat';
     this.scrollToBottom();
@@ -380,6 +432,7 @@ export class DashboardComponent {
   }
 
 
+  /** Opens the first channel if no conversation is active yet. */
   private selectFirstChannelOnce(): void {
     const first = this.store.channels()[0];
     if (first && !this.store.active()) {
@@ -388,6 +441,7 @@ export class DashboardComponent {
   }
 
 
+  /** Scrolls to the bottom when messages are present. */
   private scrollOnNewMessages(): void {
     if (this.store.messages().length) {
       this.scrollToBottom();
