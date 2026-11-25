@@ -70,7 +70,8 @@
 
 .thread-link {
   font-size: 16px;
-  color: var(--purple-3);
+  white-space: nowrap;
+  color: var(--purple-3-text);
 
   &:hover {
     font-weight: 700;
@@ -150,7 +151,7 @@
   font-weight: 700;
 
   &:hover {
-    color: var(--purple-3);
+    color: var(--purple-3-text);
   }
 }
 
@@ -319,7 +320,7 @@
 
     &:hover,
     &:focus-visible {
-      color: var(--purple-3);
+      color: var(--purple-3-text);
       background-color: var(--bg-color);
       font-weight: 700;
     }
