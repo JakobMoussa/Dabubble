@@ -195,6 +195,7 @@ export class DashboardComponent {
   openThread(messageId: string): void {
     this.store.threadParentId.set(messageId);
     this.mobileView = 'thread';
+    setTimeout(() => document.getElementById('thread-reply-input')?.focus(), 0);
   }
 
 
