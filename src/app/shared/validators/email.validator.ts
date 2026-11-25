@@ -8,11 +8,13 @@
 const EMAIL_PATTERN = /^[^\s@.]+(?:\.[^\s@.]+)*@(?:[\p{L}\d](?:[\p{L}\d-]*[\p{L}\d])?\.)+\p{L}{2,}$/u;
 
 
+/** Trims and lowercases an email address. */
 export function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
 }
 
 
+/** Checks the email against the validation pattern. */
 export function isValidEmail(value: string): boolean {
   return EMAIL_PATTERN.test(value.trim());
 }
