@@ -1,10 +1,10 @@
 <div class="search">
   <label [for]="inputId" class="visually-hidden">{{ placeholder }}</label>
   <input type="search" [id]="inputId" class="search__input" [placeholder]="placeholder" autocomplete="off"
-    [(ngModel)]="term" (ngModelChange)="onInput()" (keydown.escape)="term = ''; hits = []" />
+    [(ngModel)]="term" (ngModelChange)="onInput()" (focus)="isOpen = true" (keydown.escape)="isOpen = false" />
   <img src="assets/icons/figma/search-default.svg" alt="" width="24" height="24" class="search__icon" />
 
-  @if (term.trim().length) {
+  @if (isOpen && term.trim().length) {
   <div class="search__results" role="listbox" aria-label="Suchergebnisse">
     @switch (mode) {
     @case ('channels') {

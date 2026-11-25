@@ -131,7 +131,7 @@
     border: none;
     cursor: pointer;
     text-align: left;
-    transition: color 0.15s ease;
+    transition: color 100ms ease;
 
     &:hover {
       color: var(--purple-1);
@@ -150,7 +150,7 @@
     color: var(--purple-3);
     font-weight: 600;
     cursor: pointer;
-    transition: color 0.15s ease;
+    transition: color 100ms ease;
 
     &:hover {
       color: var(--purple-1);
@@ -246,7 +246,7 @@
   justify-content: center;
   opacity: 0.4;
   cursor: not-allowed;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 100ms ease, transform 100ms ease;
 
   &--active,
   &:not(:disabled) {

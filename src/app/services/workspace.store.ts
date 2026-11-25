@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { Observable, catchError, map, of, retry, switchMap } from 'rxjs';
+import { Observable, catchError, distinctUntilChanged, map, of, retry, switchMap, timer } from 'rxjs';
 import { AppUser } from '../models/user.model';
 import { ConversationRef, Message } from '../models/message.model';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../models/view.models';
@@ -16,11 +16,8 @@ import { UserService } from './user.service';
  */
 function resilient<T>(source: Observable<T[]>): Observable<T[]> {
   return source.pipe(
-    retry({ count: 3, delay: 800 }),
-    catchError((error) => {
-      console.warn('Firestore listener stopped:', error?.code ?? error);
-      return of([] as T[]);
-    })
+    retry({ count: 5, delay: (_error, attempt) => timer(attempt * 600) }),
+    catchError(() => of([] as T[]))
   );
 }
 
@@ -42,8 +39,12 @@ export class WorkspaceStore {
     this.uid$.pipe(switchMap((uid) => (uid ? resilient(this.channelService.channelsOf$(uid)) : of([])))),
     { initialValue: [] }
   );
+  private readonly readableActive = computed(() => this.readable(this.active(), this.rawChannels()));
   private readonly rawMessages = toSignal(
-    toObservable(this.active).pipe(switchMap((c) => (c ? resilient(this.messageService.messages$(c)) : of([])))),
+    toObservable(this.readableActive).pipe(
+      distinctUntilChanged((a, b) => a?.type === b?.type && a?.id === b?.id),
+      switchMap((c) => (c ? resilient(this.messageService.messages$(c)) : of([])))
+    ),
     { initialValue: [] as Message[] }
   );
   private readonly rawThread = toSignal(this.threadStream(), { initialValue: [] as Message[] });
@@ -75,6 +76,14 @@ export class WorkspaceStore {
     }
     this.active.set(await this.messageService.openDirectChat(uid, memberId));
     this.threadParentId.set(null);
+  }
+
+
+  private readable(conversation: ConversationRef | null, channels: ChannelPreview[]): ConversationRef | null {
+    if (conversation?.type !== 'channel') {
+      return conversation;
+    }
+    return channels.some((channel) => channel.id === conversation.id) ? conversation : null;
   }
 
 

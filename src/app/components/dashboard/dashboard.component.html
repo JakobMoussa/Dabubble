@@ -183,13 +183,14 @@
         }
 
         @if (getCurrentMessages().length > 0) {
+        @for (msg of getCurrentMessages(); track msg.id; let i = $index) {
+        @if (getCurrentMessages() | dayLabel: i; as day) {
         <div class="date-separator">
           <span class="date-separator__line"></span>
-          <span class="date-separator__pill">Heute</span>
+          <span class="date-separator__pill">{{ day }}</span>
           <span class="date-separator__line"></span>
         </div>
-
-        @for (msg of getCurrentMessages(); track msg.id) {
+        }
         <app-chat-message [message]="msg" [currentUid]="store.uid()" [userNames]="userNames"
           (reactionToggled)="onReactionToggled($event)" (threadOpened)="openThread($event)"
           (edited)="onMessageEdited($event)" (authorClicked)="openProfileById($event)" />

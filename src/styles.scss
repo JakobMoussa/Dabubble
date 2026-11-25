@@ -51,6 +51,7 @@
   --text-gray: #686868;
   --online-green: #92c83e;
   --error-pink: #ed1e79;
+  --error-text: #cf1468;
   --intro-gradient: linear-gradient(0.82deg, #313ae5 1.22%, #797ef3 98.76%);
   --card-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
   --font-primary: 'Nunito', sans-serif;
@@ -123,7 +124,7 @@ a {
   padding: 12px 25px;
   border-radius: 25px;
   border: 1px solid transparent;
-  transition: background-color 0.15s ease;
+  transition: background-color 100ms ease;
 
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
@@ -149,7 +150,7 @@ a {
   padding: 12px 25px;
   border-radius: 25px;
   border: 1px solid var(--purple-2);
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 100ms ease, color 100ms ease, border-color 100ms ease;
 
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
@@ -182,7 +183,7 @@ a {
   display: flex;
   align-items: center;
   gap: 30px;
-  transition: border-color 0.15s ease;
+  transition: border-color 100ms ease;
 
   &:hover {
     border-color: var(--text-gray);
@@ -216,15 +217,15 @@ a {
 }
 
 .input-error {
-  min-height: 19px;
+  min-height: 20px;
   font-family: var(--font-primary);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.2;
-  color: var(--error-pink);
+  color: var(--error-text);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 100ms ease;
 
   &.input-error--visible {
     visibility: visible;
@@ -233,7 +234,7 @@ a {
 
   /* a hidden message must not wrap and push the next field down on narrow screens */
   &:not(.input-error--visible) {
-    max-height: 19px;
+    max-height: 20px;
     overflow: hidden;
   }
 }

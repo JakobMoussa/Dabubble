@@ -20,6 +20,7 @@ import { WorkspaceStore } from '../../services/workspace.store';
 import { WorkspaceActions } from '../../services/workspace-actions.service';
 import { AuthService, DEFAULT_AVATAR } from '../../services/auth.service';
 import { resolveAvatar } from '../../shared/avatars';
+import { DayLabelPipe } from '../../shared/day-label.pipe';
 
 export type { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../models/view.models';
 
@@ -30,7 +31,7 @@ const EMPTY_CHANNEL: ChannelPreview = { id: '', name: '' };
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ThreadPanelComponent, AddChannelModalComponent, ProfilePopupComponent, ChatMessageComponent,
     ChannelSettingsComponent, ChannelMembersComponent, SearchBoxComponent,
-    MessageComposerComponent, NewMessageHeaderComponent],
+    MessageComposerComponent, NewMessageHeaderComponent, DayLabelPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -194,6 +195,7 @@ export class DashboardComponent {
   openThread(messageId: string): void {
     this.store.threadParentId.set(messageId);
     this.mobileView = 'thread';
+    setTimeout(() => document.getElementById('thread-reply-input')?.focus(), 0);
   }
 
 

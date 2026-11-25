@@ -13,8 +13,10 @@
 }
 
 .profile-popup {
+    box-sizing: border-box;
     width: 440px;
     max-width: 100%;
+    overflow-x: hidden;
     max-height: calc(100dvh - 120px);
     overflow-y: auto;
 
@@ -137,6 +139,13 @@
         background: #444df2;
         color: white;
     }
+
+    button:disabled {
+        border-color: var(--light-purple);
+        background: var(--light-purple);
+        color: var(--white);
+        cursor: not-allowed;
+    }
 }
 .avatar-choice {
     display: flex;
@@ -168,7 +177,37 @@
 }
 
 .edit-profile__error {
+    min-height: 20px;
     margin: 4px 0 0;
-    color: var(--error-pink);
-    font-size: 14px;
+    color: var(--error-text);
+    font-size: 16px;
+    visibility: hidden;
+
+    &--visible {
+        visibility: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-overlay {
+        padding: 0;
+    }
+
+    .profile-popup {
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        padding: 24px 20px;
+        border-radius: 0;
+        gap: 24px;
+    }
+
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+    }
+
+    .edit-profile-actions {
+        gap: 12px;
+    }
 }
