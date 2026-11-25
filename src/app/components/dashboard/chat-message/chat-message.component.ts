@@ -54,9 +54,11 @@ export class ChatMessageComponent {
   }
 
 
+  /** Lists who reacted as "A, B und C", with the current user ("Du") last. */
   reactedBy(reaction: ReactionView): string {
-    const names = reaction.userIds.map((id) => (id === this.currentUid ? 'Du' : this.userNames.get(id) ?? 'Jemand'));
-    return names.sort((x) => (x === 'Du' ? 1 : -1)).join(' und ');
+    const others = reaction.userIds.filter((id) => id !== this.currentUid).map((id) => this.userNames.get(id) ?? 'Unbekannt');
+    const names = this.hasReacted(reaction) ? [...others, 'Du'] : others;
+    return names.length > 1 ? `${names.slice(0, -1).join(', ')} und ${names[names.length - 1]}` : names.join('');
   }
 
 
