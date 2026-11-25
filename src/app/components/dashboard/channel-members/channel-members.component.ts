@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MemberPreview } from '../../../models/view.models';
 
@@ -14,7 +14,7 @@ function guestsLast(members: MemberPreview[]): MemberPreview[] {
   templateUrl: './channel-members.component.html',
   styleUrl: './channel-members.component.scss'
 })
-export class ChannelMembersComponent implements AfterViewInit {
+export class ChannelMembersComponent implements OnInit, AfterViewInit {
   @Input() channelName = '';
   @Input() members: MemberPreview[] = [];
   @Input() candidates: MemberPreview[] = [];
@@ -29,8 +29,12 @@ export class ChannelMembersComponent implements AfterViewInit {
   selected: MemberPreview[] = [];
 
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.mode = this.startInAddMode ? 'add' : 'list';
+  }
+
+
+  ngAfterViewInit(): void {
     this.dialogRef.nativeElement.showModal();
   }
 
