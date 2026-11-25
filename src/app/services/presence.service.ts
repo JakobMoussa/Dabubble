@@ -11,6 +11,7 @@ export class PresenceService {
   private uid: string | null = null;
 
 
+  /** Starts tracking the sign-in state, tab visibility and page unload until the given ref is destroyed. */
   start(destroyRef: DestroyRef): void {
     this.auth.user$.pipe(takeUntilDestroyed(destroyRef)).subscribe((user) => {
       this.uid = user?.uid ?? null;
@@ -21,11 +22,13 @@ export class PresenceService {
   }
 
 
+  /** Sets the status to online or away depending on tab visibility. */
   private onVisibilityChange(): void {
     this.update(document.visibilityState === 'visible' ? 'online' : 'away');
   }
 
 
+  /** Writes the status of the signed-in user, ignoring failures. */
   private update(status: 'online' | 'away' | 'offline'): void {
     if (this.uid) {
       this.users.setStatus(this.uid, status).catch(() => undefined);
