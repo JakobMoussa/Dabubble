@@ -27,6 +27,7 @@ const PEOPLE = {
 const uids = {};
 
 
+/** Reads the Firebase web config from the environment file. */
 function readConfig() {
   const source = readFileSync(new URL('../src/environments/environment.ts', import.meta.url), 'utf8');
   const block = source.slice(source.indexOf('firebase:') + 9, source.lastIndexOf('}') - 1);
@@ -34,6 +35,7 @@ function readConfig() {
 }
 
 
+/** Signs in as the demo user, creating the account if it does not exist. */
 async function signInAs(key) {
   const email = `${key}@dabubble-demo.de`;
   await signOut(auth);
@@ -45,6 +47,7 @@ async function signInAs(key) {
 }
 
 
+/** Creates the demo accounts and their profile documents. */
 async function createPeople() {
   for (const [key, person] of Object.entries(PEOPLE)) {
     const user = await signInAs(key);
@@ -55,6 +58,7 @@ async function createPeople() {
 }
 
 
+/** Creates a default channel that all demo users are members of. */
 async function createChannel(id, name, description, ownerKey) {
   await signInAs(ownerKey);
   await setDoc(doc(db, 'channels', id), {
@@ -64,6 +68,7 @@ async function createChannel(id, name, description, ownerKey) {
 }
 
 
+/** Adds a message to a channel and returns its id. */
 async function post(channelId, authorKey, text, minutesAgo, reactions = {}) {
   await signInAs(authorKey);
   const reactionMap = Object.fromEntries(Object.entries(reactions).map(([e, keys]) => [e, keys.map((k) => uids[k])]));
@@ -75,6 +80,7 @@ async function post(channelId, authorKey, text, minutesAgo, reactions = {}) {
 }
 
 
+/** Adds a thread reply to a message and updates the thread counter. */
 async function reply(channelId, messageId, authorKey, text, minutesAgo) {
   await signInAs(authorKey);
   const createdAt = Date.now() - minutesAgo * 6e4;
@@ -86,6 +92,7 @@ async function reply(channelId, messageId, authorKey, text, minutesAgo) {
 }
 
 
+/** Seeds the development team channel with messages, a thread and reactions. */
 async function seedEntwicklerteam() {
   await createChannel('entwicklerteam', 'Entwicklerteam', 'Dieser Channel ist für alles rund um die Entwicklung von DABubble vorgesehen.', 'noah');
   const question = await post('entwicklerteam', 'noah', 'Welche Version von Angular nutzen wir aktuell für DABubble?', 1500);
@@ -96,6 +103,7 @@ async function seedEntwicklerteam() {
 }
 
 
+/** Seeds the office team channel with messages and a reaction. */
 async function seedOfficeTeam() {
   await createChannel('office-team', 'Office-team', 'Organisation, Termine und alles, was nicht Code ist.', 'elise');
   await post('office-team', 'elise', 'Guten Morgen zusammen! Daily ist heute um 9:30 Uhr.', 300, { '☀️': ['noah', 'steffen'] });
