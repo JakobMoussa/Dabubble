@@ -162,7 +162,7 @@
 .channel-item--active,
 .member-item--active {
   background-color: var(--bg-color);
-  color: var(--purple-3);
+  color: var(--purple-3-text);
   font-weight: 700;
 }
 
@@ -188,7 +188,7 @@
   transition: color 100ms ease, transform 0.3s ease-in-out;
 
   &:hover {
-    color: var(--purple-3);
+    color: var(--purple-3-text);
   }
 
   &__label {
