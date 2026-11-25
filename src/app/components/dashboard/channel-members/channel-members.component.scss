@@ -15,6 +15,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
+  max-height: calc(100dvh - 210px);
   padding: 40px;
   background-color: var(--white);
   border-radius: 30px 0 30px 30px;
@@ -56,6 +58,16 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.member-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.picker-wrap {
+  position: relative;
 }
 
 .member-row {
@@ -125,6 +137,9 @@
     border-color: var(--purple-1);
   }
 
+  max-height: 132px;
+  overflow-y: auto;
+
   &__input {
     flex: 1;
     min-width: 120px;
@@ -156,10 +171,17 @@
 }
 
 .suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 1;
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--light-purple);
   border-radius: 20px;
+  background-color: var(--white);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.12);
 
   &__avatar {
     border-radius: 50%;
@@ -172,6 +194,7 @@
   }
 
   .members-card {
+    max-height: calc(100dvh - 40px);
     padding: 24px 16px;
     border-radius: 30px;
   }

@@ -10,7 +10,7 @@
 
     @if (mode === 'list') {
     <ul class="member-list">
-      @for (member of members; track member.id) {
+      @for (member of sortedMembers; track member.id) {
       <li>
         <button type="button" class="member-row" (click)="memberClicked.emit(member)">
           <span class="avatar">
@@ -28,6 +28,7 @@
     </button>
     } @else {
     <p class="channel-tag"># {{ channelName }}</p>
+    <div class="picker-wrap">
     <div class="picker">
       @for (member of selected; track member.id) {
       <span class="chip">
@@ -50,6 +51,7 @@
       }
     </ul>
     }
+    </div>
     <div class="members-card__actions">
       <button type="button" class="btn-primary" [disabled]="!selected.length" (click)="confirm()">Hinzufügen</button>
     </div>
