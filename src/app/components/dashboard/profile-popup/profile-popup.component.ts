@@ -30,21 +30,25 @@ export class ProfilePopupComponent {
   @Output() closed = new EventEmitter<void>();
   @Output() profileSaved = new EventEmitter<ProfileChanges>();
 
+  /** Switches to edit mode with the current name and avatar. */
   startEditing(): void {
     this.editedName = this.userName;
     this.editedAvatar = this.userAvatar;
     this.isEditing = true;
   }
 
+  /** Leaves edit mode and resets the edited name. */
   cancelEditing(): void {
     this.isEditing = false;
     this.editedName = this.userName;
   }
 
+  /** Emits that the popup should be closed. */
   closePopup(): void {
     this.closed.emit();
   }
 
+  /** Emits the edited profile if the name is not empty and leaves edit mode. */
   saveProfile(): void {
     const newName = this.editedName.trim();
 
