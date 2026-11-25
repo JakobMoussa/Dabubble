@@ -77,26 +77,52 @@
         transition: color 100ms ease-in;
 
         &:hover {
-            color: var(--purple-3);
+            color: var(--purple-3-text);
             font-weight: 700;
         }
     }
 }
 
 .profile-status {
-    color: #92c83e;
+    color: var(--online-text);
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 20px;
     font-weight: 400;
+
+    &--offline {
+        color: var(--text-gray);
+    }
+}
+
+.profile-status__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--online-green);
+
+    .profile-status--offline & {
+        background-color: var(--text-gray);
+    }
 }
 
 .profile-email {
     margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-    p {
-        color: #1381ff;
+    a {
+        color: var(--link-blue);
+        font-size: 18px;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+        transition: color 100ms ease-in;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
 }
 
