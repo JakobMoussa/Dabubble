@@ -119,9 +119,10 @@
 }
 
 .field-error {
-  min-height: 20px;
+  min-height: 22px;
   margin: 0;
   font-size: 16px;
+  line-height: 1.35;
   color: var(--error-text);
 }
 
@@ -311,5 +312,9 @@
   .field-label,
   .radio-option__text {
     font-size: 16px;
+  }
+
+  .field-error {
+    min-height: 44px;
   }
 }
