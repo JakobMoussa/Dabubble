@@ -1,4 +1,4 @@
-<article class="message-row" [class.message-row--own]="message.isOwn" [class.message-row--editing]="isEditing"
+<article class="message-row" tabindex="-1" [class.message-row--own]="message.isOwn" [class.message-row--editing]="isEditing"
   (mouseleave)="isMenuOpen = false">
   <img [src]="message.avatar" [alt]="message.author" width="70" height="70" class="message-row__avatar" />
 
