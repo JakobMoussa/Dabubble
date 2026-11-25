@@ -33,6 +33,7 @@ export class ThreadPanelComponent {
   }
 
 
+  /** Emits that the thread should be closed. */
   onClose(): void {
     this.closeThread.emit();
   }
