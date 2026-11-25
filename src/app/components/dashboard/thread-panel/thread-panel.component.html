@@ -19,7 +19,7 @@
       [showThreadLink]="false" (reactionToggled)="rootReaction.emit($event)" />
 
     <div class="thread-divider">
-      <span class="thread-divider__count">{{ replies.length }} {{ replies.length === 1 ? 'Antwort' : 'Antworten' }}</span>
+      <span class="thread-divider__count">{{ replyCount }} {{ replyCount === 1 ? 'Antwort' : 'Antworten' }}</span>
       <span class="thread-divider__line"></span>
     </div>
 

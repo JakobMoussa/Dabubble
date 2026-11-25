@@ -34,6 +34,7 @@ export class SearchBoxComponent implements OnDestroy {
   isOpen = false;
 
 
+  /** Closes the result list when a click happens outside the search box. */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (!this.host.nativeElement.contains(event.target as Node)) {
@@ -42,6 +43,7 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Search mode derived from the term prefix: "#" channels, "@" members, otherwise messages. */
   get mode(): 'channels' | 'members' | 'messages' {
     if (this.term.startsWith('#')) {
       return 'channels';
@@ -50,21 +52,25 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Search term without prefix, trimmed and lowercased. */
   get query(): string {
     return this.term.replace(/^[#@]/, '').trim().toLowerCase();
   }
 
 
+  /** Channels whose name matches the query. */
   get channelHits(): ChannelPreview[] {
     return this.store.channels().filter((c) => c.name.toLowerCase().includes(this.query));
   }
 
 
+  /** Members whose name matches the query. */
   get memberHits(): MemberPreview[] {
     return this.store.members().filter((m) => m.name.toLowerCase().includes(this.query));
   }
 
 
+  /** Resets the hits, opens the result list and starts a debounced message search for longer queries. */
   onInput(): void {
     if (this.timer) {
       clearTimeout(this.timer);
@@ -77,6 +83,7 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Display name of a conversation: channel name with "#" or the name of the chat partner. */
   channelName(conversation: ConversationRef): string {
     if (conversation.type === 'channel') {
       return '#' + (this.store.channels().find((c) => c.id === conversation.id)?.name ?? '');
@@ -86,27 +93,32 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Name of the author of a message hit. */
   authorName(hit: MessageHit): string {
     return this.store.userMap().get(hit.message.authorId)?.name ?? 'Unbekannt';
   }
 
 
+  /** Emits the selected channel. */
   pickChannel(channel: ChannelPreview): void {
     this.emit({ conversation: { type: 'channel', id: channel.id } });
   }
 
 
+  /** Emits the direct chat with the selected member. */
   pickMember(member: MemberPreview): void {
     const uid = this.store.uid() ?? '';
     this.emit({ conversation: { type: 'direct', id: buildDirectChatId(uid, member.id) }, memberId: member.id });
   }
 
 
+  /** Emits the conversation of the selected message hit. */
   pickHit(hit: MessageHit): void {
     this.emit({ conversation: hit.conversation });
   }
 
 
+  /** Cancels a pending search timer. */
   ngOnDestroy(): void {
     if (this.timer) {
       clearTimeout(this.timer);
@@ -114,6 +126,7 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Searches all channels and direct chats for the query and keeps the first 20 hits. */
   private async searchMessages(): Promise<void> {
     this.isSearching = true;
     const uid = this.store.uid() ?? '';
@@ -124,6 +137,7 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
+  /** Resets the search and emits the selection. */
   private emit(selection: SearchSelection): void {
     this.term = '';
     this.hits = [];

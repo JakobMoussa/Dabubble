@@ -51,9 +51,11 @@ export class SignUpComponent implements OnDestroy {
 
   private readonly authService = inject(AuthService);
 
+  /** Injects the router used for navigation after registration. */
   constructor(private readonly router: Router) { }
 
 
+  /** Cancels a pending redirect timer when the component is destroyed. */
   ngOnDestroy(): void {
     if (this.redirectTimer) {
       clearTimeout(this.redirectTimer);
@@ -61,21 +63,25 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Checks that the full name consists of at least a first and a last name. */
   isNameValid(): boolean {
     return this.namePattern.test(this.fullName.trim());
   }
 
 
+  /** Checks whether the entered email address is valid. */
   isEmailValid(): boolean {
     return isValidEmail(this.email);
   }
 
 
+  /** Checks that the password has at least 8 characters. */
   isPasswordValid(): boolean {
     return this.password.trim().length >= 8;
   }
 
 
+  /** Checks that all fields of the first step are valid and the privacy policy is accepted. */
   isStepOneValid(): boolean {
     return (
       this.isNameValid() &&
@@ -86,31 +92,37 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Returns true if the name field was touched and its value is invalid. */
   showNameError(): boolean {
     return this.nameTouched && !this.isNameValid();
   }
 
 
+  /** Returns true if the email field was touched and its value is invalid. */
   showEmailError(): boolean {
     return this.emailTouched && !this.isEmailValid();
   }
 
 
+  /** Returns true if the password field was touched and its value is invalid. */
   showPasswordError(): boolean {
     return this.passwordTouched && !this.isPasswordValid();
   }
 
 
+  /** Returns true if the privacy checkbox was touched but not accepted. */
   showPrivacyError(): boolean {
     return this.privacyTouched && !this.privacyAccepted;
   }
 
 
+  /** Returns true if a field is focused or has a non-empty value. */
   isFieldActive(focused: boolean, value: string): boolean {
     return focused || value.trim().length > 0;
   }
 
 
+  /** Returns the mail icon path, highlighted while the field is active. */
   getMailIcon(): string {
     return this.isFieldActive(this.emailFocused, this.email)
       ? 'assets/icons/mail-black.svg'
@@ -118,6 +130,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Returns the lock icon path, highlighted while the field is active. */
   getLockIcon(): string {
     return this.isFieldActive(this.passwordFocused, this.password)
       ? 'assets/icons/lock-black.svg'
@@ -125,6 +138,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Clears the name focus state and marks the field as touched if it has a value. */
   onNameBlur(): void {
     this.nameFocused = false;
     if (this.fullName.length > 0) {
@@ -133,6 +147,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Clears the email focus state and marks the field as touched if it has a value. */
   onEmailBlur(): void {
     this.emailFocused = false;
     if (this.email.length > 0) {
@@ -141,6 +156,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Clears the password focus state and marks the field as touched if it has a value. */
   onPasswordBlur(): void {
     this.passwordFocused = false;
     if (this.password.length > 0) {
@@ -149,11 +165,13 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Marks the privacy checkbox as touched. */
   onPrivacyChange(): void {
     this.privacyTouched = true;
   }
 
 
+  /** Moves to the avatar step if the first step is valid. */
   onProceedToAvatar(): void {
     this.markFormTouched();
     if (!this.isStepOneValid()) {
@@ -163,6 +181,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Marks all fields of the first step as touched. */
   private markFormTouched(): void {
     this.nameTouched = true;
     this.emailTouched = true;
@@ -171,16 +190,19 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Returns to the form step. */
   goBackToForm(): void {
     this.step = 'form';
   }
 
 
+  /** Selects an avatar and clears any upload error. */
   selectAvatar(src: string): void {
     this.uploadError = '';
     this.selectedAvatar = src;
   }
 
+  /** Registers the user with the selected avatar and shows the success toast, or sets an error message on failure. */
   async onCreateAccount(): Promise<void> {
     if (!this.selectedAvatar || this.isSubmitting) {
       return;
@@ -196,6 +218,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Registers the user through the auth service with the entered data and selected avatar. */
   private registerUser(): Promise<void> {
     return this.authService.register({
       name: this.fullName,
@@ -206,6 +229,7 @@ export class SignUpComponent implements OnDestroy {
   }
 
 
+  /** Shows the success toast and redirects to the dashboard after a short delay. */
   private showSuccessAndRedirect(): void {
     this.showToast = true;
     this.redirectTimer = setTimeout(() => {

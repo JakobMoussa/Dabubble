@@ -11,6 +11,7 @@ import { PresenceService } from './services/presence.service';
 export class AppComponent {
   title = 'dabubble';
 
+  /** Starts the presence tracking of the signed-in user. */
   constructor() {
     inject(PresenceService).start(inject(DestroyRef));
   }

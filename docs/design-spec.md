@@ -14,6 +14,15 @@ Quelle: Figma „DABubble (Slack Clone)“, Seiten *Prototype* und *Components*.
 | `--online-green` | `#92C83E` | Online-Status |
 | `--error-pink` | `#ED1E79` | Fehlermeldungen |
 
+Für Text auf hellem Grund sind einige Figma-Farben minimal abgedunkelt, damit der Kontrast mindestens 4,5:1 erreicht (WCAG AA). Flächen, Rahmen und Punkte behalten die Figma-Farbe.
+
+| Token | Wert | Figma-Farbe | Verwendung |
+|---|---|---|---|
+| `--purple-3-text` | `#4E55F0` | `#535AF1` | Links und Hover-Text auf `--bg-color` |
+| `--online-text` | `#3F7A12` | `#92C83E` | Text „Aktiv“ im Profil |
+| `--link-blue` | `#0B66CC` | `#1381FF` | E-Mail-Adresse im Profil |
+| `--error-text` | `#CF1468` | `#ED1E79` | Text von Fehlermeldungen |
+
 ## Schatten
 - Header / Karten: `0 2px 10px rgba(0,0,0,.08)`
 - Overlays / Popups: `0 6px 10px rgba(0,0,0,.2)`

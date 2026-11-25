@@ -27,6 +27,13 @@ export class ThreadPanelComponent {
   @Output() edited = new EventEmitter<{ messageId: string; text: string }>();
 
 
+  /** Reply count; uses the stored counter until the replies have loaded, so it never flashes 0. */
+  get replyCount(): number {
+    return Math.max(this.replies.length, this.rootMessage.repliesCount ?? 0);
+  }
+
+
+  /** Emits that the thread should be closed. */
   onClose(): void {
     this.closeThread.emit();
   }

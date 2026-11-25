@@ -28,9 +28,11 @@ export class ResetPasswordComponent implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly oobCode = inject(ActivatedRoute).snapshot.queryParamMap.get('oobCode') ?? '';
 
+  /** Injects the router used for navigation after the password was reset. */
   constructor(private readonly router: Router) {}
 
 
+  /** Cancels a pending redirect timer when the component is destroyed. */
   ngOnDestroy(): void {
     if (this.redirectTimer) {
       clearTimeout(this.redirectTimer);
@@ -38,37 +40,44 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
+  /** Checks that the new password has at least 8 characters. */
   isPasswordValid(): boolean {
     return this.password.trim().length >= 8;
   }
 
 
+  /** Checks that the confirmation is filled and matches the password. */
   doPasswordsMatch(): boolean {
     return this.confirmPassword.length > 0 && this.password === this.confirmPassword;
   }
 
 
+  /** Checks that the password is valid and both entries match. */
   isFormValid(): boolean {
     return this.isPasswordValid() && this.doPasswordsMatch();
   }
 
 
+  /** Returns true if the password field was touched and its value is invalid. */
   showPasswordError(): boolean {
     return this.passwordTouched && !this.isPasswordValid();
   }
 
 
+  /** Returns true if the confirmation field was touched and does not match the password. */
   showConfirmError(): boolean {
     return this.confirmTouched && !this.doPasswordsMatch();
   }
 
 
+  /** Returns the lock icon path, highlighted while the field is focused or filled. */
   getLockIcon(focused: boolean, value: string): string {
     const isActive = focused || value.trim().length > 0;
     return isActive ? 'assets/icons/lock-black.svg' : 'assets/icons/lock.svg';
   }
 
 
+  /** Clears the password focus state and marks the field as touched if it has a value. */
   onPasswordBlur(): void {
     this.passwordFocused = false;
     if (this.password.length > 0) {
@@ -77,6 +86,7 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
+  /** Clears the confirmation focus state and marks the field as touched if it has a value. */
   onConfirmBlur(): void {
     this.confirmFocused = false;
     if (this.confirmPassword.length > 0) {
@@ -85,6 +95,7 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
+  /** Validates the form and applies the new password. */
   onSubmit(): void {
     this.passwordTouched = true;
     this.confirmTouched = true;
@@ -95,6 +106,7 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
+  /** Confirms the password reset with the reset code and shows the success toast, or sets an error message on failure. */
   private async applyNewPassword(): Promise<void> {
     this.isSubmitting = true;
     this.submitError = '';
@@ -108,6 +120,7 @@ export class ResetPasswordComponent implements OnDestroy {
   }
 
 
+  /** Shows the success toast and redirects to the login page after a short delay. */
   private showSuccessAndRedirect(): void {
     this.showToast = true;
     this.redirectTimer = setTimeout(() => {

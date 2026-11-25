@@ -1,146 +1,131 @@
-# 💬 DABubble
+# DABubble
 
-**DABubble** ist eine moderne Chat- und Messaging-Webanwendung (inspiriert von Slack), entwickelt mit **Angular 19**. Das Projekt ermöglicht Team-Kommunikation über Channels, Direktnachrichten und Threads.
+DABubble is a team messenger inspired by Slack, built with **Angular 19** and **Firebase**. Teams talk in channels, direct messages and threads, react with emojis and mention each other with `@` and `#`.
 
----
-
-## 📋 Inhaltsverzeichnis
-
-- [Voraussetzungen](#-voraussetzungen)
-- [Installation & Setup](#-installation--setup)
-- [Entwicklungsserver starten](#-entwicklungsserver-starten)
-- [Build für Produktion](#-build-für-produktion)
-- [Projektstruktur](#-projektstruktur)
-- [Tech-Stack](#-tech-stack)
-- [Git Workflow für Teammitglieder](#-git-workflow-für-teammitglieder)
+**Live demo:** <https://dabubble-3309.developerakademie.net/> – click **Guest login** to try it without an account.
 
 ---
 
-## ⚙️ Voraussetzungen
+## Features
 
-Stelle sicher, dass folgende Werkzeuge auf deinem System installiert sind:
+- **Accounts:** sign up, login, Google login, guest login, forgot / reset password, avatar choice
+- **Channels:** create, rename, add members, leave; new accounts join the default channels automatically
+- **Messaging:** real-time messages, threads with reply count, editing your own messages, emoji reactions with "who reacted" tooltip
+- **Direct messages** between all members, including a note-to-self chat
+- **Mentions:** `@member` and `#channel` suggestions while typing
+- **Search** across all channels you are a member of, with jump to the message
+- **Presence:** online / away status
+- **Responsive** from 320 px to widescreen, legal notice and privacy policy
 
-- **Git**: [git-scm.com](https://git-scm.com/)
-- **Node.js**: Version `20.x` oder `22.x` empfohlen ([nodejs.org](https://nodejs.org/))
-- **npm**: Version `10.x` oder höher (wird mit Node.js installiert)
-- *(Optional)* **Angular CLI**:
-  ```bash
-  npm install -g @angular/cli
-  ```
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Framework | Angular 19 (standalone components, signals) |
+| Language | TypeScript, SCSS |
+| Backend | Firebase Authentication, Cloud Firestore (region `europe-west3`) |
+| Data access | AngularFire, RxJS |
+| Fonts | Nunito, served locally from `src/assets/fonts` (no external CDN) |
 
 ---
 
-## 🚀 Installation & Setup
+## Getting started
 
-Befolge diese Schritte, um das Projekt lokal bei dir einzurichten:
+### Requirements
 
-### 1. Repository klonen
+- [Node.js](https://nodejs.org/) 20 or 22 with npm 10+
+- Optional: Angular CLI (`npm install -g @angular/cli`)
+
+### Install and run
 
 ```bash
 git clone https://github.com/JakobMoussa/Dabubble.git
-```
-
-### 2. In das Projektverzeichnis wechseln
-
-```bash
 cd Dabubble
-```
-*(Hinweis: Falls der lokale Ordnername abweicht, wechsle in den entsprechenden Projektordner).*
-
-### 3. Abhängigkeiten installieren
-
-```bash
 npm install
-```
-
----
-
-## 💻 Entwicklungsserver starten
-
-Nach erfolgreicher Installation der Abhängigkeiten kannst du den lokalen Entwicklungsserver starten:
-
-```bash
 npm start
 ```
-*(Alternativ: `ng serve`)*
 
-Sobald der Build abgeschlossen ist, öffne deinen Browser unter:
+Open <http://localhost:4200/>.
 
-👉 **[http://localhost:4200/](http://localhost:4200/)**
+> The Firebase API key only accepts requests from `localhost:4200` and the live domain. If you start the dev server on another port, login fails with a network error.
 
-> **Tipp:** Der Server verfügt über Hot-Reloading. Änderungen im Code werden automatisch im Browser aktualisiert.
+### Firebase configuration
 
----
+The web config lives in `src/environments/environment.ts`. These values are public by design; access is protected by the Firestore security rules and an HTTP-referrer restricted API key. To run DABubble against your own Firebase project:
 
-## 📦 Build für Produktion
+1. Create a project and a web app in the [Firebase console](https://console.firebase.google.com/) and paste its config into `environment.ts`.
+2. Authentication: enable **Email/Password**, **Google** and **Anonymous**.
+3. Firestore: create a database and deploy the rules:
 
-Um einen optimierten Produktions-Build zu generieren:
+   ```bash
+   npx firebase-tools deploy --only firestore:rules --project <your-project-id>
+   ```
+
+4. Authentication → Settings → Authorized domains: add your hosting domain.
+
+### Demo data
+
+`scripts/seed-demo-data.mjs` creates demo users, channels, messages, threads and reactions:
 
 ```bash
-npm run build
+SEED_PASSWORD=<at-least-8-characters> node scripts/seed-demo-data.mjs
 ```
-
-Die fertigen Artefakte befinden sich anschließend im Ordner `dist/dabubble/`.
 
 ---
 
-## 🗂️ Projektstruktur
+## Scripts
+
+| Command | Purpose |
+|---|---|
+| `npm start` | Dev server on `localhost:4200` |
+| `npm run build` | Production build into `dist/dabubble/browser/` |
+| `npm test` | Unit tests with Karma / Jasmine |
+
+## Deployment
+
+The app uses hash routing (`/#/dashboard`), so it runs on any static web server without rewrite rules.
+
+1. `npm run build`
+2. Upload the **contents** of `dist/dabubble/browser/` to the web root (including `.htaccess`).
+3. Reload with `Ctrl + F5` and test the guest login.
+
+## Security
+
+- Firestore rules (`firestore.rules`): only signed-in users read data; only channel or chat members read and write messages; only the author edits a message, while every member may react and reply; nobody can remove other members from a channel; deleting is disabled.
+- Emails are trimmed and lower-cased before they are stored.
+
+---
+
+## Project structure
 
 ```text
-dabubble/
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── dashboard/          # Haupt-Dashboard (Chat, Header, Sidebar)
-│   │   │   │   ├── add-channel-modal/
-│   │   │   │   ├── profile-popup/
-│   │   │   │   └── thread-panel/
-│   │   │   ├── login/              # Authentifizierung: Login
-│   │   │   ├── sign-up/            # Registrierung
-│   │   │   ├── forgot-password/    # Passwort vergessen
-│   │   │   └── reset-password/     # Passwort zurücksetzen
-│   │   ├── models/                 # TypeScript Datenmodelle / Interfaces
-│   │   ├── services/               # State- und Datendienste
-│   │   ├── shared/                 # Wiederverwendbare Layouts & Styles
-│   │   ├── app.routes.ts           # Routing-Konfiguration
-│   │   └── app.config.ts           # App-Konfiguration
-│   ├── assets/                     # Bilder, Icons, Fonts
-│   └── styles.scss                 # Globale Styles & Variablen
-├── angular.json                    # Angular CLI Konfiguration
-└── package.json                    # Dependencies & NPM Scripts
+src/
+├── app/
+│   ├── components/
+│   │   ├── dashboard/          # Workspace: sidebar, chat, threads, dialogs
+│   │   ├── login/              # Login, guest login, intro animation
+│   │   ├── sign-up/            # Registration and avatar choice
+│   │   ├── forgot-password/    # Request a reset email
+│   │   ├── reset-password/     # Set a new password
+│   │   └── legal/              # Legal notice and privacy policy
+│   ├── models/                 # Firestore and view models
+│   ├── services/               # Auth, users, channels, messages, presence, workspace store
+│   └── shared/                 # Pipes, validators, guards, shared components and styles
+├── assets/                     # Icons, images, fonts
+├── environments/               # Firebase web config
+└── styles.scss                 # Global styles and design tokens
+docs/design-spec.md             # Colors, typography and animations from Figma
+firestore.rules                 # Firestore security rules
+scripts/seed-demo-data.mjs      # Demo data
 ```
 
----
+## Team workflow
 
-## 🛠️ Tech-Stack
+1. Update `main`: `git checkout main && git pull`
+2. Create a branch: `git checkout -b fix/short-name`
+3. Commit small, focused changes with [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `style:`, `docs:`)
+4. Push and open a pull request into `main`; a teammate reviews and merges it.
 
-- **Framework:** [Angular 19](https://angular.dev/)
-- **Sprache:** TypeScript
-- **Styling:** SCSS
-- **Reaktivität:** RxJS
+## Team
 
----
-
-## 🤝 Git Workflow für Teammitglieder
-
-Damit wir reibungslos zusammenarbeiten können, empfiehlt sich folgender Workflow:
-
-1. **Neuesten Stand von `main` abholen:**
-   ```bash
-   git checkout main
-   git pull origin main
-   ```
-2. **Neuen Feature-Branch erstellen:**
-   ```bash
-   git checkout -b feature/dein-feature-name
-   ```
-3. **Änderungen committen:**
-   ```bash
-   git add .
-   git commit -m "feat: kurze Beschreibung deiner Änderung"
-   ```
-4. **Branch pushen & Pull Request erstellen:**
-   ```bash
-   git push origin feature/dein-feature-name
-   ```
-   Erstelle anschließend auf GitHub einen Pull Request in den `main`-Branch.
+Developed by Jakob Moussa, Raphael Neuberger and Samrawit Tesfay as part of the Developer Akademie frontend course.

@@ -32,6 +32,7 @@ export class EmojiPickerComponent {
   @Output() dismissed = new EventEmitter<void>();
 
 
+  /** Closes the picker on any document click or Escape key press. */
   @HostListener('document:click')
   @HostListener('document:keydown.escape')
   onOutsideClick(): void {

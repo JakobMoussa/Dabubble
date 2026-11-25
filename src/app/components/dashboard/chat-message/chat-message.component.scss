@@ -65,12 +65,15 @@
 .message-thread-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 4px;
 }
 
 .thread-link {
   font-size: 16px;
-  color: var(--purple-3);
+  white-space: nowrap;
+  color: var(--purple-3-text);
 
   &:hover {
     font-weight: 700;
@@ -120,13 +123,17 @@
   margin: 0 calc(-1 * var(--row-bleed, 36px));
   transition: background-color 80ms ease-in;
 
-  &:hover,
-  &--editing {
+  &--editing,
+  &:focus-within {
     background-color: var(--bg-color);
 
     .message-bubble:not(.message-bubble--own) {
       background-color: var(--white);
     }
+  }
+
+  &:focus-visible {
+    outline: none;
   }
 
   &--editing .message-content {
@@ -135,9 +142,24 @@
     max-width: 100%;
   }
 
-  &:hover .message-actions {
+  &:focus-within .message-actions {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--bg-color);
+
+      .message-bubble:not(.message-bubble--own) {
+        background-color: var(--white);
+      }
+
+      .message-actions {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   }
 }
 
@@ -150,7 +172,7 @@
   font-weight: 700;
 
   &:hover {
-    color: var(--purple-3);
+    color: var(--purple-3-text);
   }
 }
 
@@ -319,7 +341,7 @@
 
     &:hover,
     &:focus-visible {
-      color: var(--purple-3);
+      color: var(--purple-3-text);
       background-color: var(--bg-color);
       font-weight: 700;
     }
@@ -346,7 +368,9 @@
   }
 
   .message-actions {
+    top: -44px;
     right: 16px;
+    z-index: 2;
 
     &--own {
       left: 16px;

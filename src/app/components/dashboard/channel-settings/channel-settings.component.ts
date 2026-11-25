@@ -31,11 +31,13 @@ export class ChannelSettingsComponent implements AfterViewInit {
   draftDescription = '';
 
 
+  /** Opens the dialog as a modal. */
   ngAfterViewInit(): void {
     this.dialogRef.nativeElement.showModal();
   }
 
 
+  /** Validation message for the draft channel name, or an empty string if valid. */
   get nameError(): string {
     const name = this.draftName.trim().replace(/^#+/, '');
     if (!name) {
@@ -46,6 +48,7 @@ export class ChannelSettingsComponent implements AfterViewInit {
   }
 
 
+  /** Starts editing the given field with the current channel values. */
   startEdit(field: EditField): void {
     this.draftName = this.channel.name;
     this.draftDescription = this.channel.description ?? '';
@@ -53,6 +56,7 @@ export class ChannelSettingsComponent implements AfterViewInit {
   }
 
 
+  /** Emits the changes unless the name is invalid and ends editing. */
   save(): void {
     if (this.editing === 'name' && this.nameError) {
       return;
@@ -62,6 +66,7 @@ export class ChannelSettingsComponent implements AfterViewInit {
   }
 
 
+  /** Closes the dialog and emits the closed event. */
   close(): void {
     this.dialogRef.nativeElement.close();
     this.closed.emit();

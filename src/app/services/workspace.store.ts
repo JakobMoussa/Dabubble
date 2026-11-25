@@ -57,18 +57,21 @@ export class WorkspaceStore {
   readonly threadMessages = computed(() => this.toPreviews(this.rawThread()));
 
 
+  /** Makes the channel the active conversation and closes any open thread. */
   openChannel(channelId: string): void {
     this.active.set({ type: 'channel', id: channelId });
     this.threadParentId.set(null);
   }
 
 
+  /** Makes the conversation active and closes any open thread. */
   openConversation(conversation: ConversationRef): void {
     this.active.set(conversation);
     this.threadParentId.set(null);
   }
 
 
+  /** Opens (and creates if needed) the direct chat with the member and closes any open thread. */
   async openDirect(memberId: string): Promise<void> {
     const uid = this.uid();
     if (!uid) {
@@ -79,6 +82,7 @@ export class WorkspaceStore {
   }
 
 
+  /** Returns the conversation only if it is readable (direct chat or a channel the user belongs to), otherwise null. */
   private readable(conversation: ConversationRef | null, channels: ChannelPreview[]): ConversationRef | null {
     if (conversation?.type !== 'channel') {
       return conversation;
@@ -87,11 +91,13 @@ export class WorkspaceStore {
   }
 
 
+  /** Emits the source list while a user is signed in and an empty list otherwise. */
   private whenSignedIn<T>(source: () => Observable<T[]>): Observable<T[]> {
     return this.uid$.pipe(switchMap((uid) => (uid ? resilient(source()) : of([] as T[]))));
   }
 
 
+  /** Streams the replies of the open thread, or an empty list if none is open. */
   private threadStream(): Observable<Message[]> {
     return toObservable(this.threadParentId).pipe(
       switchMap((parentId) => {
@@ -102,12 +108,14 @@ export class WorkspaceStore {
   }
 
 
+  /** Converts messages to view previews using the known users. */
   private toPreviews(messages: Message[]): ChatMessagePreview[] {
     const users = this.userMap();
     return messages.map((message) => toMessagePreview(message, users, this.uid()));
   }
 
 
+  /** Sorts members with the current user first, then alphabetically by name. */
   private sortMembers(members: MemberPreview[]): MemberPreview[] {
     return members.sort((a, b) => Number(!!b.isCurrentUser) - Number(!!a.isCurrentUser) || a.name.localeCompare(b.name));
   }

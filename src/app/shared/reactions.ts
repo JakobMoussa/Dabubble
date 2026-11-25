@@ -26,6 +26,7 @@ export function limitReactions(views: ReactionView[], limit: number): { visible:
 }
 
 
+/** Reads the most recently used emojis from local storage, falling back to the defaults. */
 export function readRecentEmojis(): string[] {
   try {
     const stored = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as string[];
@@ -36,6 +37,7 @@ export function readRecentEmojis(): string[] {
 }
 
 
+/** Stores the emoji as most recently used in local storage. */
 export function rememberEmoji(emoji: string): void {
   try {
     const recent = [emoji, ...readRecentEmojis().filter((e) => e !== emoji)].slice(0, 2);

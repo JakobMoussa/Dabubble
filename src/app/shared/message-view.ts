@@ -6,11 +6,13 @@ import { DEFAULT_AVATAR } from '../services/auth.service';
 import { resolveAvatar } from './avatars';
 
 
+/** Formats a timestamp as a German time string such as "09:30 Uhr". */
 export function formatTime(timestamp: number): string {
   return new Date(timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
 }
 
 
+/** Returns "Heute", "Gestern" or the long German date for a timestamp. */
 export function formatDay(timestamp: number): string {
   const date = new Date(timestamp);
   const yesterday = new Date();
@@ -25,6 +27,7 @@ export function formatDay(timestamp: number): string {
 }
 
 
+/** Converts a user to the member preview shown in lists, marking the current user. */
 export function toMemberPreview(user: AppUser, currentUid: string | null): MemberPreview {
   const isCurrentUser = user.uid === currentUid;
   return {
@@ -35,6 +38,7 @@ export function toMemberPreview(user: AppUser, currentUid: string | null): Membe
 }
 
 
+/** Converts a message to the preview shown in the chat, resolving author, times and reactions. */
 export function toMessagePreview(message: Message, users: Map<string, AppUser>, currentUid: string | null): ChatMessagePreview {
   const author = users.get(message.authorId);
   return {
