@@ -115,10 +115,11 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Avatar URLs of the active channel's members. */
+  /** Avatar URLs of the active channel's members; deleted accounts are skipped. */
   get channelMemberAvatars(): string[] {
-    const memberIds = this.getActiveChannel().memberIds ?? [];
-    return memberIds.map((id) => resolveAvatar(this.store.userMap().get(id)?.avatar, DEFAULT_AVATAR));
+    const users = this.store.userMap();
+    const memberIds = (this.getActiveChannel().memberIds ?? []).filter((id) => users.has(id));
+    return memberIds.map((id) => resolveAvatar(users.get(id)?.avatar, DEFAULT_AVATAR));
   }
 
 
