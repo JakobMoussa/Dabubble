@@ -3,7 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 
-/** Keeps the signed-in user's status in sync with tab visibility (online, away, offline). */
+const HEARTBEAT_MS = 60_000;
+
+/** Keeps the signed-in user's status in sync with tab visibility and sends a heartbeat every minute. */
 @Injectable({ providedIn: 'root' })
 export class PresenceService {
   private readonly auth = inject(AuthService);
@@ -19,6 +21,8 @@ export class PresenceService {
     });
     document.addEventListener('visibilitychange', () => this.onVisibilityChange());
     window.addEventListener('pagehide', () => this.update('offline'));
+    const heartbeat = setInterval(() => this.onVisibilityChange(), HEARTBEAT_MS);
+    destroyRef.onDestroy(() => clearInterval(heartbeat));
   }
 
 

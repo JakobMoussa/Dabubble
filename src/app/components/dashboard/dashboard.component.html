@@ -73,7 +73,7 @@
                   [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag-purple.svg' : 'assets/icons/tag.svg'"
                   alt="" width="24" height="24" />
                 <span class="channel-item__name">{{ channel.name }}</span>
-                @if (drafts.has('channel:' + channel.id) && (activeMemberId || activeChannelId !== channel.id)) {
+                @if (drafts.has('channel:' + channel.id)) {
                 <img src="assets/icons/figma/edit-default.svg" alt="Entwurf" title="Entwurf" width="20" height="20"
                   class="draft-icon" />
                 }
@@ -113,7 +113,7 @@
                     [class.status-dot--offline]="!member.online"></span>
                 </span>
                 <span class="member-item__name">{{ member.name }}</span>
-                @if (drafts.has('member:' + member.id) && activeMemberId !== member.id) {
+                @if (drafts.has('member:' + member.id)) {
                 <img src="assets/icons/figma/edit-default.svg" alt="Entwurf" title="Entwurf" width="20" height="20"
                   class="draft-icon" />
                 }

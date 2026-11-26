@@ -180,6 +180,14 @@
   margin-left: auto;
 }
 
+// On desktop the open chat is visible next to the sidebar, so its own entry needs no draft hint.
+@media (min-width: 961px) {
+  .channel-item--active .draft-icon,
+  .member-item--active .draft-icon {
+    display: none;
+  }
+}
+
 .workspace-toggle-tab {
   position: fixed;
   left: 0;
