@@ -38,6 +38,7 @@
               id="channel-name-input"
               name="channelName"
               [(ngModel)]="channelName"
+              (ngModelChange)="onNameInput()"
               (blur)="onNameBlur()"
               placeholder="z. B. Kooperationsprojekte"
               maxlength="40"

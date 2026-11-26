@@ -6,9 +6,11 @@ import {
   EventEmitter,
   Input,
   Output,
-  ViewChild
+  ViewChild,
+  inject
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChannelService } from '../../../services/channel.service';
 
 export interface ModalMemberOption {
   id: string;
@@ -37,11 +39,13 @@ export class AddChannelModalComponent implements AfterViewInit {
   @Output() closed = new EventEmitter<void>();
   @Output() channelCreated = new EventEmitter<CreatedChannelPayload>();
   @ViewChild('channelDialog') dialogRef!: ElementRef<HTMLDialogElement>;
+  private readonly channelService = inject(ChannelService);
 
   step: 'details' | 'members' = 'details';
   channelName = '';
   channelDescription = '';
   nameTouched = false;
+  isNameTakenRemotely = false;
 
   inviteMode: 'all' | 'specific' = 'all';
   memberSearch = '';
@@ -66,7 +70,12 @@ export class AddChannelModalComponent implements AfterViewInit {
     if (!normalized) {
       return false;
     }
-    return this.existingChannelNames.some((n) => n.toLowerCase() === normalized);
+    return this.isNameTakenRemotely || this.existingChannelNames.some((n) => n.toLowerCase() === normalized);
+  }
+
+  /** Clears the server-side duplicate flag while the name is being edited. */
+  onNameInput(): void {
+    this.isNameTakenRemotely = false;
   }
 
   /** Checks that the normalized name is not empty and not a duplicate. */
@@ -86,18 +95,27 @@ export class AddChannelModalComponent implements AfterViewInit {
     return this.isDuplicateName() ? '*Dieser Channel existiert bereits.' : '';
   }
 
-  /** Marks the name field as touched. */
-  onNameBlur(): void {
+  /** Marks the name field as touched and checks the name against all active channels. */
+  async onNameBlur(): Promise<void> {
     this.nameTouched = true;
+    await this.checkNameOnServer();
   }
 
-  /** Moves to the members step if the channel name is valid. */
-  onProceedToMembers(): void {
+  /** Moves to the members step if the channel name is valid and not used by an active channel. */
+  async onProceedToMembers(): Promise<void> {
     this.nameTouched = true;
-    if (!this.isNameValid()) {
-      return;
+    if (this.isNameValid()) {
+      await this.checkNameOnServer();
     }
-    this.step = 'members';
+    if (this.isNameValid()) {
+      this.step = 'members';
+    }
+  }
+
+  /** Asks the server whether an active channel with this name exists, including channels the user is not in. */
+  private async checkNameOnServer(): Promise<void> {
+    const name = this.getNormalizedName();
+    this.isNameTakenRemotely = !!name && (await this.channelService.isNameTaken(name));
   }
 
   /** Returns the selectable members matching the search, with guests sorted last and the rest alphabetically. */
