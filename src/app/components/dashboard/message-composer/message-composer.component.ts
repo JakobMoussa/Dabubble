@@ -35,9 +35,11 @@ export class MessageComposerComponent {
   /** Conversation the composer writes to; switching keeps the old text as a draft and loads the new one. */
   @Input() set draftKey(key: string | null) {
     if (key === this.key) return;
+    const typedBeforeLoad = this.key === null ? this.text : '';
     this.drafts.set(this.key, this.text);
     this.key = key;
-    this.text = this.drafts.get(key);
+    this.text = this.drafts.get(key) || typedBeforeLoad;
+    this.drafts.set(key, this.text);
     this.options = [];
   }
 
