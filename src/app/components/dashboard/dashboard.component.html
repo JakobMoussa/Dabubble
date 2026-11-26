@@ -193,7 +193,8 @@
         }
         <app-chat-message [message]="msg" [currentUid]="store.uid()" [userNames]="userNames"
           (reactionToggled)="onReactionToggled($event)" (threadOpened)="openThread($event)"
-          (edited)="onMessageEdited($event)" (authorClicked)="openProfileById($event)" />
+          (edited)="onMessageEdited($event)" (authorClicked)="openProfileById($event)"
+          (mentionClicked)="selectMember($event)" />
         }
         }
       </div>
@@ -212,7 +213,7 @@
       [members]="members" [channels]="channels" [currentUid]="store.uid()" [userNames]="userNames"
       (closeThread)="closeThread()" (replySent)="sendReply($event)"
       (reactionToggled)="onReactionToggled($event, true)" (rootReaction)="onReactionToggled($event)"
-      (edited)="onMessageEdited($event, true)" />
+      (edited)="onMessageEdited($event, true)" (mentionClicked)="selectMember($event)" />
     }
   </div>
 

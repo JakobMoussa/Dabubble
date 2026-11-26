@@ -25,6 +25,7 @@ export class ThreadPanelComponent {
   @Output() reactionToggled = new EventEmitter<ReactionToggle>();
   @Output() rootReaction = new EventEmitter<ReactionToggle>();
   @Output() edited = new EventEmitter<{ messageId: string; text: string }>();
+  @Output() mentionClicked = new EventEmitter<string>();
 
 
   /** Reply count; uses the stored counter until the replies have loaded, so it never flashes 0. */

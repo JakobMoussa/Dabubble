@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatMessagePreview } from '../../../models/view.models';
+import { MessagePart, splitMentions } from '../../../shared/mention-parts';
 import { EmojiPickerComponent } from '../../../shared/components/emoji-picker/emoji-picker.component';
 import {
   MAX_REACTIONS_COMPACT, MAX_REACTIONS_DESKTOP, ReactionView, limitReactions, readRecentEmojis, rememberEmoji
@@ -29,6 +30,7 @@ export class ChatMessageComponent {
   @Output() threadOpened = new EventEmitter<string>();
   @Output() edited = new EventEmitter<{ messageId: string; text: string }>();
   @Output() authorClicked = new EventEmitter<string>();
+  @Output() mentionClicked = new EventEmitter<string>();
 
   isPickerOpen = false;
   isMenuOpen = false;
@@ -36,6 +38,12 @@ export class ChatMessageComponent {
   showAll = false;
   editText = '';
   quickEmojis = readRecentEmojis();
+
+
+  /** Message text split into plain text and clickable @-mentions. */
+  get textParts(): MessagePart[] {
+    return splitMentions(this.message.text, this.userNames);
+  }
 
 
   /** Maximum number of reactions shown before collapsing, depending on screen size. */
