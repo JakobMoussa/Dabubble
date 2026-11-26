@@ -1,4 +1,6 @@
-/** Open and closed state of the dashboard panels, popups and sidebar lists. */
+import { MentionTarget } from '../../shared/mention-parts';
+
+/** Open and closed state of the dashboard panels, popups and sidebar lists, plus mention navigation. */
 export abstract class DashboardPanels {
   isSidebarHidden = false;
   isSettingsPopupOpen = false;
@@ -8,6 +10,10 @@ export abstract class DashboardPanels {
   isDirectMessagesOpen = true;
   isChannelSettingsOpen = false;
   membersDialogMode: 'list' | 'add' | null = null;
+  mobileView: 'menu' | 'chat' | 'thread' = 'menu';
+
+  abstract selectChannel(channelId: string): void;
+  abstract selectMember(memberId: string): Promise<void>;
 
 
   /** Opens the members dialog in add or list mode. */
@@ -55,5 +61,21 @@ export abstract class DashboardPanels {
   /** Expands or collapses the direct message list. */
   toggleDirectMessages(): void {
     this.isDirectMessagesOpen = !this.isDirectMessagesOpen;
+  }
+
+
+  /** Switches the mobile view to the menu. */
+  openMobileMenu(): void {
+    this.mobileView = 'menu';
+  }
+
+
+  /** Opens the direct chat or channel behind a clicked mention. */
+  openMention(target: MentionTarget): void {
+    if (target.kind === 'channel') {
+      this.selectChannel(target.id);
+    } else {
+      this.selectMember(target.id);
+    }
   }
 }

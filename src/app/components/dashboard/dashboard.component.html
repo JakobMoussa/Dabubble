@@ -191,10 +191,10 @@
           <span class="date-separator__line"></span>
         </div>
         }
-        <app-chat-message [message]="msg" [currentUid]="store.uid()" [userNames]="userNames"
+        <app-chat-message [message]="msg" [currentUid]="store.uid()" [userNames]="userNames" [channelNames]="channelNames"
           (reactionToggled)="onReactionToggled($event)" (threadOpened)="openThread($event)"
           (edited)="onMessageEdited($event)" (authorClicked)="openProfileById($event)"
-          (mentionClicked)="selectMember($event)" />
+          (mentionClicked)="openMention($event)" />
         }
         }
       </div>
@@ -210,10 +210,10 @@
     @if (isThreadOpen) {
     <app-thread-panel [class.thread-panel--mobile-hidden]="mobileView !== 'thread'"
       [channelName]="getActiveChannel().name" [rootMessage]="threadRootMessage!" [replies]="threadReplies"
-      [members]="members" [channels]="channels" [currentUid]="store.uid()" [userNames]="userNames"
+      [members]="members" [channels]="channels" [currentUid]="store.uid()" [userNames]="userNames" [channelNames]="channelNames"
       (closeThread)="closeThread()" (replySent)="sendReply($event)"
       (reactionToggled)="onReactionToggled($event, true)" (rootReaction)="onReactionToggled($event)"
-      (edited)="onMessageEdited($event, true)" (mentionClicked)="selectMember($event)" />
+      (edited)="onMessageEdited($event, true)" (mentionClicked)="openMention($event)" />
     }
   </div>
 

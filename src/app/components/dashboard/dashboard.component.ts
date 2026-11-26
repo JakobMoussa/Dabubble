@@ -42,7 +42,6 @@ export class DashboardComponent extends DashboardPanels {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  mobileView: 'menu' | 'chat' | 'thread' = 'menu';
   selectedProfileMember: MemberPreview | null = null;
   channelError = '';
   isNewMessage = false;
@@ -169,6 +168,12 @@ export class DashboardComponent extends DashboardPanels {
   /** Adds the given members to the active channel. */
   addChannelMembers(memberIds: string[]): Promise<void> {
     return this.actions.addMembers(this.activeChannelId, memberIds);
+  }
+
+
+  /** Map of channel ids to channel names. */
+  get channelNames(): Map<string, string> {
+    return new Map(this.channels.map((c) => [c.id, c.name]));
   }
 
 
@@ -328,12 +333,6 @@ export class DashboardComponent extends DashboardPanels {
     this.isNewMessage = false;
     await this.store.openDirect(memberId);
     this.showChat();
-  }
-
-
-  /** Switches the mobile view to the menu. */
-  openMobileMenu(): void {
-    this.mobileView = 'menu';
   }
 
 

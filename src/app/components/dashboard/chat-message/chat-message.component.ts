@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatMessagePreview } from '../../../models/view.models';
-import { MessagePart, splitMentions } from '../../../shared/mention-parts';
+import { MentionTarget, MessagePart, splitMentions } from '../../../shared/mention-parts';
 import { EmojiPickerComponent } from '../../../shared/components/emoji-picker/emoji-picker.component';
 import {
   MAX_REACTIONS_COMPACT, MAX_REACTIONS_DESKTOP, ReactionView, limitReactions, readRecentEmojis, rememberEmoji
@@ -24,13 +24,14 @@ export class ChatMessageComponent {
   @Input({ required: true }) message!: ChatMessagePreview;
   @Input() currentUid: string | null = null;
   @Input() userNames = new Map<string, string>();
+  @Input() channelNames = new Map<string, string>();
   @Input() compact = false;
   @Input() showThreadLink = true;
   @Output() reactionToggled = new EventEmitter<ReactionToggle>();
   @Output() threadOpened = new EventEmitter<string>();
   @Output() edited = new EventEmitter<{ messageId: string; text: string }>();
   @Output() authorClicked = new EventEmitter<string>();
-  @Output() mentionClicked = new EventEmitter<string>();
+  @Output() mentionClicked = new EventEmitter<MentionTarget>();
 
   isPickerOpen = false;
   isMenuOpen = false;
@@ -40,9 +41,9 @@ export class ChatMessageComponent {
   quickEmojis = readRecentEmojis();
 
 
-  /** Message text split into plain text and clickable @-mentions. */
+  /** Message text split into plain text and clickable @- and #-mentions. */
   get textParts(): MessagePart[] {
-    return splitMentions(this.message.text, this.userNames);
+    return splitMentions(this.message.text, this.userNames, this.channelNames);
   }
 
 

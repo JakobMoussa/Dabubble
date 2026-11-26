@@ -15,7 +15,7 @@
   </header>
 
   <div class="thread-messages">
-    <app-chat-message [message]="rootMessage" [currentUid]="currentUid" [userNames]="userNames" [compact]="true"
+    <app-chat-message [message]="rootMessage" [currentUid]="currentUid" [userNames]="userNames" [channelNames]="channelNames" [compact]="true"
       [showThreadLink]="false" (reactionToggled)="rootReaction.emit($event)" (mentionClicked)="mentionClicked.emit($event)" />
 
     <div class="thread-divider">
@@ -24,7 +24,7 @@
     </div>
 
     @for (reply of replies; track reply.id) {
-    <app-chat-message [message]="reply" [currentUid]="currentUid" [userNames]="userNames" [compact]="true"
+    <app-chat-message [message]="reply" [currentUid]="currentUid" [userNames]="userNames" [channelNames]="channelNames" [compact]="true"
       [showThreadLink]="false" (reactionToggled)="reactionToggled.emit($event)" (edited)="edited.emit($event)"
       (mentionClicked)="mentionClicked.emit($event)" />
     }

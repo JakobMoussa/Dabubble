@@ -1,3 +1,4 @@
+import { MentionTarget } from '../../../shared/mention-parts';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ChannelPreview, ChatMessagePreview, MemberPreview } from '../../../models/view.models';
 import { ChatMessageComponent, ReactionToggle } from '../chat-message/chat-message.component';
@@ -20,12 +21,13 @@ export class ThreadPanelComponent {
   @Input() channels: ChannelPreview[] = [];
   @Input() currentUid: string | null = null;
   @Input() userNames = new Map<string, string>();
+  @Input() channelNames = new Map<string, string>();
   @Output() closeThread = new EventEmitter<void>();
   @Output() replySent = new EventEmitter<string>();
   @Output() reactionToggled = new EventEmitter<ReactionToggle>();
   @Output() rootReaction = new EventEmitter<ReactionToggle>();
   @Output() edited = new EventEmitter<{ messageId: string; text: string }>();
-  @Output() mentionClicked = new EventEmitter<string>();
+  @Output() mentionClicked = new EventEmitter<MentionTarget>();
 
 
   /** Reply count; uses the stored counter until the replies have loaded, so it never flashes 0. */

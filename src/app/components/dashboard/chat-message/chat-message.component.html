@@ -21,7 +21,7 @@
     </div>
     } @else {
     <div class="message-bubble" [class.message-bubble--own]="message.isOwn">
-      @for (part of textParts; track $index) {@if (part.uid) {<button type="button" class="mention" (click)="mentionClicked.emit(part.uid)">{{ part.text }}</button>} @else {{{ part.text }}}}
+      @for (part of textParts; track $index) {@if (part.mention) {<button type="button" class="mention" (click)="mentionClicked.emit(part.mention)">{{ part.text }}</button>} @else {{{ part.text }}}}
       @if (message.edited) {
       <span class="message-bubble__edited">(bearbeitet)</span>
       }
