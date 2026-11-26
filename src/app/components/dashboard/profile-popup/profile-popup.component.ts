@@ -30,11 +30,12 @@ export class ProfilePopupComponent {
   @Output() closed = new EventEmitter<void>();
   @Output() profileSaved = new EventEmitter<ProfileChanges>();
 
-  /** Switches to edit mode with the current name and avatar. */
+  /** Switches to edit mode with the current name and avatar and focuses the name field. */
   startEditing(): void {
     this.editedName = this.userName;
     this.editedAvatar = this.userAvatar;
     this.isEditing = true;
+    setTimeout(() => document.getElementById('profile-name')?.focus(), 0);
   }
 
   /** Leaves edit mode and resets the edited name. */

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChannelPreview, MemberPreview } from '../../../models/view.models';
 
@@ -15,13 +15,19 @@ export interface Recipient {
   templateUrl: './new-message-header.component.html',
   styleUrl: './new-message-header.component.scss'
 })
-export class NewMessageHeaderComponent {
+export class NewMessageHeaderComponent implements AfterViewInit {
   @Input() channels: ChannelPreview[] = [];
   @Input() members: MemberPreview[] = [];
   @Input() recipient: Recipient | null = null;
   @Output() recipientChange = new EventEmitter<Recipient | null>();
 
   term = '';
+
+
+  /** Focuses the recipient field as soon as a new message is started. */
+  ngAfterViewInit(): void {
+    document.getElementById('new-message-to')?.focus();
+  }
 
 
   /** Matching channel and member suggestions for the search term, limited to eight. */
