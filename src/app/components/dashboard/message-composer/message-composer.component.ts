@@ -1,6 +1,7 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChannelPreview, MemberPreview } from '../../../models/view.models';
+import { DraftStore } from '../../../services/draft.store';
 import { EmojiPickerComponent } from '../../../shared/components/emoji-picker/emoji-picker.component';
 
 interface MentionOption {
@@ -27,6 +28,18 @@ export class MessageComposerComponent {
   @Input() compact = false;
   @Output() sent = new EventEmitter<string>();
   @ViewChild('field') private field!: ElementRef<HTMLTextAreaElement>;
+  private readonly drafts = inject(DraftStore);
+  private key: string | null = null;
+
+
+  /** Conversation the composer writes to; switching keeps the old text as a draft and loads the new one. */
+  @Input() set draftKey(key: string | null) {
+    if (key === this.key) return;
+    this.drafts.set(this.key, this.text);
+    this.key = key;
+    this.text = this.drafts.get(key);
+    this.options = [];
+  }
 
   text = '';
   isEmojiOpen = false;
@@ -36,6 +49,7 @@ export class MessageComposerComponent {
 
   /** Updates the mention suggestions based on the token before the caret. */
   onInput(): void {
+    this.drafts.set(this.key, this.text);
     const match = TOKEN_PATTERN.exec(this.textBeforeCaret());
     this.options = match ? this.findOptions(match[2], match[3].toLowerCase()) : [];
     this.activeIndex = 0;
@@ -92,6 +106,7 @@ export class MessageComposerComponent {
     if (text) {
       this.sent.emit(text);
       this.text = '';
+      this.drafts.set(this.key, '');
       this.options = [];
     }
   }

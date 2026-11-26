@@ -32,6 +32,7 @@
 
   <div class="thread-composer-wrap">
     <app-message-composer inputId="thread-reply-input" placeholder="Antworten..." [members]="members"
-      [channels]="channels" [compact]="true" (sent)="replySent.emit($event)" />
+      [channels]="channels" [compact]="true"
+      [draftKey]="'thread:' + rootMessage.id" (sent)="replySent.emit($event)" />
   </div>
 </aside>

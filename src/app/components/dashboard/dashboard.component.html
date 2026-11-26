@@ -72,7 +72,11 @@
                 <img
                   [src]="!activeMemberId && activeChannelId === channel.id ? 'assets/icons/tag-purple.svg' : 'assets/icons/tag.svg'"
                   alt="" width="24" height="24" />
-                <span>{{ channel.name }}</span>
+                <span class="channel-item__name">{{ channel.name }}</span>
+                @if (drafts.has('channel:' + channel.id) && (activeMemberId || activeChannelId !== channel.id)) {
+                <img src="assets/icons/figma/edit-default.svg" alt="Entwurf" title="Entwurf" width="20" height="20"
+                  class="draft-icon" />
+                }
               </button>
             </li>
             }
@@ -109,6 +113,10 @@
                     [class.status-dot--offline]="!member.online"></span>
                 </span>
                 <span class="member-item__name">{{ member.name }}</span>
+                @if (drafts.has('member:' + member.id) && activeMemberId !== member.id) {
+                <img src="assets/icons/figma/edit-default.svg" alt="Entwurf" title="Entwurf" width="20" height="20"
+                  class="draft-icon" />
+                }
               </button>
             </li>
             }
@@ -203,7 +211,8 @@
 
       <div class="composer-wrapper">
         <app-message-composer [placeholder]="isNewMessage ? 'Starte eine neue Nachricht' : getComposerPlaceholder()"
-          [members]="members" [channels]="channels" (sent)="isNewMessage ? sendNewMessage($event) : sendMessage($event)" />
+          [members]="members" [channels]="channels"
+          [draftKey]="draftKeyFor(isNewMessage, activeMemberId, activeChannelId)" (sent)="isNewMessage ? sendNewMessage($event) : sendMessage($event)" />
       </div>
     </main>
 
