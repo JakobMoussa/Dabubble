@@ -1,4 +1,5 @@
-import { AfterViewInit, Directive } from '@angular/core';
+import { AfterViewInit, Directive, inject } from '@angular/core';
+import { DraftStore } from '../../services/draft.store';
 import { focusWhenReady } from '../../shared/focus-when-ready';
 import { MentionTarget } from '../../shared/mention-parts';
 
@@ -14,9 +15,18 @@ export abstract class DashboardPanels implements AfterViewInit {
   isChannelSettingsOpen = false;
   membersDialogMode: 'list' | 'add' | null = null;
   mobileView: 'menu' | 'chat' | 'thread' = 'menu';
+  readonly drafts = inject(DraftStore);
 
   abstract selectChannel(channelId: string): void;
   abstract selectMember(memberId: string): Promise<void>;
+
+
+  /** Returns the draft key of the open conversation: new message, direct chat or channel. */
+  draftKeyFor(isNew: boolean, memberId: string | null, channelId: string): string | null {
+    if (isNew) return 'new';
+    if (memberId) return 'member:' + memberId;
+    return channelId ? 'channel:' + channelId : null;
+  }
 
 
   /** Focuses the message input after every login, also when a conversation is still open from before. */

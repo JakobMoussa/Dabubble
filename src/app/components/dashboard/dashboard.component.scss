@@ -166,10 +166,18 @@
   font-weight: 700;
 }
 
+.channel-item__name,
 .member-item__name {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.draft-icon {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .workspace-toggle-tab {

@@ -9,6 +9,7 @@ import { AppUser } from '../models/user.model';
 import { normalizeEmail } from '../shared/validators/email.validator';
 import { UserService } from './user.service';
 import { ChannelService } from './channel.service';
+import { DraftStore } from './draft.store';
 
 export const DEFAULT_AVATAR = 'assets/img/avatars/default.svg';
 
@@ -24,6 +25,7 @@ export class AuthService {
   private readonly auth = inject(Auth);
   private readonly users = inject(UserService);
   private readonly channels = inject(ChannelService);
+  private readonly drafts = inject(DraftStore);
   readonly user$: Observable<User | null> = authState(this.auth);
 
 
@@ -86,6 +88,7 @@ export class AuthService {
     if (uid) {
       await this.users.setStatus(uid, 'offline');
     }
+    this.drafts.clear();
     await signOut(this.auth);
   }
 
