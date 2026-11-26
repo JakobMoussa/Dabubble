@@ -45,6 +45,6 @@ export class UserService {
 
   /** Sets the presence status of a user. */
   setStatus(uid: string, status: PresenceStatus): Promise<void> {
-    return updateDoc(doc(this.firestore, USERS, uid), { status });
+    return updateDoc(doc(this.firestore, USERS, uid), { status, lastSeen: Date.now() });
   }
 }

@@ -1,3 +1,4 @@
+import { isOnline } from './presence';
 import { AppUser } from '../models/user.model';
 import { Message } from '../models/message.model';
 import { ChatMessagePreview, MemberPreview } from '../models/view.models';
@@ -33,7 +34,7 @@ export function toMemberPreview(user: AppUser, currentUid: string | null): Membe
   return {
     id: user.uid, email: user.email, avatar: resolveAvatar(user.avatar, DEFAULT_AVATAR),
     name: isCurrentUser ? `${user.name} (Du)` : user.name,
-    online: user.status === 'online', isCurrentUser
+    online: isCurrentUser || isOnline(user), isCurrentUser
   };
 }
 

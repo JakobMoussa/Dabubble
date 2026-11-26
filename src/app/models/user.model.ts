@@ -7,4 +7,5 @@ export interface AppUser {
   avatar: string;
   status: PresenceStatus;
   isGuest: boolean;
+  lastSeen?: number;
 }
