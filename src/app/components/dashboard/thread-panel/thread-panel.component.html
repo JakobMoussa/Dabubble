@@ -15,8 +15,8 @@
   </header>
 
   <div class="thread-messages">
-    <app-chat-message [message]="rootMessage" [currentUid]="currentUid" [userNames]="userNames" [compact]="true"
-      [showThreadLink]="false" (reactionToggled)="rootReaction.emit($event)" />
+    <app-chat-message [message]="rootMessage" [currentUid]="currentUid" [userNames]="userNames" [channelNames]="channelNames" [compact]="true"
+      [showThreadLink]="false" (reactionToggled)="rootReaction.emit($event)" (mentionClicked)="mentionClicked.emit($event)" />
 
     <div class="thread-divider">
       <span class="thread-divider__count">{{ replyCount }} {{ replyCount === 1 ? 'Antwort' : 'Antworten' }}</span>
@@ -24,8 +24,9 @@
     </div>
 
     @for (reply of replies; track reply.id) {
-    <app-chat-message [message]="reply" [currentUid]="currentUid" [userNames]="userNames" [compact]="true"
-      [showThreadLink]="false" (reactionToggled)="reactionToggled.emit($event)" (edited)="edited.emit($event)" />
+    <app-chat-message [message]="reply" [currentUid]="currentUid" [userNames]="userNames" [channelNames]="channelNames" [compact]="true"
+      [showThreadLink]="false" (reactionToggled)="reactionToggled.emit($event)" (edited)="edited.emit($event)"
+      (mentionClicked)="mentionClicked.emit($event)" />
     }
   </div>
 

@@ -62,6 +62,27 @@
   }
 }
 
+.mention {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--purple-3);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 100ms ease;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+
+  .message-bubble--own & {
+    color: var(--white);
+    text-decoration: underline;
+  }
+}
+
 .message-thread-info {
   display: flex;
   align-items: center;

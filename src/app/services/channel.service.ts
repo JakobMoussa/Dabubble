@@ -68,11 +68,17 @@ export class ChannelService {
   }
 
 
-  /** Throws a DuplicateChannelError if another channel already uses the name (case-insensitive). */
-  private async assertNameIsFree(name: string, ownId?: string): Promise<void> {
+  /** Checks whether another channel with members uses the name; channels everyone has left free their name again. */
+  async isNameTaken(name: string, ownId?: string): Promise<boolean> {
     const sameName = query(this.channels, where('nameLower', '==', name.trim().toLowerCase()));
     const result = await getDocs(sameName);
-    if (result.docs.some((snapshot) => snapshot.id !== ownId)) {
+    return result.docs.some((snapshot) => snapshot.id !== ownId && (snapshot.data()['memberIds'] ?? []).length > 0);
+  }
+
+
+  /** Throws a DuplicateChannelError if another active channel already uses the name (case-insensitive). */
+  private async assertNameIsFree(name: string, ownId?: string): Promise<void> {
+    if (await this.isNameTaken(name, ownId)) {
       throw new DuplicateChannelError();
     }
   }

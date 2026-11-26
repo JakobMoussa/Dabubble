@@ -37,7 +37,7 @@
           (click)="unpick(member.id)">×</button>
       </span>
       }
-      <input class="picker__input" [(ngModel)]="search" placeholder="Name eingeben" aria-label="Name eingeben" />
+      <input class="picker__input" autofocus [(ngModel)]="search" placeholder="Name eingeben" aria-label="Name eingeben" />
     </div>
     @if (suggestions.length) {
     <ul class="suggestions" role="listbox">

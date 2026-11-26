@@ -42,7 +42,6 @@ export class DashboardComponent extends DashboardPanels {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  mobileView: 'menu' | 'chat' | 'thread' = 'menu';
   selectedProfileMember: MemberPreview | null = null;
   channelError = '';
   isNewMessage = false;
@@ -136,11 +135,14 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Opens the conversation chosen in the search box and shows the chat. */
+  /** Opens the conversation chosen in the search box, shows the chat and opens the thread for thread replies. */
   onSearchSelected(selection: SearchSelection): void {
     this.isNewMessage = false;
     this.store.openConversation(selection.conversation);
     this.showChat();
+    if (selection.threadParentId) {
+      this.openThread(selection.threadParentId);
+    }
   }
 
 
@@ -166,6 +168,12 @@ export class DashboardComponent extends DashboardPanels {
   /** Adds the given members to the active channel. */
   addChannelMembers(memberIds: string[]): Promise<void> {
     return this.actions.addMembers(this.activeChannelId, memberIds);
+  }
+
+
+  /** Map of channel ids to channel names. */
+  get channelNames(): Map<string, string> {
+    return new Map(this.channels.map((c) => [c.id, c.name]));
   }
 
 
@@ -328,12 +336,6 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Switches the mobile view to the menu. */
-  openMobileMenu(): void {
-    this.mobileView = 'menu';
-  }
-
-
   /** The active channel, or an empty channel if none is active. */
   getActiveChannel(): ChannelPreview {
     return this.channels.find((c) => c.id === this.activeChannelId) ?? EMPTY_CHANNEL;
@@ -378,11 +380,12 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Opens the first channel if no conversation is active yet. */
+  /** Opens the first channel if no conversation is active yet and focuses the message input. */
   private selectFirstChannelOnce(): void {
     const first = this.store.channels()[0];
     if (first && !this.store.active()) {
       this.store.openChannel(first.id);
+      setTimeout(() => document.getElementById('chat-message-input')?.focus(), 0);
     }
   }
 

@@ -10,6 +10,7 @@ import { ConversationRef, Message } from '../models/message.model';
 export interface MessageHit {
   conversation: ConversationRef;
   message: Message;
+  threadParentId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -81,16 +82,29 @@ export class MessageService {
   }
 
 
-  /** Returns the messages of one conversation that contain the search text; unreadable conversations yield no hits. */
+  /** Returns the messages and thread replies of one conversation that contain the search text; unreadable conversations yield no hits. */
   private async searchIn(conversation: ConversationRef, needle: string): Promise<MessageHit[]> {
-    const snapshot = await getDocs(this.messagesRef(conversation)).catch(() => null);
-    if (!snapshot) {
-      return [];
-    }
-    return snapshot.docs
-      .map((d) => ({ ...(d.data() as Message), id: d.id }))
-      .filter((message) => message.text.toLowerCase().includes(needle))
-      .map((message) => ({ conversation, message }));
+    const messages = await this.readAll(this.messagesRef(conversation));
+    const hits = messages.filter((m) => m.text.toLowerCase().includes(needle)).map((message) => ({ conversation, message }));
+    const withThreads = messages.filter((m) => m.threadCount > 0);
+    const threadHits = await Promise.all(withThreads.map((m) => this.searchThread(conversation, m.id, needle)));
+    return [...hits, ...threadHits.flat()];
+  }
+
+
+  /** Returns the replies of one thread that contain the search text. */
+  private async searchThread(conversation: ConversationRef, parentId: string, needle: string): Promise<MessageHit[]> {
+    const replies = await this.readAll(this.threadRef(conversation, parentId));
+    return replies
+      .filter((reply) => reply.text.toLowerCase().includes(needle))
+      .map((message) => ({ conversation, message, threadParentId: parentId }));
+  }
+
+
+  /** Reads all messages of a collection once; a denied read yields an empty list. */
+  private async readAll(ref: CollectionReference): Promise<Message[]> {
+    const snapshot = await getDocs(ref).catch(() => null);
+    return snapshot ? snapshot.docs.map((d) => ({ ...(d.data() as Message), id: d.id })) : [];
   }
 
 

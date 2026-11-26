@@ -36,8 +36,10 @@
             <input
               type="text"
               id="channel-name-input"
+              autofocus
               name="channelName"
               [(ngModel)]="channelName"
+              (ngModelChange)="onNameInput()"
               (blur)="onNameBlur()"
               placeholder="z. B. Kooperationsprojekte"
               maxlength="40"
