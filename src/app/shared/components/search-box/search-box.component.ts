@@ -9,6 +9,7 @@ import { WorkspaceStore } from '../../../services/workspace.store';
 export interface SearchSelection {
   conversation: ConversationRef;
   memberId?: string;
+  threadParentId?: string;
 }
 
 @Component({
@@ -112,9 +113,9 @@ export class SearchBoxComponent implements OnDestroy {
   }
 
 
-  /** Emits the conversation of the selected message hit. */
+  /** Emits the conversation (and thread, for replies) of the selected message hit. */
   pickHit(hit: MessageHit): void {
-    this.emit({ conversation: hit.conversation });
+    this.emit({ conversation: hit.conversation, threadParentId: hit.threadParentId });
   }
 
 

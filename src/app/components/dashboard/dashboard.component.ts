@@ -136,11 +136,14 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Opens the conversation chosen in the search box and shows the chat. */
+  /** Opens the conversation chosen in the search box, shows the chat and opens the thread for thread replies. */
   onSearchSelected(selection: SearchSelection): void {
     this.isNewMessage = false;
     this.store.openConversation(selection.conversation);
     this.showChat();
+    if (selection.threadParentId) {
+      this.openThread(selection.threadParentId);
+    }
   }
 
 
