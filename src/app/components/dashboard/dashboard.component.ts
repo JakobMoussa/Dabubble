@@ -378,11 +378,12 @@ export class DashboardComponent extends DashboardPanels {
   }
 
 
-  /** Opens the first channel if no conversation is active yet. */
+  /** Opens the first channel if no conversation is active yet and focuses the message input. */
   private selectFirstChannelOnce(): void {
     const first = this.store.channels()[0];
     if (first && !this.store.active()) {
       this.store.openChannel(first.id);
+      setTimeout(() => document.getElementById('chat-message-input')?.focus(), 0);
     }
   }
 
