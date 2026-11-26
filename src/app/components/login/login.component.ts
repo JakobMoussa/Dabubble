@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { focusWhenReady } from '../../shared/focus-when-ready';
 import { isValidEmail } from '../../shared/validators/email.validator';
 import { AuthService } from '../../services/auth.service';
 import { toAuthMessage } from '../../shared/auth-error-messages';
@@ -40,6 +41,7 @@ export class LoginComponent implements OnInit {
     const alreadyPlayed = sessionStorage.getItem('dabubble_intro_done') === 'true';
     if (alreadyPlayed) {
       this.introCompleted = true;
+      focusWhenReady('email');
       return;
     }
     this.scheduleIntroCompletion();
@@ -50,6 +52,7 @@ export class LoginComponent implements OnInit {
     setTimeout(() => {
       this.introCompleted = true;
       sessionStorage.setItem('dabubble_intro_done', 'true');
+      focusWhenReady('email');
     }, 1800);
   }
 

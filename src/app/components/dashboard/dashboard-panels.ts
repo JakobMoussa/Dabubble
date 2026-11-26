@@ -1,7 +1,10 @@
+import { AfterViewInit, Directive } from '@angular/core';
+import { focusWhenReady } from '../../shared/focus-when-ready';
 import { MentionTarget } from '../../shared/mention-parts';
 
 /** Open and closed state of the dashboard panels, popups and sidebar lists, plus mention navigation. */
-export abstract class DashboardPanels {
+@Directive()
+export abstract class DashboardPanels implements AfterViewInit {
   isSidebarHidden = false;
   isSettingsPopupOpen = false;
   isChannelPopupOpen = false;
@@ -14,6 +17,12 @@ export abstract class DashboardPanels {
 
   abstract selectChannel(channelId: string): void;
   abstract selectMember(memberId: string): Promise<void>;
+
+
+  /** Focuses the message input after every login, also when a conversation is still open from before. */
+  ngAfterViewInit(): void {
+    focusWhenReady('chat-message-input');
+  }
 
 
   /** Opens the members dialog in add or list mode. */
